@@ -7,8 +7,8 @@
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
       <Options>None</Options>
-      <Output>C:\Users\Dylan\git\cs-2d-game\Game\Game\Game\bin\x86\Debug\Content\knight-0.xnb</Output>
-      <Time>2018-09-07T17:31:57.3339372-04:00</Time>
+      <Output>C:\Users\Dylan\Documents\Git\cs-2d-game\Game\Game\Game\bin\x86\Debug\Content\knight-0.xnb</Output>
+      <Time>2018-09-07T22:59:30.2048793-04:00</Time>
     </Item>
     <Item>
       <Source>dante's-lunch.jpg</Source>
@@ -16,8 +16,8 @@
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
       <Options>None</Options>
-      <Output>C:\Users\Dylan\git\cs-2d-game\Game\Game\Game\bin\x86\Debug\Content\dante's-lunch.xnb</Output>
-      <Time>2018-09-07T17:32:38.505017-04:00</Time>
+      <Output>C:\Users\Dylan\Documents\Git\cs-2d-game\Game\Game\Game\bin\x86\Debug\Content\dante's-lunch.xnb</Output>
+      <Time>2018-09-07T22:59:30.1398327-04:00</Time>
     </Item>
     <Item>
       <Source>crosshair.png</Source>
@@ -25,17 +25,8 @@
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
       <Options>None</Options>
-      <Output>C:\Users\Dylan\git\cs-2d-game\Game\Game\Game\bin\x86\Debug\Content\crosshair.xnb</Output>
-      <Time>2018-09-07T17:32:50.8974983-04:00</Time>
-    </Item>
-    <Item>
-      <Source>SpriteFont1.spritefont</Source>
-      <Name>SpriteFont1</Name>
-      <Importer>FontDescriptionImporter</Importer>
-      <Processor>FontDescriptionProcessor</Processor>
-      <Options>None</Options>
-      <Output>C:\Users\Dylan\git\cs-2d-game\Game\Game\Game\bin\x86\Debug\Content\SpriteFont1.xnb</Output>
-      <Time>2018-09-07T17:33:24.434509-04:00</Time>
+      <Output>C:\Users\Dylan\Documents\Git\cs-2d-game\Game\Game\Game\bin\x86\Debug\Content\crosshair.xnb</Output>
+      <Time>2018-09-07T22:59:30.1288244-04:00</Time>
     </Item>
     <Item>
       <Source>fantasy-background.jpg</Source>
@@ -43,8 +34,8 @@
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
       <Options>None</Options>
-      <Output>C:\Users\Dylan\git\cs-2d-game\Game\Game\Game\bin\x86\Debug\Content\fantasy-background.xnb</Output>
-      <Time>2018-09-07T17:34:50.8080915-04:00</Time>
+      <Output>C:\Users\Dylan\Documents\Git\cs-2d-game\Game\Game\Game\bin\x86\Debug\Content\fantasy-background.xnb</Output>
+      <Time>2018-09-07T22:59:30.1528428-04:00</Time>
     </Item>
     <Item>
       <Source>skill-square.png</Source>
@@ -52,8 +43,26 @@
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
       <Options>None</Options>
-      <Output>C:\Users\Dylan\git\cs-2d-game\Game\Game\Game\bin\x86\Debug\Content\skill-square.xnb</Output>
-      <Time>2018-09-07T17:39:58.0436368-04:00</Time>
+      <Output>C:\Users\Dylan\Documents\Git\cs-2d-game\Game\Game\Game\bin\x86\Debug\Content\skill-square.xnb</Output>
+      <Time>2018-09-07T22:59:30.3239635-04:00</Time>
+    </Item>
+    <Item>
+      <Source>SpriteFont1.spritefont</Source>
+      <Name>SpriteFont1</Name>
+      <Importer>FontDescriptionImporter</Importer>
+      <Processor>FontDescriptionProcessor</Processor>
+      <Options>None</Options>
+      <Output>C:\Users\Dylan\Documents\Git\cs-2d-game\Game\Game\Game\bin\x86\Debug\Content\SpriteFont1.xnb</Output>
+      <Time>2018-09-07T22:59:30.1128139-04:00</Time>
+    </Item>
+    <Item>
+      <Source>knight-small.png</Source>
+      <Name>knight-small</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+      <Options>None</Options>
+      <Output>C:\Users\Dylan\Documents\Git\cs-2d-game\Game\Game\Game\bin\x86\Debug\Content\knight-small.xnb</Output>
+      <Time>2018-09-08T15:09:43.154911-04:00</Time>
     </Item>
     <BuildSuccessful>true</BuildSuccessful>
     <Settings>
@@ -62,10 +71,10 @@
       <TargetProfile>Reach</TargetProfile>
       <BuildConfiguration>Debug</BuildConfiguration>
       <CompressContent>false</CompressContent>
-      <RootDirectory>C:\Users\Dylan\git\cs-2d-game\Game\Game\GameContent\</RootDirectory>
-      <LoggerRootDirectory>C:\Users\Dylan\git\cs-2d-game\Game\Game\Game\</LoggerRootDirectory>
-      <IntermediateDirectory>C:\Users\Dylan\git\cs-2d-game\Game\Game\Game\obj\x86\Debug\</IntermediateDirectory>
-      <OutputDirectory>C:\Users\Dylan\git\cs-2d-game\Game\Game\Game\bin\x86\Debug\Content\</OutputDirectory>
+      <RootDirectory>C:\Users\Dylan\Documents\Git\cs-2d-game\Game\Game\GameContent\</RootDirectory>
+      <LoggerRootDirectory>C:\Users\Dylan\Documents\Git\cs-2d-game\Game\Game\Game\</LoggerRootDirectory>
+      <IntermediateDirectory>C:\Users\Dylan\Documents\Git\cs-2d-game\Game\Game\Game\obj\x86\Debug\</IntermediateDirectory>
+      <OutputDirectory>C:\Users\Dylan\Documents\Git\cs-2d-game\Game\Game\Game\bin\x86\Debug\Content\</OutputDirectory>
     </Settings>
     <Assemblies>
       <Assembly>
@@ -94,7 +103,7 @@
       </Assembly>
       <Assembly>
         <Key>C:\WINDOWS\Microsoft.Net\assembly\GAC_32\Microsoft.Xna.Framework.Content.Pipeline\v4.0_4.0.0.0__842cf8be1de50553\Microsoft.Xna.Framework.Content.Pipeline.dll</Key>
-        <Value>2018-09-05T14:56:54.7530954-04:00</Value>
+        <Value>2018-09-05T22:30:52.1723467-04:00</Value>
       </Assembly>
     </Assemblies>
   </Asset>

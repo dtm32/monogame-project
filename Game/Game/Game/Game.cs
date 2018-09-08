@@ -18,7 +18,7 @@ namespace Game
     {
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
-        Texture2D donutTexture;
+        Texture2D knightTexture;
         Texture2D crosshairTexture;
         Texture2D backgroundTexture;
         Rectangle donutRect;
@@ -103,17 +103,20 @@ namespace Game
             spriteBatch = new SpriteBatch(GraphicsDevice);
 
             // TODO: use this.Content to load your game content here
-            donutTexture = Content.Load<Texture2D>("knight-0");
+            knightTexture = Content.Load<Texture2D>("knight-small");
             backgroundTexture = Content.Load<Texture2D>("fantasy-background");
             crosshairTexture = Content.Load<Texture2D>("crosshair");
             font = Content.Load<SpriteFont>("SpriteFont1");
 
             tileTexture = Content.Load<Texture2D>("skill-square");
 
+            // assign textures to objects
             for (int i = 0; i < 25; i++)
             {
                 tileArray[i].SetTexture(tileTexture);
             }
+
+            tileArray[7].AddUnit(knightTexture);
         }
 
         /// <summary>
@@ -187,6 +190,11 @@ namespace Game
                 score++;
             }
 
+            if(crosshairRect.Intersects(tileArray[7].GetUnitRectangle()))
+            {
+                crosshairColor = Color.Blue;
+            }
+
             base.Update(gameTime);
         }
 
@@ -206,9 +214,13 @@ namespace Game
             {
                 Tile tile = tileArray[i];
                 spriteBatch.Draw(tile.GetTexture(), tile.GetRectangle(), Color.White);
+                if(tile.HasUnit())
+                {
+                    spriteBatch.Draw(tile.GetUnitTexture(), tile.GetUnitRectangle(), Color.White);
+                }
             }
 
-            spriteBatch.Draw(donutTexture, donutRect, Color.White);
+            spriteBatch.Draw(knightTexture, donutRect, Color.White);
             spriteBatch.Draw(crosshairTexture, crosshairRect, crosshairColor);
             spriteBatch.DrawString(font, "Score: " + score, fontPosition, Color.White);
 

@@ -1,2 +1,4 @@
 C:\Users\Dylan\git\cs-2d-game\Game\Game\GameContent\obj\x86\Debug\GameContent.contentprojAssemblyReference.cache
 C:\Users\Dylan\git\cs-2d-game\Game\Game\GameContent\obj\x86\Debug\GameContent.contentproj.CoreCompileInputs.cache
+C:\Users\Dylan\Documents\Git\cs-2d-game\Game\Game\GameContent\obj\x86\Debug\GameContent.contentprojAssemblyReference.cache
+C:\Users\Dylan\Documents\Git\cs-2d-game\Game\Game\GameContent\obj\x86\Debug\GameContent.contentproj.CoreCompileInputs.cache
