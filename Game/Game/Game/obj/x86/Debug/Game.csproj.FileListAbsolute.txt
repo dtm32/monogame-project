@@ -47,3 +47,6 @@ C:\Users\Dylan\Documents\Git\cs-2d-game\Game\Game\Game\obj\x86\Debug\Microsoft.X
 C:\Users\Dylan\Documents\Git\cs-2d-game\Game\Game\Game\obj\x86\Debug\Game.csproj.CoreCompileInputs.cache
 C:\Users\Dylan\Documents\Git\cs-2d-game\Game\Game\Game\obj\x86\Debug\Game.csproj.CopyComplete
 C:\Users\Dylan\Documents\Git\cs-2d-game\Game\Game\Game\bin\x86\Debug\Content\knight-small.xnb
+C:\Users\Dylan\git\cs-2d-game\Game\Game\Game\bin\x86\Debug\Content\knight-small.xnb
+C:\Users\Dylan\git\cs-2d-game\Game\Game\Game\bin\x86\Debug\Content\knight-no-helmet.xnb
+C:\Users\Dylan\git\cs-2d-game\Game\Game\Game\bin\x86\Debug\Content\cursor.xnb

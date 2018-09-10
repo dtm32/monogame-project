@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Content;
@@ -19,15 +20,19 @@ namespace Game
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
         Texture2D knightTexture;
+        Texture2D knightNoHelmetTexture;
         Texture2D crosshairTexture;
         Texture2D backgroundTexture;
+        Texture2D cursorTexture;
         Rectangle donutRect;
         Rectangle crosshairRect;
+        Rectangle cursorRect;
         Rectangle backgroundRect;
         Vector2 donutPosition;
         Vector2 donutVelocity;
         Vector2 crosshairPosition;
-        Color crosshairColor;
+        Vector2 cursorPosition;
+        Color cursorColor;
         SpriteFont font;
         Vector2 fontPosition;
         Random rnd = new Random();
@@ -35,13 +40,14 @@ namespace Game
 
         protected Texture2D tileTexture;
         protected Rectangle[] tileRectangles = new Rectangle[25];
-        private Tile[] tileArray = new Tile[25];
+        private Tile[] tileArray = new Tile[49];
+        private bool skillsOpen = false;
 
         public Game()
         {
             graphics = new GraphicsDeviceManager(this);
-            graphics.PreferredBackBufferWidth = 1280;
-            graphics.PreferredBackBufferHeight = 720;
+            graphics.PreferredBackBufferWidth = 1920;
+            graphics.PreferredBackBufferHeight = 1048;
             Content.RootDirectory = "Content";
         }
 
@@ -64,7 +70,11 @@ namespace Game
             crosshairPosition.X = 400;
             crosshairPosition.Y = 400;
 
-            crosshairColor = Color.White;
+            cursorRect = new Rectangle(0, 0, 30, 30);
+            cursorPosition.X = 0;
+            cursorPosition.Y = 0;
+
+            cursorColor = Color.White;
 
             backgroundRect = new Rectangle(0, 0,
                 graphics.GraphicsDevice.Viewport.Width,
@@ -75,17 +85,16 @@ namespace Game
             score = 0;
 
             Vector2 tileStart = new Vector2();
-            tileStart.X = graphics.GraphicsDevice.Viewport.Width / 2 - 250;
-            tileStart.Y = graphics.GraphicsDevice.Viewport.Height / 2 - 250;
+            tileStart.X = graphics.GraphicsDevice.Viewport.Width / 2 - 420;
+            tileStart.Y = graphics.GraphicsDevice.Viewport.Height / 2 - 450;
 
             int i = 0;
 
-            for (int x = 0; x < 5; x++)
+            for (int x = 0; x < 7; x++)
             {
-                for(int y = 0; y < 5; y++)
+                for(int y = 0; y < 7; y++)
                 {
-                    tileRectangles[i] = new Rectangle((int)tileStart.X + 100 * x, (int)tileStart.Y + 100 * y, 100, 100);
-                    tileArray[i] = new Tile((int)tileStart.X + 100 * x, (int)tileStart.Y + 100 * y);
+                    tileArray[i] = new Tile((int)tileStart.X + 120 * x, (int)tileStart.Y + 120 * y);
                     i++;
                 }
             }
@@ -104,19 +113,23 @@ namespace Game
 
             // TODO: use this.Content to load your game content here
             knightTexture = Content.Load<Texture2D>("knight-small");
+            knightNoHelmetTexture = Content.Load<Texture2D>("knight-no-helmet");
             backgroundTexture = Content.Load<Texture2D>("fantasy-background");
             crosshairTexture = Content.Load<Texture2D>("crosshair");
+            cursorTexture = Content.Load<Texture2D>("cursor");
+
             font = Content.Load<SpriteFont>("SpriteFont1");
 
             tileTexture = Content.Load<Texture2D>("skill-square");
 
             // assign textures to objects
-            for (int i = 0; i < 25; i++)
+            for (int i = 0; i < tileArray.Length; i++)
             {
                 tileArray[i].SetTexture(tileTexture);
             }
 
-            tileArray[7].AddUnit(knightTexture);
+            tileArray[9].AddUnit(knightTexture);
+            tileArray[14].AddUnit(knightNoHelmetTexture);
         }
 
         /// <summary>
@@ -147,11 +160,11 @@ namespace Game
             // update crosshair
             if (Mouse.GetState().LeftButton == ButtonState.Pressed)
             {
-                crosshairColor = Color.Red;
+                cursorColor = Color.Red;
             }
             else
             {
-                crosshairColor = Color.White;
+                cursorColor = Color.White;
             }
 
             // moving donut
@@ -170,29 +183,23 @@ namespace Game
             donutRect.Y = (int)donutPosition.Y;
 
             // crosshair
-            crosshairPosition.X = Mouse.GetState().X;
-            crosshairPosition.Y = Mouse.GetState().Y;
+            cursorPosition.X = Mouse.GetState().X;
+            cursorPosition.Y = Mouse.GetState().Y;
 
-            crosshairPosition.X = MathHelper.Clamp(crosshairPosition.X, 0, viewportWidth - crosshairRect.Width);
-            crosshairPosition.Y = MathHelper.Clamp(crosshairPosition.Y, 0, viewportHeight - crosshairRect.Height);
+            cursorPosition.X = MathHelper.Clamp(cursorPosition.X, 0, viewportWidth - cursorRect.Width);
+            cursorPosition.Y = MathHelper.Clamp(cursorPosition.Y, 0, viewportHeight - cursorRect.Height);
 
-            crosshairRect.X = (int)crosshairPosition.X;
-            crosshairRect.Y = (int)crosshairPosition.Y;
+            cursorRect.X = (int)cursorPosition.X;
+            cursorRect.Y = (int)cursorPosition.Y;
 
-            // check if user clicked clown
-            if (crosshairRect.Intersects(donutRect) && crosshairColor.Equals(Color.Red))
+            // check if user clicked unit
+            for (int i = 0; i < tileArray.Length; i++)
             {
-                // clown gets shot
-                donutPosition.X = rnd.Next(viewportWidth - donutRect.Width);
-                donutPosition.Y = rnd.Next(viewportHeight - donutRect.Height);
-                donutVelocity.X *= 1.1f;
-                donutVelocity.Y *= 1.1f;
-                score++;
-            }
-
-            if(crosshairRect.Intersects(tileArray[7].GetUnitRectangle()))
-            {
-                crosshairColor = Color.Blue;
+                if (cursorRect.Intersects(tileArray[i].GetUnitRectangle()) && Mouse.GetState().LeftButton == ButtonState.Pressed)
+                {
+                    cursorColor = Color.LightGreen;
+                    skillsOpen = true;
+                }
             }
 
             base.Update(gameTime);
@@ -210,7 +217,7 @@ namespace Game
             spriteBatch.Begin();
             spriteBatch.Draw(backgroundTexture, backgroundRect, Color.White);
 
-            for (int i = 0; i < 25; i++)
+            for (int i = 0; i < tileArray.Length; i++)
             {
                 Tile tile = tileArray[i];
                 spriteBatch.Draw(tile.GetTexture(), tile.GetRectangle(), Color.White);
@@ -220,13 +227,43 @@ namespace Game
                 }
             }
 
-            spriteBatch.Draw(knightTexture, donutRect, Color.White);
-            spriteBatch.Draw(crosshairTexture, crosshairRect, crosshairColor);
+            if (skillsOpen)
+            {
+                spriteBatch.Draw()
+            }
+
+            spriteBatch.Draw(cursorTexture, cursorRect, cursorColor);
             spriteBatch.DrawString(font, "Score: " + score, fontPosition, Color.White);
 
             spriteBatch.End();
 
             base.Draw(gameTime);
+        }
+
+        public string WrapText(SpriteFont spriteFont, string text, float maxLineWidth)
+        {
+            string[] words = text.Split(' ');
+            StringBuilder sb = new StringBuilder();
+            float lineWidth = 0f;
+            float spaceWidth = spriteFont.MeasureString(" ").X;
+
+            foreach (string word in words)
+            {
+                Vector2 size = spriteFont.MeasureString(word);
+
+                if (lineWidth + size.X < maxLineWidth)
+                {
+                    sb.Append(word + " ");
+                    lineWidth += size.X + spaceWidth;
+                }
+                else
+                {
+                    sb.Append("\n" + word + " ");
+                    lineWidth = size.X + spaceWidth;
+                }
+            }
+
+            return sb.ToString();
         }
     }
 }

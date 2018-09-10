@@ -3,5 +3,7 @@ Content\dante's-lunch.xnb
 Content\crosshair.xnb
 Content\fantasy-background.xnb
 Content\skill-square.xnb
-Content\SpriteFont1.xnb
 Content\knight-small.xnb
+Content\SpriteFont1.xnb
+Content\knight-no-helmet.xnb
+Content\cursor.xnb
