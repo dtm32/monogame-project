@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using Game.Units;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
@@ -7,15 +8,15 @@ using System.Text;
 
 namespace Game
 {
-    public class Tile
+    class Tile : Drawable
     {
         private Vector2   position;
         private Rectangle tileRect;
         private Texture2D tileTexture;
         private bool      hasUnit = false;
+        private Unit      unit;
         private Vector2   unitPos;
         private Rectangle unitRect;
-        private Texture2D unitTexture;
         private bool      hasTerrain = false;
          
 
@@ -31,13 +32,19 @@ namespace Game
             tileTexture = texture;
         }
 
-        public void AddUnit(Texture2D texture)
+        public void AddUnit(Unit newUnit)
         {
             hasUnit = true;
+            this.unit = newUnit;
             unitPos.X = position.X + 2;
             unitPos.Y = position.Y - 40;
             unitRect = new Rectangle((int) unitPos.X, (int) unitPos.Y, 100, 138);
-            unitTexture = texture;
+        }
+
+
+        public void AddTerrain()
+        {
+            hasTerrain = true;
         }
 
         public bool HasUnit()
@@ -60,9 +67,38 @@ namespace Game
             return unitRect;
         }
 
-        public Texture2D GetUnitTexture()
+        //public Texture2D GetUnitTexture()
+        //{
+        //    return Units.;
+        //}
+
+        public Unit GetUnit()
         {
-            return unitTexture;
+            return unit;
+        }
+
+        public override void Update(GameTime gameTime)
+        {
+            if(hasUnit)
+            {
+                unit.Update(gameTime);
+            }
+            //throw new NotImplementedException();
+        }
+
+
+        public override void Draw(SpriteBatch spriteBatch)
+        {
+            spriteBatch.Draw(tileTexture, position, Color.White);
+
+            if(hasUnit)
+            {
+                unit.Draw(spriteBatch, position);
+            }
+            else if(hasTerrain)
+            {
+                spriteBatch.Draw(tileTexture, position, Color.Black);
+            }
         }
     }
 }

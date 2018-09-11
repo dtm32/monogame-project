@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Game.Units;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Content;
@@ -17,37 +18,41 @@ namespace Game
     /// </summary>
     public class Game : Microsoft.Xna.Framework.Game
     {
+        public static SpriteFont font;
+        public static SpriteFont fontTimesNewRoman;
+        public static SpriteFont DamageFont;
+
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
         Texture2D knightTexture;
         Texture2D knightNoHelmetTexture;
-        Texture2D crosshairTexture;
         Texture2D backgroundTexture;
         Texture2D cursorTexture;
-        Rectangle donutRect;
-        Rectangle crosshairRect;
         Rectangle cursorRect;
         Rectangle backgroundRect;
-        Vector2 donutPosition;
-        Vector2 donutVelocity;
-        Vector2 crosshairPosition;
         Vector2 cursorPosition;
         Color cursorColor;
-        SpriteFont font;
         Vector2 fontPosition;
         Random rnd = new Random();
         protected int score;
+        private Vector2 gridSize;
 
         protected Texture2D tileTexture;
         protected Rectangle[] tileRectangles = new Rectangle[25];
-        private Tile[] tileArray = new Tile[49];
+        private Tile[] tileArray;
         private bool skillsOpen = false;
+
+        private String feralSwipeText = 
+            "Feral Swipe 4\n" +
+            "Rng 1 CD 2\n" +
+            "Deal damage = 80% Strength. Inflict (4) Bleed to target.";
 
         public Game()
         {
             graphics = new GraphicsDeviceManager(this);
-            graphics.PreferredBackBufferWidth = 1920;
-            graphics.PreferredBackBufferHeight = 1048;
+            graphics.PreferredBackBufferWidth = 1280;
+            graphics.PreferredBackBufferHeight = 720;
+            //graphics.PreferMultiSampling = true;
             Content.RootDirectory = "Content";
         }
 
@@ -60,16 +65,6 @@ namespace Game
         protected override void Initialize()
         {
             // TODO: Add your initialization logic here
-            donutRect = new Rectangle(200, 200, 80, 70);
-            donutPosition.X = 200.0f;
-            donutPosition.Y = 200.0f;
-            donutVelocity.X = 1.0f;
-            donutVelocity.Y = 1.0f;
-
-            crosshairRect = new Rectangle(50, 50, 30, 30);
-            crosshairPosition.X = 400;
-            crosshairPosition.Y = 400;
-
             cursorRect = new Rectangle(0, 0, 30, 30);
             cursorPosition.X = 0;
             cursorPosition.Y = 0;
@@ -84,15 +79,20 @@ namespace Game
 
             score = 0;
 
+            gridSize.X = 5;
+            gridSize.Y = 5;
+
+            tileArray = new Tile[(int) (gridSize.X * gridSize.Y)];
+
             Vector2 tileStart = new Vector2();
-            tileStart.X = graphics.GraphicsDevice.Viewport.Width / 2 - 420;
-            tileStart.Y = graphics.GraphicsDevice.Viewport.Height / 2 - 450;
+            tileStart.X = graphics.GraphicsDevice.Viewport.Width / 2 - (120 * gridSize.X / 2 - 20);
+            tileStart.Y = graphics.GraphicsDevice.Viewport.Height / 2 - (120 * gridSize.Y / 2 - 20);
 
             int i = 0;
 
-            for (int x = 0; x < 7; x++)
+            for (int x = 0; x < gridSize.X; x++)
             {
-                for(int y = 0; y < 7; y++)
+                for(int y = 0; y < gridSize.Y; y++)
                 {
                     tileArray[i] = new Tile((int)tileStart.X + 120 * x, (int)tileStart.Y + 120 * y);
                     i++;
@@ -115,10 +115,11 @@ namespace Game
             knightTexture = Content.Load<Texture2D>("knight-small");
             knightNoHelmetTexture = Content.Load<Texture2D>("knight-no-helmet");
             backgroundTexture = Content.Load<Texture2D>("fantasy-background");
-            crosshairTexture = Content.Load<Texture2D>("crosshair");
             cursorTexture = Content.Load<Texture2D>("cursor");
 
             font = Content.Load<SpriteFont>("SpriteFont1");
+            fontTimesNewRoman = Content.Load<SpriteFont>("TimesNewRomanSmall");
+            DamageFont = Content.Load<SpriteFont>("DamageFont");
 
             tileTexture = Content.Load<Texture2D>("skill-square");
 
@@ -128,8 +129,9 @@ namespace Game
                 tileArray[i].SetTexture(tileTexture);
             }
 
-            tileArray[9].AddUnit(knightTexture);
-            tileArray[14].AddUnit(knightNoHelmetTexture);
+            tileArray[9].AddUnit(new GreyKnight(knightTexture));
+            tileArray[14].AddUnit(new GreyKnight(knightNoHelmetTexture));
+            tileArray[10].AddTerrain();
         }
 
         /// <summary>
@@ -157,7 +159,7 @@ namespace Game
             int viewportWidth = graphics.GraphicsDevice.Viewport.Width;
             int viewportHeight = graphics.GraphicsDevice.Viewport.Height;
 
-            // update crosshair
+            // update cursor on click
             if (Mouse.GetState().LeftButton == ButtonState.Pressed)
             {
                 cursorColor = Color.Red;
@@ -167,22 +169,8 @@ namespace Game
                 cursorColor = Color.White;
             }
 
-            // moving donut
-            if (donutPosition.X + donutRect.Width > viewportWidth || donutPosition.X < 0)
-            {
-                donutVelocity.X *= -1;
-            }
-
-            if (donutPosition.Y + donutRect.Height > viewportHeight || donutPosition.Y < 0)
-            {
-                donutVelocity.Y *= -1;
-            }
-
-            donutPosition += donutVelocity;
-            donutRect.X = (int)donutPosition.X;
-            donutRect.Y = (int)donutPosition.Y;
-
-            // crosshair
+            // cusor
+            // TODO: Make cursor an object
             cursorPosition.X = Mouse.GetState().X;
             cursorPosition.Y = Mouse.GetState().Y;
 
@@ -195,11 +183,16 @@ namespace Game
             // check if user clicked unit
             for (int i = 0; i < tileArray.Length; i++)
             {
+                //TODO: Register clicks on tile for anything?
                 if (cursorRect.Intersects(tileArray[i].GetUnitRectangle()) && Mouse.GetState().LeftButton == ButtonState.Pressed)
                 {
                     cursorColor = Color.LightGreen;
-                    skillsOpen = true;
+                    tileArray[i].GetUnit().DealDamage(1);
+                    // Click on Unit
+                    tileArray[i].GetUnit().Click();
                 }
+
+                tileArray[i].Update(gameTime);
             }
 
             base.Update(gameTime);
@@ -217,23 +210,30 @@ namespace Game
             spriteBatch.Begin();
             spriteBatch.Draw(backgroundTexture, backgroundRect, Color.White);
 
-            for (int i = 0; i < tileArray.Length; i++)
+            //for (int i = 0; i < tileArray.Length; i++)
+            //{
+                //Tile tile = tileArray[i];
+                //spriteBatch.Draw(tile.GetTexture(), tile.GetRectangle(), Color.White);
+                //if(tile.HasUnit())
+                //{
+                //    spriteBatch.Draw(tile.GetUnitTexture(), tile.GetUnitRectangle(), Color.White);
+                //}
+
+            //}
+
+            foreach(Tile tile in tileArray)
             {
-                Tile tile = tileArray[i];
-                spriteBatch.Draw(tile.GetTexture(), tile.GetRectangle(), Color.White);
-                if(tile.HasUnit())
-                {
-                    spriteBatch.Draw(tile.GetUnitTexture(), tile.GetUnitRectangle(), Color.White);
-                }
+                tile.Draw(spriteBatch);
             }
 
             if (skillsOpen)
             {
-                spriteBatch.Draw()
+                //spriteBatch.Draw()
+                spriteBatch.DrawString(fontTimesNewRoman, WrapText(font, feralSwipeText, 300), new Vector2(10, 10), Color.Black);
             }
 
             spriteBatch.Draw(cursorTexture, cursorRect, cursorColor);
-            spriteBatch.DrawString(font, "Score: " + score, fontPosition, Color.White);
+            //spriteBatch.DrawString(font, "Score: " + score, fontPosition, Color.White);
 
             spriteBatch.End();
 
@@ -251,7 +251,14 @@ namespace Game
             {
                 Vector2 size = spriteFont.MeasureString(word);
 
-                if (lineWidth + size.X < maxLineWidth)
+                Console.WriteLine(word + ": size.X = " + size.X + " curr size = " + lineWidth);
+
+                if (word.Contains("\n"))
+                {
+                    lineWidth = size.X + spaceWidth;
+                    sb.Append(word + " ");
+                }
+                else if (lineWidth + size.X < maxLineWidth)
                 {
                     sb.Append(word + " ");
                     lineWidth += size.X + spaceWidth;
