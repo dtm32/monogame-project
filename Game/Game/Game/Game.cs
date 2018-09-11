@@ -41,6 +41,7 @@ namespace Game
         protected Rectangle[] tileRectangles = new Rectangle[25];
         private Tile[] tileArray;
         private bool skillsOpen = false;
+        private Unit selectedUnit;
 
         private String feralSwipeText = 
             "Feral Swipe 4\n" +
@@ -188,8 +189,15 @@ namespace Game
                 {
                     cursorColor = Color.LightGreen;
                     tileArray[i].GetUnit().DealDamage(1);
-                    // Click on Unit
-                    tileArray[i].GetUnit().Click();
+                    // Click on Unit to select
+                    if (!tileArray[i].GetUnit().Equals(selectedUnit))
+                    {
+                        selectedUnit = tileArray[i].GetUnit();
+                    }
+                    else
+                    {
+                        selectedUnit = null;
+                    }
                 }
 
                 tileArray[i].Update(gameTime);
