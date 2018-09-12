@@ -75,10 +75,14 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Game.cs" />
-    <Compile Include="Stats.cs" />
+    <Compile Include="SkillContainer.cs" />
     <Compile Include="Tile.cs" />
     <Compile Include="Units\GreyKnight.cs" />
+    <Compile Include="Units\Skill.cs" />
+    <Compile Include="Units\Skills\DeadlyBite.cs" />
+    <Compile Include="Units\Stats.cs" />
     <Compile Include="Units\Unit.cs" />
+    <Compile Include="Units\Weapon.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Game.ico" />

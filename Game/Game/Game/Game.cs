@@ -48,6 +48,14 @@ namespace Game
             "Rng 1 CD 2\n" +
             "Deal damage = 80% Strength. Inflict (4) Bleed to target.";
 
+        private bool mousePressed = false;
+
+        private enum MouseState
+        {
+            NotClicked,
+            Clicked
+        }
+
         public Game()
         {
             graphics = new GraphicsDeviceManager(this);
@@ -170,7 +178,7 @@ namespace Game
                 cursorColor = Color.White;
             }
 
-            // cusor
+            // Cursor
             // TODO: Make cursor an object
             cursorPosition.X = Mouse.GetState().X;
             cursorPosition.Y = Mouse.GetState().Y;
@@ -190,14 +198,22 @@ namespace Game
                     cursorColor = Color.LightGreen;
                     tileArray[i].GetUnit().DealDamage(1);
                     // Click on Unit to select
-                    if (!tileArray[i].GetUnit().Equals(selectedUnit))
+                    if ( !(tileArray[i].GetUnit().Equals(selectedUnit)) )
                     {
                         selectedUnit = tileArray[i].GetUnit();
+                        Console.WriteLine("Selected unit ");
+                        tileArray[i].AddTerrain();
                     }
                     else
                     {
                         selectedUnit = null;
+                        Console.WriteLine("Unselected!");
+                        tileArray[i].RemoveTerrain();
                     }
+                }
+                else if(Mouse.GetState().LeftButton != ButtonState.Pressed)
+                {
+                    MouseState =
                 }
 
                 tileArray[i].Update(gameTime);

@@ -47,6 +47,11 @@ namespace Game
             hasTerrain = true;
         }
 
+        public void RemoveTerrain()
+        {
+            hasTerrain = false;
+        }
+
         public bool HasUnit()
         {
             return hasUnit;
@@ -91,14 +96,15 @@ namespace Game
         {
             spriteBatch.Draw(tileTexture, position, Color.White);
 
-            if(hasUnit)
-            {
-                unit.Draw(spriteBatch, position);
-            }
-            else if(hasTerrain)
+            if (hasTerrain)
             {
                 spriteBatch.Draw(tileTexture, position, Color.Black);
             }
+            if (hasUnit)
+            {
+                unit.Draw(spriteBatch, position);
+            }
+
         }
     }
 }
