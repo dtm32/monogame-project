@@ -42,18 +42,26 @@ namespace Game
         private Tile[] tileArray;
         private bool skillsOpen = false;
         private Unit selectedUnit;
+        private Tile selectedTile;
 
         private String feralSwipeText = 
             "Feral Swipe 4\n" +
             "Rng 1 CD 2\n" +
             "Deal damage = 80% Strength. Inflict (4) Bleed to target.";
 
-        private bool mousePressed = false;
+        // Button press variables
+        private bool leftMousePressed = false;
+        private bool leftMousePressedLast = false;
+        private bool rightMousePressed = false;
+        private bool rightMousePressedLast = false;
+        private MouseState leftMouseState = MouseState.None;
+        private MouseState rightMouseState = MouseState.None;
 
         private enum MouseState
         {
-            NotClicked,
-            Clicked
+            None,
+            MouseDown,
+            MouseUp
         }
 
         public Game()
@@ -168,6 +176,34 @@ namespace Game
             int viewportWidth = graphics.GraphicsDevice.Viewport.Width;
             int viewportHeight = graphics.GraphicsDevice.Viewport.Height;
 
+            // Update mouse events
+            if (Mouse.GetState().LeftButton == ButtonState.Pressed)
+            {
+                if(!leftMousePressedLast)
+                {
+                    leftMouseState = MouseState.MouseDown;
+                }
+                else
+                {
+                    leftMouseState = MouseState.None;
+                }
+
+                leftMousePressedLast = true;
+            }
+            else
+            {
+                if(leftMousePressedLast)
+                {
+                    leftMouseState = MouseState.MouseUp;
+                }
+                else
+                {
+                    leftMouseState = MouseState.None;
+                }
+
+                leftMousePressedLast = false;
+            }
+
             // update cursor on click
             if (Mouse.GetState().LeftButton == ButtonState.Pressed)
             {
@@ -193,27 +229,33 @@ namespace Game
             for (int i = 0; i < tileArray.Length; i++)
             {
                 //TODO: Register clicks on tile for anything?
-                if (cursorRect.Intersects(tileArray[i].GetUnitRectangle()) && Mouse.GetState().LeftButton == ButtonState.Pressed)
+                if (cursorRect.Intersects(tileArray[i].GetUnitRectangle()) && leftMouseState == MouseState.MouseDown)
                 {
                     cursorColor = Color.LightGreen;
                     tileArray[i].GetUnit().DealDamage(1);
                     // Click on Unit to select
-                    if ( !(tileArray[i].GetUnit().Equals(selectedUnit)) )
+                    if (!tileArray[i].GetUnit().Equals(selectedUnit))
                     {
+                        if(selectedTile != null)
+                        {
+                            selectedTile.RemoveTerrain();
+                        }
+                        // Select unit
+                        selectedTile = tileArray[i];
                         selectedUnit = tileArray[i].GetUnit();
-                        Console.WriteLine("Selected unit ");
                         tileArray[i].AddTerrain();
                     }
                     else
                     {
+                        // Deselect unit
+                        selectedTile = null;
                         selectedUnit = null;
-                        Console.WriteLine("Unselected!");
                         tileArray[i].RemoveTerrain();
                     }
                 }
                 else if(Mouse.GetState().LeftButton != ButtonState.Pressed)
                 {
-                    MouseState =
+                    //MouseState =
                 }
 
                 tileArray[i].Update(gameTime);
