@@ -2,10 +2,12 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Game.GameData;
+using Game.GameData.Skills;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
-namespace Game.Units
+namespace Game.GameData.Units
 {
     class GreyKnight : Unit
     {
@@ -17,7 +19,8 @@ namespace Game.Units
 
             stats = new Stats(50, 50, 50, 50, 50, 50);
 
-
+            skillList.Add(new Health(3));
+            skillList.Add(new Steady_March(3));
         }
     }
 }

@@ -2,7 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using Game.Units;
+using Game.GameData;
+using Game.GameData.Units;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Content;
@@ -40,14 +41,8 @@ namespace Game
         protected Texture2D tileTexture;
         protected Rectangle[] tileRectangles = new Rectangle[25];
         private Tile[] tileArray;
-        private bool skillsOpen = false;
         private Unit selectedUnit;
         private Tile selectedTile;
-
-        private String feralSwipeText = 
-            "Feral Swipe 4\n" +
-            "Rng 1 CD 2\n" +
-            "Deal damage = 80% Strength. Inflict (4) Bleed to target.";
 
         // Button press variables
         private bool leftMousePressed = false;
@@ -128,26 +123,33 @@ namespace Game
             // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
 
-            // TODO: use this.Content to load your game content here
+            // GAME
+            cursorTexture = Content.Load<Texture2D>("cursor");
+            backgroundTexture = Content.Load<Texture2D>("fantasy-background");
+            tileTexture = Content.Load<Texture2D>("skill-square");
+
+            // UNITS
             knightTexture = Content.Load<Texture2D>("knight-small");
             knightNoHelmetTexture = Content.Load<Texture2D>("knight-no-helmet");
-            backgroundTexture = Content.Load<Texture2D>("fantasy-background");
-            cursorTexture = Content.Load<Texture2D>("cursor");
 
+            // FONTS
             font = Content.Load<SpriteFont>("SpriteFont1");
             fontTimesNewRoman = Content.Load<SpriteFont>("TimesNewRomanSmall");
             DamageFont = Content.Load<SpriteFont>("DamageFont");
 
-            tileTexture = Content.Load<Texture2D>("skill-square");
+            // ASSIGN TEXTURES
 
-            // assign textures to objects
+            // Assign textures to Tile objects
             for (int i = 0; i < tileArray.Length; i++)
             {
                 tileArray[i].SetTexture(tileTexture);
             }
 
+            // Add Unit(s) to random Tile(s)
             tileArray[9].AddUnit(new GreyKnight(knightTexture));
-            tileArray[14].AddUnit(new GreyKnight(knightNoHelmetTexture));
+            tileArray[14].AddUnit(new RenegadeKnight(knightNoHelmetTexture));
+
+            // AddTerrain() to random Tile(s)
             tileArray[10].AddTerrain();
         }
 
@@ -207,6 +209,11 @@ namespace Game
             // update cursor on click
             if (Mouse.GetState().LeftButton == ButtonState.Pressed)
             {
+                cursorColor = Color.LightSlateGray;
+            }
+            else if (selectedTile != null)
+            {
+                // Signal unit can attack
                 cursorColor = Color.Red;
             }
             else
@@ -232,20 +239,31 @@ namespace Game
                 if (cursorRect.Intersects(tileArray[i].GetUnitRectangle()) && leftMouseState == MouseState.MouseDown)
                 {
                     cursorColor = Color.LightGreen;
-                    tileArray[i].GetUnit().DealDamage(1);
+                    //tileArray[i].GetUnit().DealDamage(1);
                     // Click on Unit to select
-                    if (!tileArray[i].GetUnit().Equals(selectedUnit))
+                    if (!tileArray[i].GetUnit().Equals(selectedUnit)) // Didn't click on selected unit
                     {
-                        if(selectedTile != null)
+                        if (selectedTile != null)
                         {
                             selectedTile.RemoveTerrain();
                         }
-                        // Select unit
-                        selectedTile = tileArray[i];
-                        selectedUnit = tileArray[i].GetUnit();
-                        tileArray[i].AddTerrain();
+                        if (selectedUnit != null)
+                        {
+                            // Unit is selected, clicked on another unit = attack
+                            Tile targetTile = tileArray[i];
+                            Unit targetUnit = targetTile.GetUnit();
+                            selectedUnit.StartCombat(targetUnit, 1, 1.2f, Skill.DamageType.Physical);
+
+                        }
+                        else
+                        {
+                            // Select unit
+                            selectedTile = tileArray[i];
+                            selectedUnit = tileArray[i].GetUnit();
+                            tileArray[i].AddTerrain();
+                        }
                     }
-                    else
+                    else // Clicked on selected unit
                     {
                         // Deselect unit
                         selectedTile = null;
@@ -253,9 +271,17 @@ namespace Game
                         tileArray[i].RemoveTerrain();
                     }
                 }
+                else if(!cursorRect.Intersects(tileArray[i].GetUnitRectangle()) && leftMouseState == MouseState.MouseDown)
+                {
+                    // Deselect unit
+                    //selectedTile = null;
+                    //selectedUnit = null;
+                    //tileArray[i].RemoveTerrain();
+                }
                 else if(Mouse.GetState().LeftButton != ButtonState.Pressed)
                 {
                     //MouseState =
+
                 }
 
                 tileArray[i].Update(gameTime);
@@ -276,27 +302,25 @@ namespace Game
             spriteBatch.Begin();
             spriteBatch.Draw(backgroundTexture, backgroundRect, Color.White);
 
-            //for (int i = 0; i < tileArray.Length; i++)
-            //{
-                //Tile tile = tileArray[i];
-                //spriteBatch.Draw(tile.GetTexture(), tile.GetRectangle(), Color.White);
-                //if(tile.HasUnit())
-                //{
-                //    spriteBatch.Draw(tile.GetUnitTexture(), tile.GetUnitRectangle(), Color.White);
-                //}
-
-            //}
-
             foreach(Tile tile in tileArray)
             {
                 tile.Draw(spriteBatch);
             }
 
-            if (skillsOpen)
+            if (selectedUnit != null)
             {
-                //spriteBatch.Draw()
-                spriteBatch.DrawString(fontTimesNewRoman, WrapText(font, feralSwipeText, 300), new Vector2(10, 10), Color.Black);
+                Skill[] skillArray = selectedUnit.GetSkillList();
+
+                for (int i = 0; i < skillArray.Length; i++)
+                {
+                    spriteBatch.DrawString(fontTimesNewRoman, WrapText(font, skillArray[i].GetText(), 300), new Vector2(10, 10 + 100 * i), Color.Black);
+                }
             }
+
+            //if (hoveredUnit != null)
+            //{
+
+            //}
 
             spriteBatch.Draw(cursorTexture, cursorRect, cursorColor);
             //spriteBatch.DrawString(font, "Score: " + score, fontPosition, Color.White);
@@ -316,8 +340,6 @@ namespace Game
             foreach (string word in words)
             {
                 Vector2 size = spriteFont.MeasureString(word);
-
-                Console.WriteLine(word + ": size.X = " + size.X + " curr size = " + lineWidth);
 
                 if (word.Contains("\n"))
                 {

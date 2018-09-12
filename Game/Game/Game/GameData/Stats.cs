@@ -87,6 +87,78 @@ namespace Game
             }
         }
 
+        public void ModHealth(float mod)
+        {
+            if (mod < 1)
+            {
+                modHealth += (int)(health * mod);
+            }
+            else
+            {
+                modHealth += (int)mod;
+            }
+        }
+
+        public void ModSpeed(float mod)
+        {
+            if (mod < 1)
+            {
+                modSpeed += (int)(speed * mod);
+            }
+            else
+            {
+                modSpeed += (int)mod;
+            }
+        }
+
+        public void ModStrength(float mod)
+        {
+            if (mod < 1)
+            {
+                modStrength += (int)(strength * mod);
+            }
+            else
+            {
+                modStrength += (int)mod;
+            }
+        }
+
+        public void ModFocus(float mod)
+        {
+            if (mod < 1)
+            {
+                modFocus += (int)(focus * mod);
+            }
+            else
+            {
+                modFocus += (int)mod;
+            }
+        }
+
+        public void ModArmor(float mod)
+        {
+            if (mod < 1)
+            {
+                modArmor += (int)(armor * mod);
+            }
+            else
+            {
+                modArmor += (int)mod;
+            }
+        }
+
+        public void ModResistance(float mod)
+        {
+            if (mod < 1)
+            {
+                modResistance += (int)(resistance * mod);
+            }
+            else
+            {
+                modResistance += (int)mod;
+            }
+        }
+
         public void ResetBuffs()
         {
             modHealth = 0;

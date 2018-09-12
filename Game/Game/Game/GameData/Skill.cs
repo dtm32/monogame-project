@@ -1,9 +1,10 @@
-﻿using System;
+﻿using Game.GameData;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace Game.Units
+namespace Game.GameData
 {
     abstract class Skill
     {
@@ -60,6 +61,31 @@ namespace Game.Units
         {
             this.rank = rank;
  
+        }
+
+        public string GetDescription()
+        {
+            return description[rank];
+        }
+
+        public string GetText()
+        {
+            StringBuilder sb = new StringBuilder();
+
+            sb.Append(this.GetType().Name.Replace("_", " ") + " " + (rank + 1) + "\n");
+
+            if(passive)
+            {
+                sb.Append("Passive\n");
+            }
+            else
+            {
+                sb.Append("Range " + range + " CD " + cooldown + "\n");
+            }
+
+            sb.Append(description[rank]);
+
+            return sb.ToString();
         }
 
         // For passive stat changes

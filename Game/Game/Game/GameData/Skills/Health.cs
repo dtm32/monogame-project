@@ -3,24 +3,24 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace Game.Units.Skills
+namespace Game.GameData.Skills
 {
-    class DeadlyBite : Skill
+    class Health : Skill
     {
-        public DeadlyBite(int rank)
+        public Health(int rank)
             : base(rank)
         {
             this.description = new string[] {
-                "Deal damage = 105% Strength.",
-                "Deal damage = 110% Strength.",
-                "Deal damage = 115% Strength.",
-                "Deal damage = 120% Strength."
+                "Gain Health +20.",
+                "Gain Health +22.",
+                "Gain Health +25.",
+                "Gain Health +30."
             };
-            this.passive = false;
-            this.target = Target.Enemy;
-            this.cooldown = 2;
+            this.passive = true;
+            this.target = Target.None;
+            this.cooldown = 0;
             this.cooldownTimer = 0;
-            this.range = 1;
+            this.range = 0;
         }
 
         public override void TriggerAfterCombat()
@@ -45,7 +45,7 @@ namespace Game.Units.Skills
 
         public override void TriggerOnTarget(Unit target)
         {
-            unit.StartCombat(target, range, 1.2f, DamageType.Physical);
+            throw new NotImplementedException();
         }
 
         public override void TriggerPassive()
@@ -55,10 +55,7 @@ namespace Game.Units.Skills
 
         public override void TriggerRoundEnd()
         {
-            if (this.cooldownTimer > 0)
-            {
-                cooldownTimer--;
-            }
+            throw new NotImplementedException();
         }
 
         public override void TriggerStartCombat()

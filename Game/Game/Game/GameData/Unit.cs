@@ -4,41 +4,48 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using static Game.Units.Skill;
+using static Game.GameData.Skill;
 
-namespace Game.Units
+namespace Game.GameData
 {
     abstract class Unit : Drawable
     {
-        protected Texture2D texture;
-        //protected Vector2   position;
-        protected Rectangle rect;
-        protected Stats     stats;
-        protected List<Skill> skillsList;
-        protected int       level;
-        protected bool      dispOverlayText;
-        protected float     delta;
-        protected string    overlayText;
+        protected Texture2D   texture;
+        protected Rectangle   rect;
+        protected List<Skill> skillList;
+        protected Stats       stats;
+        protected int         level;
+        protected bool        dispOverlayText;
+        protected float       delta;
+        protected string      overlayText;
 
-        //public Unit(int lvl, int hp, int spd, int str, int fcs, int amr, int res)
-        //{
-        //    level = lvl;
-        //    stats = new Stats(hp, spd, str, fcs, amr, res);
-        //}
-
-            /// <summary>
-            /// Initialize unit by saving texture.
-            /// </summary>
-            /// <param name="unitTexture"></param>
+        /// <summary>
+        /// Initialize unit by saving texture.
+        /// </summary>
+        /// <param name="unitTexture"></param>
         public Unit(Texture2D unitTexture)
         {
             texture = unitTexture;
+
+            skillList = new List<Skill>();
+        }
+
+        public Stats GetStats()
+        {
+            return stats;
+        }
+
+        public Skill[] GetSkillList()
+        {
+            return skillList.ToArray();
         }
 
         // Update to (unit target, Skill attack)
         public void StartCombat(Unit target, int range, float damageMult, DamageType damageType)
         {
             int damage = 0;
+
+            float temp = 0f;
 
             // Calculate total damage
             switch (damageType)
@@ -54,7 +61,15 @@ namespace Game.Units
                     break;
             }
 
-            damage = (int) (damage * (1 + (stats.GetSpd() - target.GetStats().GetSpd()) / 200));
+            Console.WriteLine("Strength = " + damage);
+
+            temp = damage * damageMult;
+
+            Console.WriteLine("Strength * Weapon = " + temp);
+
+            damage = (int)(temp * (1 + (stats.GetSpd() - target.GetStats().GetSpd()) / 200));
+
+            Console.WriteLine("Attack * Speed = " + damage);
 
             // Calculate defense
             switch (damageType)
@@ -70,17 +85,14 @@ namespace Game.Units
                     break;
             }
 
-            target.DealDamage(damage);
-        }
+            Console.WriteLine("Damage - defenses = " + damage);
 
-        public Stats GetStats()
-        {
-            return stats;
+            target.DealDamage(damage);
         }
 
         public bool DealDamage(int damage)
         {
-            overlayText = damage.ToString();
+            overlayText = (damage * -1).ToString();
             dispOverlayText = true;
 
             return stats.DecreaseHealth(damage);

@@ -3,15 +3,24 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace Game.Units
+namespace Game.GameData.Skills
 {
-    class Weapon : Skill
+    class Steady_March : Skill
     {
-        public Weapon(int rank)
+        public Steady_March(int rank)
             : base(rank)
         {
-            this.target = Target.Enemy;
+            this.description = new string[] {
+                "Gain 10 Strength.",
+                "Gain 12 Strength.",
+                "Gain 15 Strength.",
+                "Gain Health +20 and Strength/Defense +8."
+            };
+            this.passive = true;
+            this.target = Target.None;
             this.cooldown = 0;
+            this.cooldownTimer = 0;
+            this.range = 0;
         }
 
         public override void TriggerAfterCombat()
