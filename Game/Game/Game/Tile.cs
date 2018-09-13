@@ -18,6 +18,7 @@ namespace Game
         private Vector2   unitPos;
         private Rectangle unitRect;
         private bool      hasTerrain = false;
+        private Terrain   terrain;
          
 
         public Tile(int x, int y)
@@ -35,16 +36,17 @@ namespace Game
         public void AddUnit(Unit newUnit)
         {
             hasUnit = true;
-            this.unit = newUnit;
+            unit = newUnit;
             unitPos.X = position.X + 2;
             unitPos.Y = position.Y - 40;
             unitRect = new Rectangle((int) unitPos.X, (int) unitPos.Y, 100, 138);
         }
 
 
-        public void AddTerrain()
+        public void AddTerrain(Terrain newTerrain)
         {
             hasTerrain = true;
+            terrain = newTerrain;
         }
 
         public void RemoveTerrain()
@@ -98,7 +100,7 @@ namespace Game
 
             if (hasTerrain)
             {
-                spriteBatch.Draw(tileTexture, position, Color.Black);
+                terrain.Draw(spriteBatch, position);
             }
             if (hasUnit)
             {

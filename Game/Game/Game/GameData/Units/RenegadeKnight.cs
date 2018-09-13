@@ -18,7 +18,7 @@ namespace Game.GameData.Units
             stats = new Stats(50, 50, 50, 50, 50, 50);
 
             skillList.Add(new Strength(3));
-            skillList.Add(new DeadlyBite(3));
+            skillList.Add(new Deadly_Bite(3));
         }
     }
 }

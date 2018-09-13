@@ -5,9 +5,9 @@ using System.Text;
 
 namespace Game.GameData.Skills
 {
-    class DeadlyBite : Skill
+    class Deadly_Bite : Skill
     {
-        public DeadlyBite(int rank)
+        public Deadly_Bite(int rank)
             : base(rank)
         {
             this.description = new string[] {

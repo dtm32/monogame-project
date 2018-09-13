@@ -133,7 +133,7 @@ namespace Game.GameData
                 Vector2 textPos;
                 textPos.X = tilePos.X + 50;
                 textPos.Y = tilePos.Y + 50 - damageTextPos;
-                spriteBatch.DrawString(Game.DamageFont, overlayText, textPos, Color.Red);
+                spriteBatch.DrawString(Game.Font.DamageFont, overlayText, textPos, Color.Red);
             }
         }
 

@@ -20,15 +20,34 @@ namespace Game
     public class Game : Microsoft.Xna.Framework.Game
     {
         public static SpriteFont font;
-        public static SpriteFont fontTimesNewRoman;
-        public static SpriteFont DamageFont;
+        //public static SpriteFont fontTimesNewRoman;
+        //public static SpriteFont DamageFont;
+
+        public struct Font
+        {
+            public static SpriteFont DamageFont;
+            public static SpriteFont TimesNewRoman;
+            public static SpriteFont TimesNewRoman14;
+            public static SpriteFont Cambira;
+            public static SpriteFont CambiraHalf;
+        }
+
+        Texture2D knightTexture;
+        Texture2D knightNoHelmetTexture;
 
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
-        Texture2D knightTexture;
-        Texture2D knightNoHelmetTexture;
-        Texture2D backgroundTexture;
+
         Texture2D cursorTexture;
+        Texture2D backgroundTexture;
+        Texture2D tileTexture;
+        Texture2D unitPanelTexture;
+
+        private struct TerrainTexture
+        {
+            public static Texture2D simpleRock;
+        }
+
         Rectangle cursorRect;
         Rectangle backgroundRect;
         Vector2 cursorPosition;
@@ -38,11 +57,10 @@ namespace Game
         protected int score;
         private Vector2 gridSize;
 
-        protected Texture2D tileTexture;
-        protected Rectangle[] tileRectangles = new Rectangle[25];
         private Tile[] tileArray;
         private Unit selectedUnit;
         private Tile selectedTile;
+        private Unit hoveredUnit;
 
         // Button press variables
         private bool leftMousePressed = false;
@@ -51,6 +69,9 @@ namespace Game
         private bool rightMousePressedLast = false;
         private MouseState leftMouseState = MouseState.None;
         private MouseState rightMouseState = MouseState.None;
+
+        private UnitPanel selectedUnitPanel;
+        private UnitPanel hoveredUnitPanel;
 
         private enum MouseState
         {
@@ -124,18 +145,25 @@ namespace Game
             spriteBatch = new SpriteBatch(GraphicsDevice);
 
             // GAME
-            cursorTexture = Content.Load<Texture2D>("cursor");
+            cursorTexture     = Content.Load<Texture2D>("cursor");
             backgroundTexture = Content.Load<Texture2D>("fantasy-background");
-            tileTexture = Content.Load<Texture2D>("skill-square");
+            tileTexture       = Content.Load<Texture2D>("skill-square");
+            unitPanelTexture  = Content.Load<Texture2D>("unit-panel-background");
 
             // UNITS
-            knightTexture = Content.Load<Texture2D>("knight-small");
+            knightTexture         = Content.Load<Texture2D>("knight-small");
             knightNoHelmetTexture = Content.Load<Texture2D>("knight-no-helmet");
 
+            // TERRAIN
+            TerrainTexture.simpleRock = Content.Load<Texture2D>("simple-rock");
+
             // FONTS
-            font = Content.Load<SpriteFont>("SpriteFont1");
-            fontTimesNewRoman = Content.Load<SpriteFont>("TimesNewRomanSmall");
-            DamageFont = Content.Load<SpriteFont>("DamageFont");
+            font              = Content.Load<SpriteFont>("SpriteFont1");
+            Font.TimesNewRoman = Content.Load<SpriteFont>("TimesNewRomanSmall");
+            Font.TimesNewRoman14 = Content.Load<SpriteFont>("TimesNewRoman14");
+            Font.DamageFont = Content.Load<SpriteFont>("DamageFont");
+            Font.Cambira = Content.Load<SpriteFont>("Cambria");
+            Font.CambiraHalf = Content.Load<SpriteFont>("CambriaHalf");
 
             // ASSIGN TEXTURES
 
@@ -150,7 +178,11 @@ namespace Game
             tileArray[14].AddUnit(new RenegadeKnight(knightNoHelmetTexture));
 
             // AddTerrain() to random Tile(s)
-            tileArray[10].AddTerrain();
+            tileArray[10].AddTerrain(new Terrain(TerrainTexture.simpleRock));
+
+            // Add texture to unit panels
+            selectedUnitPanel = new UnitPanel(unitPanelTexture, new Vector2(graphics.GraphicsDevice.Viewport.Width, graphics.GraphicsDevice.Viewport.Height), true);
+            hoveredUnitPanel = new UnitPanel(unitPanelTexture, new Vector2(graphics.GraphicsDevice.Viewport.Width, graphics.GraphicsDevice.Viewport.Height), false);
         }
 
         /// <summary>
@@ -206,6 +238,33 @@ namespace Game
                 leftMousePressedLast = false;
             }
 
+            if (Mouse.GetState().RightButton == ButtonState.Pressed)
+            {
+                if (!rightMousePressedLast)
+                {
+                    rightMouseState = MouseState.MouseDown;
+                }
+                else
+                {
+                    rightMouseState = MouseState.None;
+                }
+
+                rightMousePressedLast = true;
+            }
+            else
+            {
+                if (rightMousePressedLast)
+                {
+                    rightMouseState = MouseState.MouseUp;
+                }
+                else
+                {
+                    rightMouseState = MouseState.None;
+                }
+
+                rightMousePressedLast = false;
+            }
+
             // update cursor on click
             if (Mouse.GetState().LeftButton == ButtonState.Pressed)
             {
@@ -233,6 +292,7 @@ namespace Game
             cursorRect.Y = (int)cursorPosition.Y;
 
             // check if user clicked unit
+            hoveredUnit = null;
             for (int i = 0; i < tileArray.Length; i++)
             {
                 //TODO: Register clicks on tile for anything?
@@ -260,7 +320,7 @@ namespace Game
                             // Select unit
                             selectedTile = tileArray[i];
                             selectedUnit = tileArray[i].GetUnit();
-                            tileArray[i].AddTerrain();
+                            tileArray[i].AddTerrain(new Terrain(TerrainTexture.simpleRock));
                         }
                     }
                     else // Clicked on selected unit
@@ -271,16 +331,24 @@ namespace Game
                         tileArray[i].RemoveTerrain();
                     }
                 }
-                else if(!cursorRect.Intersects(tileArray[i].GetUnitRectangle()) && leftMouseState == MouseState.MouseDown)
+           
+                if (cursorRect.Intersects(tileArray[i].GetUnitRectangle()) 
+                    && !tileArray[i].GetUnit().Equals(selectedUnit) 
+                    //&& leftMouseState == MouseState.None
+                    && selectedUnit != null)
+                {
+                    hoveredUnit = tileArray[i].GetUnit();
+                }
+                else if (!cursorRect.Intersects(tileArray[i].GetUnitRectangle()) && leftMouseState == MouseState.MouseDown)
                 {
                     // Deselect unit
                     //selectedTile = null;
                     //selectedUnit = null;
                     //tileArray[i].RemoveTerrain();
                 }
-                else if(Mouse.GetState().LeftButton != ButtonState.Pressed)
+                else if(!cursorRect.Intersects(tileArray[i].GetUnitRectangle()))
                 {
-                    //MouseState =
+                    
 
                 }
 
@@ -311,16 +379,18 @@ namespace Game
             {
                 Skill[] skillArray = selectedUnit.GetSkillList();
 
-                for (int i = 0; i < skillArray.Length; i++)
-                {
-                    spriteBatch.DrawString(fontTimesNewRoman, WrapText(font, skillArray[i].GetText(), 300), new Vector2(10, 10 + 100 * i), Color.Black);
-                }
+                
+
+                // Draw unit panel
+                selectedUnitPanel.SetUnit(selectedUnit);
+                selectedUnitPanel.Draw(spriteBatch);
             }
 
-            //if (hoveredUnit != null)
-            //{
-
-            //}
+            if (hoveredUnit != null)
+            {
+                hoveredUnitPanel.SetUnit(hoveredUnit);
+                hoveredUnitPanel.Draw(spriteBatch);
+            }
 
             spriteBatch.Draw(cursorTexture, cursorRect, cursorColor);
             //spriteBatch.DrawString(font, "Score: " + score, fontPosition, Color.White);
@@ -329,6 +399,9 @@ namespace Game
 
             base.Draw(gameTime);
         }
+
+
+        // OTHER METHODS
 
         public string WrapText(SpriteFont spriteFont, string text, float maxLineWidth)
         {

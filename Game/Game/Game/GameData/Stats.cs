@@ -179,5 +179,20 @@ namespace Game
             armor += amrChange;
             resistance += resChange;
         }
+
+        public string[] ToArray()
+        {
+            string[] array =
+            {
+                "HP: " + currentHealth + "/" + (health + modHealth),
+                "Spd: " + (speed + modSpeed),
+                "Str: " + (strength + modStrength),
+                "Fcs: " + (focus + modFocus),
+                "Amr: " + (armor + modArmor),
+                "Res: " + (resistance + modResistance)
+            };
+
+            return array;
+        }
     }
 }
