@@ -34,6 +34,8 @@ namespace Game
 
         Texture2D knightTexture;
         Texture2D knightNoHelmetTexture;
+        Texture2D crimsonKnightTexture;
+        Texture2D darkKnightTexture;
 
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
@@ -153,6 +155,8 @@ namespace Game
             // UNITS
             knightTexture         = Content.Load<Texture2D>("knight-small");
             knightNoHelmetTexture = Content.Load<Texture2D>("knight-no-helmet");
+            crimsonKnightTexture = Content.Load<Texture2D>("crimson-knight-0");
+            darkKnightTexture = Content.Load<Texture2D>("dark-knight-0");
 
             // TERRAIN
             TerrainTexture.simpleRock = Content.Load<Texture2D>("simple-rock");
@@ -176,6 +180,8 @@ namespace Game
             // Add Unit(s) to random Tile(s)
             tileArray[9].AddUnit(new GreyKnight(knightTexture));
             tileArray[14].AddUnit(new RenegadeKnight(knightNoHelmetTexture));
+            tileArray[21].AddUnit(new Crimson_Knight(crimsonKnightTexture));
+            tileArray[2].AddUnit(new Dark_Knight(darkKnightTexture));
 
             // AddTerrain() to random Tile(s)
             tileArray[10].AddTerrain(new Terrain(TerrainTexture.simpleRock));
@@ -291,21 +297,26 @@ namespace Game
             cursorRect.X = (int)cursorPosition.X;
             cursorRect.Y = (int)cursorPosition.Y;
 
-            // check if user clicked unit
+
+            // Handle clicking/selecting/targeting units
+
             hoveredUnit = null;
+
+            // Check each tile
             for (int i = 0; i < tileArray.Length; i++)
             {
-                //TODO: Register clicks on tile for anything?
+                // Mousedown on unit
                 if (cursorRect.Intersects(tileArray[i].GetUnitRectangle()) && leftMouseState == MouseState.MouseDown)
                 {
                     cursorColor = Color.LightGreen;
-                    //tileArray[i].GetUnit().DealDamage(1);
-                    // Click on Unit to select
-                    if (!tileArray[i].GetUnit().Equals(selectedUnit)) // Didn't click on selected unit
+
+                    // Click on Unit to select it
+                    // First check that unit isn't already selected
+                    if (!tileArray[i].GetUnit().Equals(selectedUnit))
                     {
                         if (selectedTile != null)
                         {
-                            selectedTile.RemoveTerrain();
+                            //selectedTile.RemoveTerrain();
                         }
                         if (selectedUnit != null)
                         {
@@ -318,24 +329,35 @@ namespace Game
                         else
                         {
                             // Select unit
-                            selectedTile = tileArray[i];
-                            selectedUnit = tileArray[i].GetUnit();
-                            tileArray[i].AddTerrain(new Terrain(TerrainTexture.simpleRock));
+                            //selectedTile = tileArray[i];
+                            //selectedUnit = tileArray[i].GetUnit();
+                            //tileArray[i].AddTerrain(new Terrain(TerrainTexture.simpleRock));
+                            SelectTile(tileArray[i]);
                         }
                     }
                     else // Clicked on selected unit
                     {
-                        // Deselect unit
-                        selectedTile = null;
-                        selectedUnit = null;
-                        tileArray[i].RemoveTerrain();
+                        // Deselect unit/tile
+                        DeselectTile();
                     }
                 }
+
+                // Move unit
+                // Mousedown on empty tile with unit selected
+                if (cursorRect.Intersects(tileArray[i].GetRectangle()) // cursor rect intersects tile rect
+                    && rightMouseState.Equals(MouseState.MouseDown) // mousedown
+                    && !tileArray[i].HasUnit() // tile doesn't have unit
+                    && !tileArray[i].HasTerrain() // tile doesn't have terrain
+                    && selectedUnit != null) // there is a unit selected
+                {
+                    tileArray[i].AddUnit(selectedTile.RemoveUnit());
+
+                    DeselectTile();
+                }
            
-                if (cursorRect.Intersects(tileArray[i].GetUnitRectangle()) 
-                    && !tileArray[i].GetUnit().Equals(selectedUnit) 
-                    //&& leftMouseState == MouseState.None
-                    && selectedUnit != null)
+                if (cursorRect.Intersects(tileArray[i].GetUnitRectangle())
+                    && selectedUnit != null
+                    && (tileArray[i].HasUnit() && !tileArray[i].GetUnit().Equals(selectedUnit)))
                 {
                     hoveredUnit = tileArray[i].GetUnit();
                 }
@@ -367,7 +389,7 @@ namespace Game
             GraphicsDevice.Clear(Color.CornflowerBlue);
 
             // TODO: Add your drawing code here
-            spriteBatch.Begin();
+            spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend);
             spriteBatch.Draw(backgroundTexture, backgroundRect, Color.White);
 
             foreach(Tile tile in tileArray)
@@ -402,6 +424,30 @@ namespace Game
 
 
         // OTHER METHODS
+
+        private void SelectTile(Tile tile)
+        {
+            selectedTile = tile;
+
+            selectedTile.HighlightTile(Color.LightGreen);
+
+            if(selectedTile.HasUnit())
+            {
+                selectedUnit = selectedTile.GetUnit();
+            }
+            else
+            {
+                selectedUnit = null;
+            }
+        }
+
+        private void DeselectTile()
+        {
+            selectedTile.RemoveHighlight();
+
+            selectedTile = null;
+            selectedUnit = null;
+        }
 
         public string WrapText(SpriteFont spriteFont, string text, float maxLineWidth)
         {

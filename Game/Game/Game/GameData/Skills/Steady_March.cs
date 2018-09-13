@@ -11,9 +11,9 @@ namespace Game.GameData.Skills
             : base(rank)
         {
             this.description = new string[] {
-                "Gain 10 Strength.",
-                "Gain 12 Strength.",
-                "Gain 15 Strength.",
+                "Gain Health +10 and Strength/Defense +2.",
+                "Gain Health +13 and Strength/Defense +4.",
+                "Gain Health +16 and Strength/Defense +6.",
                 "Gain Health +20 and Strength/Defense +8."
             };
             this.passive = true;

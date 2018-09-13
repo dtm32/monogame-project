@@ -18,6 +18,8 @@ namespace Game.GameData
         protected bool        dispOverlayText;
         protected float       delta;
         protected string      overlayText;
+        protected int         damageTextPos = 0;
+
 
         /// <summary>
         /// Initialize unit by saving texture.
@@ -43,9 +45,9 @@ namespace Game.GameData
         // Update to (unit target, Skill attack)
         public void StartCombat(Unit target, int range, float damageMult, DamageType damageType)
         {
-            int damage = 0;
-
             float temp = 0f;
+            float speedMult = 1 + (stats.GetSpd() - target.GetStats().GetSpd()) / 200f;
+            int damage = 0;
 
             // Calculate total damage
             switch (damageType)
@@ -61,15 +63,9 @@ namespace Game.GameData
                     break;
             }
 
-            Console.WriteLine("Strength = " + damage);
-
             temp = damage * damageMult;
 
-            Console.WriteLine("Strength * Weapon = " + temp);
-
-            damage = (int)(temp * (1 + (stats.GetSpd() - target.GetStats().GetSpd()) / 200));
-
-            Console.WriteLine("Attack * Speed = " + damage);
+            damage = (int)(temp * speedMult);
 
             // Calculate defense
             switch (damageType)
@@ -85,20 +81,79 @@ namespace Game.GameData
                     break;
             }
 
-            Console.WriteLine("Damage - defenses = " + damage);
+            target.DealDamage(damage);
+
+            if(target.GetStats().IsAlive())
+            {
+                target.Retaliate(this);
+            }
+        }
+
+        public void Retaliate(Unit target)
+        {
+            // TODO: update use weapon 
+            // TODO: check range
+
+            float temp = 0f;
+            float speedMult = 1 + (stats.GetSpd() - target.GetStats().GetSpd()) / 200f;
+            int damage = 0;
+
+            // TODO: use weapon damageType
+            DamageType damageType = DamageType.Physical;
+
+            // Calculate total damage
+            switch (damageType)
+            {
+                case DamageType.Physical:
+                    damage = stats.GetStr();
+                    break;
+                case DamageType.Magical:
+                    damage = stats.GetFcs();
+                    break;
+                default:
+                    damage = 0;
+                    break;
+            }
+
+            // TODO: change 1 to weapon damage mult
+            temp = damage * 1;
+
+            // Factor in speed difference
+            damage = (int)(temp * speedMult);
+
+            // Calculate defense
+            switch (damageType)
+            {
+                case DamageType.Physical:
+                    damage -= target.GetStats().GetAmr();
+                    break;
+                case DamageType.Magical:
+                    damage -= target.GetStats().GetRes();
+                    break;
+                default:
+                    damage = 0;
+                    break;
+            }
 
             target.DealDamage(damage);
         }
 
         public bool DealDamage(int damage)
         {
-            overlayText = (damage * -1).ToString();
-            dispOverlayText = true;
+            if (stats.GetCurrentHealth() > damage)
+            {
+                overlayText = (damage * -1).ToString();
+                dispOverlayText = true;
+            }
+            else if (stats.GetCurrentHealth() > 0)
+            {
+                damage = stats.GetCurrentHealth();
+                overlayText = (damage * -1).ToString();
+                dispOverlayText = true;
+            }
 
             return stats.DecreaseHealth(damage);
         }
-
-        private int damageTextPos = 0;
 
         public override void Update(GameTime gameTime)
         {
@@ -121,12 +176,20 @@ namespace Game.GameData
             throw new NotImplementedException();
         }
 
-        public void Draw(SpriteBatch spriteBatch, Vector2 tilePos)
+        public virtual void Draw(SpriteBatch spriteBatch, Vector2 tilePos)
         {
             // All drawing is relative to parent tile
 
-            rect = new Rectangle((int)tilePos.X, (int)tilePos.Y - 38, 100, 138);
-            spriteBatch.Draw(texture, rect, Color.White);
+            rect = new Rectangle((int)tilePos.X, (int)tilePos.Y + (100 - texture.Height), texture.Width, texture.Height);
+
+            if(stats.IsAlive())
+            {
+                spriteBatch.Draw(texture, rect, Color.White);
+            }
+            else
+            {
+                spriteBatch.Draw(texture, rect, Color.Red * 0.5f);
+            }
 
             if(dispOverlayText)
             {
@@ -136,7 +199,5 @@ namespace Game.GameData
                 spriteBatch.DrawString(Game.Font.DamageFont, overlayText, textPos, Color.Red);
             }
         }
-
-
     }
 }

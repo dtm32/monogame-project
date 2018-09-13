@@ -159,6 +159,16 @@ namespace Game
             }
         }
 
+        public int GetCurrentHealth()
+        {
+            return currentHealth;
+        }
+
+        public bool IsAlive()
+        {
+            return currentHealth > 0;
+        }
+
         public void ResetBuffs()
         {
             modHealth = 0;

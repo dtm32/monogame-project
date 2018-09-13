@@ -19,6 +19,8 @@ namespace Game
         private Rectangle unitRect;
         private bool      hasTerrain = false;
         private Terrain   terrain;
+        private bool      hasHighlight = false;
+        private Color     highlight = Color.White;
          
 
         public Tile(int x, int y)
@@ -42,6 +44,20 @@ namespace Game
             unitRect = new Rectangle((int) unitPos.X, (int) unitPos.Y, 100, 138);
         }
 
+        public Unit RemoveUnit()
+        {
+            Unit tempUnit = unit;
+
+            hasUnit = false;
+            unit = null;
+
+            return tempUnit;
+        }
+
+        public bool HasUnit()
+        {
+            return hasUnit;
+        }
 
         public void AddTerrain(Terrain newTerrain)
         {
@@ -54,9 +70,21 @@ namespace Game
             hasTerrain = false;
         }
 
-        public bool HasUnit()
+        public bool HasTerrain()
         {
-            return hasUnit;
+            return hasTerrain;
+        }
+
+        public void HighlightTile(Color highlightColor)
+        {
+            hasHighlight = true;
+            highlight = highlightColor;
+        }
+
+        public void RemoveHighlight()
+        {
+            hasHighlight = false;
+            highlight = Color.White;
         }
 
         public Rectangle GetRectangle()
@@ -74,11 +102,6 @@ namespace Game
             return unitRect;
         }
 
-        //public Texture2D GetUnitTexture()
-        //{
-        //    return Units.;
-        //}
-
         public Unit GetUnit()
         {
             return unit;
@@ -90,13 +113,12 @@ namespace Game
             {
                 unit.Update(gameTime);
             }
-            //throw new NotImplementedException();
         }
 
 
         public override void Draw(SpriteBatch spriteBatch)
         {
-            spriteBatch.Draw(tileTexture, position, Color.White);
+            spriteBatch.Draw(tileTexture, position, highlight);
 
             if (hasTerrain)
             {
