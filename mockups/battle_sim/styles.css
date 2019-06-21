@@ -1,0 +1,116 @@
+html {
+  /* background: #0077be; */
+  background: #333;
+  font-family: 'Roboto', sans-serif;
+}
+
+body {
+  display: flex;
+  flex-direction: row;
+  margin: 0;
+  height: 100%;
+}
+
+h3 {
+  margin: 0;
+  padding: 10px;
+  text-align: center;
+}
+
+#left, #right {
+  width: 50%;
+  height: 100%;
+  padding: 8px;
+  position: relative;
+}
+
+#center {
+  margin: auto;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  -ms-transform: translateY(-50%) translateX(-50%);
+  transform: translateY(-50%) translateX(-50%);
+}
+
+#center label {
+  position: absolute;
+  top: -20px;
+  font-size: 14px;
+}
+
+table {
+  margin: 0;
+  position: absolute;
+  top: 50%;
+  right: 20%;
+  -ms-transform: translateY(-50%);
+  transform: translateY(-50%);
+}
+
+#right table {
+  left: 20%;
+}
+
+.battlefield td {
+  width: 100px;
+  height: 100px;
+  border: 1px solid #222;
+  padding: 4px;
+  text-align: center;
+  position: relative;
+  cursor: default;
+}
+
+.edit-unit-button {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  width: 12px;
+  height: 12px;
+  border-top: 1px solid #222;
+  border-left: 1px solid #222;
+  font-size: 10px;
+  text-align: center;
+  cursor: pointer;
+  user-select: none;
+}
+
+.health-bar {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 2px;
+  width: 100%;
+  background: rgb(56, 0, 0);
+}
+
+/* unit list element */
+#unit-list-container {
+  display: none;
+  position: absolute;
+  background: #444;
+  max-height: 500px;
+  min-width: 240px;
+  overflow-y: auto;
+  border: 1px solid #333;
+  -webkit-box-shadow: 0px 0px 6px 2px rgba(0,0,0,0.5);
+  -moz-box-shadow: 0px 0px 6px 2px rgba(0,0,0,0.5);
+  box-shadow: 0px 0px 6px 2px rgba(0,0,0,0.5);
+}
+
+#unit-list {
+  list-style: none;
+  padding: unset;
+  margin: 5px 0;
+  font-size: 13px;
+}
+
+#unit-list li {
+  padding: 2px 5px;
+  cursor: default;
+}
+
+#unit-list li:hover {
+  background: #333;
+}
