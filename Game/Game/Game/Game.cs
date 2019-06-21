@@ -44,6 +44,7 @@ namespace Game
         Texture2D backgroundTexture;
         Texture2D tileTexture;
         Texture2D unitPanelTexture;
+        Texture2D unitPanelTexture1;
 
         private struct TerrainTexture
         {
@@ -151,6 +152,7 @@ namespace Game
             backgroundTexture = Content.Load<Texture2D>("fantasy-background");
             tileTexture       = Content.Load<Texture2D>("skill-square");
             unitPanelTexture  = Content.Load<Texture2D>("unit-panel-background");
+            unitPanelTexture1 = Content.Load<Texture2D>("path843");
 
             // UNITS
             knightTexture         = Content.Load<Texture2D>("knight-small");
@@ -187,8 +189,8 @@ namespace Game
             tileArray[10].AddTerrain(new Terrain(TerrainTexture.simpleRock));
 
             // Add texture to unit panels
-            selectedUnitPanel = new UnitPanel(unitPanelTexture, new Vector2(graphics.GraphicsDevice.Viewport.Width, graphics.GraphicsDevice.Viewport.Height), true);
-            hoveredUnitPanel = new UnitPanel(unitPanelTexture, new Vector2(graphics.GraphicsDevice.Viewport.Width, graphics.GraphicsDevice.Viewport.Height), false);
+            selectedUnitPanel = new UnitPanel(unitPanelTexture1, new Vector2(graphics.GraphicsDevice.Viewport.Width, graphics.GraphicsDevice.Viewport.Height), true);
+            hoveredUnitPanel = new UnitPanel(unitPanelTexture1, new Vector2(graphics.GraphicsDevice.Viewport.Width, graphics.GraphicsDevice.Viewport.Height), false);
         }
 
         /// <summary>

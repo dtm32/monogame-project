@@ -50,6 +50,7 @@ namespace Game
 
             hasUnit = false;
             unit = null;
+            unitRect = Rectangle.Empty;
 
             return tempUnit;
         }
