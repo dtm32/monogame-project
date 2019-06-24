@@ -76,6 +76,8 @@
     <Compile Include="GameData\Skills\Steady_March.cs" />
     <Compile Include="GameData\Skills\Strength.cs" />
     <Compile Include="GameData\Terrain.cs" />
+    <Compile Include="GameData\UnitManager.cs" />
+    <Compile Include="GameData\UnitManagerStatus.cs" />
     <Compile Include="GameData\Units\Crimson_Knight.cs" />
     <Compile Include="GameData\Units\Dark_Knight.cs" />
     <Compile Include="GameData\Units\RenegadeKnight.cs" />

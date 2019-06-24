@@ -115,10 +115,10 @@ namespace Game
 
             score = 0;
 
-            gridSize.X = 5;
-            gridSize.Y = 5;
+            gridSize.X = 8;
+            gridSize.Y = 4;
 
-            tileArray = new Tile[(int) (gridSize.X * gridSize.Y)];
+            tileArray = new Tile[(int) ((gridSize.X - 2) * gridSize.Y)];
 
             Vector2 tileStart = new Vector2();
             tileStart.X = graphics.GraphicsDevice.Viewport.Width / 2 - (120 * gridSize.X / 2 - 20);
@@ -128,6 +128,10 @@ namespace Game
 
             for (int x = 0; x < gridSize.X; x++)
             {
+                if(x == 3 || x == 4)
+                {
+                    continue;
+                }
                 for(int y = 0; y < gridSize.Y; y++)
                 {
                     tileArray[i] = new Tile((int)tileStart.X + 120 * x, (int)tileStart.Y + 120 * y);
@@ -157,19 +161,19 @@ namespace Game
             // UNITS
             knightTexture         = Content.Load<Texture2D>("knight-small");
             knightNoHelmetTexture = Content.Load<Texture2D>("knight-no-helmet");
-            crimsonKnightTexture = Content.Load<Texture2D>("crimson-knight-0");
-            darkKnightTexture = Content.Load<Texture2D>("dark-knight-0");
+            crimsonKnightTexture  = Content.Load<Texture2D>("crimson-knight-0");
+            darkKnightTexture     = Content.Load<Texture2D>("dark-knight-0");
 
             // TERRAIN
             TerrainTexture.simpleRock = Content.Load<Texture2D>("simple-rock");
 
             // FONTS
-            font              = Content.Load<SpriteFont>("SpriteFont1");
-            Font.TimesNewRoman = Content.Load<SpriteFont>("TimesNewRomanSmall");
+            font                 = Content.Load<SpriteFont>("SpriteFont1");
+            Font.TimesNewRoman   = Content.Load<SpriteFont>("TimesNewRomanSmall");
             Font.TimesNewRoman14 = Content.Load<SpriteFont>("TimesNewRoman14");
-            Font.DamageFont = Content.Load<SpriteFont>("DamageFont");
-            Font.Cambira = Content.Load<SpriteFont>("Cambria");
-            Font.CambiraHalf = Content.Load<SpriteFont>("CambriaHalf");
+            Font.DamageFont      = Content.Load<SpriteFont>("DamageFont");
+            Font.Cambira         = Content.Load<SpriteFont>("Cambria");
+            Font.CambiraHalf     = Content.Load<SpriteFont>("CambriaHalf");
 
             // ASSIGN TEXTURES
 
@@ -186,7 +190,7 @@ namespace Game
             tileArray[2].AddUnit(new Dark_Knight(darkKnightTexture));
 
             // AddTerrain() to random Tile(s)
-            tileArray[10].AddTerrain(new Terrain(TerrainTexture.simpleRock));
+            //tileArray[10].AddTerrain(new Terrain(TerrainTexture.simpleRock));
 
             // Add texture to unit panels
             selectedUnitPanel = new UnitPanel(unitPanelTexture1, new Vector2(graphics.GraphicsDevice.Viewport.Width, graphics.GraphicsDevice.Viewport.Height), true);
