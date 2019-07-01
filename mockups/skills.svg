@@ -17,7 +17,10 @@
    id="svg2"
    version="1.1"
    inkscape:version="0.91 r13725"
-   sodipodi:docname="skills.svg">
+   sodipodi:docname="skills.svg"
+   inkscape:export-filename="C:\Users\miaodt\git\cs-2d-game\Game\Game\GameContent\skill-icons\holy-fire-skill.png"
+   inkscape:export-xdpi="168.75"
+   inkscape:export-ydpi="168.75">
   <defs
      id="defs4">
     <inkscape:path-effect
@@ -163,6 +166,17 @@
        y2="215.57709"
        gradientUnits="userSpaceOnUse"
        gradientTransform="translate(2.3214286,0)" />
+    <radialGradient
+       inkscape:collect="always"
+       xlink:href="#linearGradient5973"
+       id="radialGradient6107"
+       cx="298.78201"
+       cy="159.53687"
+       fx="298.78201"
+       fy="159.53687"
+       r="15.500001"
+       gradientTransform="matrix(0.55107771,0.95449407,-0.76223981,0.4400796,255.95842,-195.37587)"
+       gradientUnits="userSpaceOnUse" />
   </defs>
   <sodipodi:namedview
      id="base"
@@ -171,11 +185,11 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="7.9195959"
-     inkscape:cx="213.4644"
-     inkscape:cy="911.78346"
+     inkscape:zoom="2.8"
+     inkscape:cx="272.41719"
+     inkscape:cy="868.94334"
      inkscape:document-units="px"
-     inkscape:current-layer="g5842"
+     inkscape:current-layer="layer1"
      showgrid="false"
      inkscape:window-width="932"
      inkscape:window-height="571"
@@ -206,7 +220,10 @@
        id="rect4160"
        style="fill:#cccccc;fill-rule:evenodd;stroke:#000000;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
     <g
-       id="g5842">
+       id="g5842"
+       inkscape:export-filename="C:\Users\miaodt\git\cs-2d-game\Game\Game\GameContent\skill-icons\frost-barrier-skill.png"
+       inkscape:export-xdpi="168.75"
+       inkscape:export-ydpi="168.75">
       <rect
          inkscape:export-ydpi="168.75"
          inkscape:export-xdpi="168.75"
@@ -778,6 +795,88 @@ lhMMieUEQ2I5wZBYTjAklhMMieUEQ2I5wZBYTjAklhP8P78lHFoo2DuOAAAAAElFTkSuQmCC
          height="31.000004"
          x="281.22263"
          y="195.76205" />
+    </g>
+    <g
+       id="g6066"
+       transform="matrix(0.84906704,0,0,0.84906704,31.855192,99.723267)">
+      <path
+         style="fill:#ff0000;fill-rule:evenodd;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+         d="m 354.93974,142.81044 c -4.9329,-0.45638 -12.74256,-4.5628 -13.32787,-12.63107 -0.58531,-8.06826 1.93353,-14.68806 6.8993,-18.05148 0.75761,3.91434 2.80484,5.25254 2.80484,5.25254 0,0 2.10587,-6.89142 6.65944,-10.55213 0,0 0.597,8.57405 2.67858,13.48214 3.56508,-2.89413 5.26786,-8.48213 5.26786,-8.48213 4.42673,9.32512 6.01214,12.9691 5.4554,19.92602 -0.55674,6.95692 -8.76059,11.66203 -16.43755,11.05611 z"
+         id="path6068"
+         inkscape:connector-curvature="0"
+         sodipodi:nodetypes="czccccczc" />
+      <path
+         style="fill:#ff2a2a;fill-rule:evenodd;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+         d="m 356.51886,140.98271 c -4.1599,-0.14118 -8.54953,-3.38687 -8.79922,-5.91298 -0.24968,-2.52611 3.24973,-5.86068 3.24973,-5.86068 0,0 0.81363,3.17576 2.77792,5.05076 0.71429,-3.48214 3.48323,-6.42703 3.48323,-6.42703 0,0 1.60823,4.21021 3.84037,6.1745 2.32143,-1.51786 2.40918,-3.54823 2.40918,-3.54823 0,0 2.79353,2.93888 2.66062,5.1464 -0.13291,2.20751 -5.46193,5.51845 -9.62183,5.37726 z"
+         id="path6070"
+         inkscape:connector-curvature="0"
+         sodipodi:nodetypes="zzccccczz" />
+    </g>
+    <path
+       style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       d="m 323.09127,230.83398 15.65737,0 0,3.283 -15.65737,0 z"
+       id="path6074"
+       inkscape:connector-curvature="0"
+       sodipodi:nodetypes="ccccc" />
+    <path
+       style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       d="m 328.71025,243.65029 0,-18.62469 4.41941,0 0,18.62469 z"
+       id="path6076"
+       inkscape:connector-curvature="0"
+       sodipodi:nodetypes="ccccc" />
+    <g
+       id="g6109"
+       transform="translate(-85.357143,10.714286)">
+      <g
+         transform="translate(-1.1364216,44.572981)"
+         id="g6042"
+         inkscape:export-filename="C:\Users\miaodt\git\cs-2d-game\Game\Game\GameContent\skill-icons\ignite-skill.png"
+         inkscape:export-xdpi="168.75"
+         inkscape:export-ydpi="168.75">
+        <rect
+           y="145.8481"
+           x="283.47626"
+           height="31.000004"
+           width="31.000002"
+           id="rect6044"
+           style="fill:#afdde9;fill-rule:evenodd;stroke:none;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+        <g
+           style="fill:#ffdd55"
+           transform="matrix(0.83873741,0,0,0.83873741,14.152459,26.90085)"
+           id="g6046">
+          <path
+             sodipodi:nodetypes="czccccczc"
+             inkscape:connector-curvature="0"
+             id="path6048"
+             d="m 338.01969,178.41832 c -4.9329,-0.45638 -12.74256,-4.5628 -13.32787,-12.63107 -0.58531,-8.06826 1.93353,-14.68806 6.8993,-18.05148 0.75761,3.91434 2.80484,5.25254 2.80484,5.25254 0,0 2.10587,-6.89142 6.65944,-10.55213 0,0 0.597,8.57405 2.67858,13.48214 3.56508,-2.89413 5.26786,-8.48213 5.26786,-8.48213 4.42673,9.32512 6.01214,12.9691 5.4554,19.92602 -0.55674,6.95692 -8.76059,11.66203 -16.43755,11.05611 z"
+             style="fill:#ffdd55;fill-rule:evenodd;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+          <path
+             sodipodi:nodetypes="zzccccczz"
+             inkscape:connector-curvature="0"
+             id="path6050"
+             d="m 339.59881,176.59059 c -4.1599,-0.14118 -8.54953,-3.38687 -8.79922,-5.91298 -0.24968,-2.52611 3.24973,-5.86068 3.24973,-5.86068 0,0 0.81363,3.17576 2.77792,5.05076 0.71429,-3.48214 3.48323,-6.42703 3.48323,-6.42703 0,0 1.60823,4.21021 3.84037,6.1745 2.32143,-1.51786 2.40918,-3.54823 2.40918,-3.54823 0,0 2.79353,2.93888 2.66062,5.1464 -0.13291,2.20751 -5.46193,5.51845 -9.62183,5.37726 z"
+             style="fill:#ffcc00;fill-rule:evenodd;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+        </g>
+        <rect
+           style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+           id="rect6084"
+           width="31.000002"
+           height="31.000004"
+           x="283.47626"
+           y="145.8481" />
+        <rect
+           y="145.8481"
+           x="283.47626"
+           height="31.000004"
+           width="31.000002"
+           id="rect6099"
+           style="opacity:0.67099998;fill:url(#radialGradient6107);fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+      </g>
+      <path
+         inkscape:connector-curvature="0"
+         id="path6078"
+         d="m 295.62987,196.60858 0,5.80859 -5.61914,0 0,3.2832 5.61914,0 0,9.53321 4.41993,0 0,-9.53321 5.61914,0 0,-3.2832 -5.61914,0 0,-5.80859 -4.41993,0 z"
+         style="fill:#ffeeaa;fill-rule:evenodd;stroke:#d4aa00;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
     </g>
   </g>
 </svg>
