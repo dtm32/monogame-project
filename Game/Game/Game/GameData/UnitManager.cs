@@ -12,6 +12,8 @@ namespace Game.GameData
         private int arrayLength;
         private int highestSpeed;
 
+        private Queue<Unit> queue;
+
         public UnitManager(int size)
         {
             units = new Unit[size];
@@ -33,33 +35,30 @@ namespace Game.GameData
 
         public Unit GetNext()
         {
-            int nextIndex = -1;
-
-            for(int i = 0; i < arrayLength; i++)
-            {
-                if(!unitStatusArray[i].GetAction()
-                    && unitStatusArray[i].GetSpeed() > highestSpeed)
-                {
-                    highestSpeed = unitStatusArray[i].GetSpeed();
-                    nextIndex = i;
-                }
-            }
-
-            if (nextIndex != -1)
-            {
-                return units[nextIndex];
-            }
-            else
-            {
-                return null;
-            }
+            return queue.Dequeue();
         }
 
         public void NewRound()
         {
-            for(int i = 0; i < arrayLength; i++)
+            bool[] inQueue = new bool[arrayLength];
+            int maxSpeed;
+            int maxSpeedIndex = -1;
+
+            while(queue.Count < arrayLength)
             {
-                unitStatusArray[i].Reset();
+                maxSpeed = 0;
+                maxSpeedIndex = -1;
+
+                for(int i = 0; i < arrayLength; i++)
+                {
+                    if(!inQueue[i] && units[i].GetStats().GetSpd() > maxSpeed)
+                    {
+                        maxSpeed = units[i].GetStats().GetSpd();
+                        maxSpeedIndex = i;
+                    }
+                }
+
+                queue.Enqueue(units[maxSpeedIndex]);
             }
         }
     }
