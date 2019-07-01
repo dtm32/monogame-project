@@ -1,0 +1,783 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:osb="http://www.openswatchbook.org/uri/2009/osb"
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:xlink="http://www.w3.org/1999/xlink"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="210mm"
+   height="297mm"
+   viewBox="0 0 744.09448819 1052.3622047"
+   id="svg2"
+   version="1.1"
+   inkscape:version="0.91 r13725"
+   sodipodi:docname="skills.svg">
+  <defs
+     id="defs4">
+    <inkscape:path-effect
+       end_linecap_type="round"
+       miter_limit="4"
+       linejoin_type="round"
+       start_linecap_type="round"
+       interpolator_beta="0.2"
+       interpolator_type="Linear"
+       sort_points="true"
+       offset_points="0,0.99999994 | 0.62985648,0.64285708 | 1,0.062499937"
+       is_visible="true"
+       id="path-effect6012"
+       effect="powerstroke" />
+    <linearGradient
+       inkscape:collect="always"
+       id="linearGradient5973">
+      <stop
+         style="stop-color:#e5ff80;stop-opacity:1;"
+         offset="0"
+         id="stop5975" />
+      <stop
+         style="stop-color:#e5ff80;stop-opacity:0;"
+         offset="1"
+         id="stop5977" />
+    </linearGradient>
+    <linearGradient
+       inkscape:collect="always"
+       id="linearGradient5963">
+      <stop
+         style="stop-color:#000000;stop-opacity:1"
+         offset="0"
+         id="stop5965" />
+      <stop
+         style="stop-color:#4d4d4d;stop-opacity:0;"
+         offset="1"
+         id="stop5967" />
+    </linearGradient>
+    <inkscape:path-effect
+       effect="powerstroke"
+       id="path-effect5951"
+       is_visible="true"
+       offset_points="0,0.99999994 | 0.62985648,0.64285708 | 1,0.062499937"
+       sort_points="true"
+       interpolator_type="Linear"
+       interpolator_beta="0.2"
+       start_linecap_type="round"
+       linejoin_type="round"
+       miter_limit="4"
+       end_linecap_type="round" />
+    <inkscape:path-effect
+       effect="skeletal"
+       id="path-effect5949"
+       is_visible="true"
+       pattern="M 0,0 1,0"
+       copytype="single_stretched"
+       prop_scale="1"
+       scale_y_rel="false"
+       spacing="0"
+       normal_offset="0"
+       tang_offset="0"
+       prop_units="false"
+       vertical_pattern="false"
+       fuse_tolerance="0" />
+    <inkscape:path-effect
+       effect="powerstroke"
+       id="path-effect5947"
+       is_visible="true"
+       offset_points="0,0.99999994 | 0.5,0.99999994 | 1,0.99999994"
+       sort_points="true"
+       interpolator_type="Linear"
+       interpolator_beta="0.2"
+       start_linecap_type="round"
+       linejoin_type="round"
+       miter_limit="4"
+       end_linecap_type="round" />
+    <linearGradient
+       inkscape:collect="always"
+       id="linearGradient5785">
+      <stop
+         style="stop-color:#ffffff;stop-opacity:1;"
+         offset="0"
+         id="stop5787" />
+      <stop
+         style="stop-color:#ffffff;stop-opacity:0;"
+         offset="1"
+         id="stop5789" />
+    </linearGradient>
+    <linearGradient
+       inkscape:collect="always"
+       id="linearGradient5775">
+      <stop
+         style="stop-color:#3e3748;stop-opacity:1;"
+         offset="0"
+         id="stop5777" />
+      <stop
+         style="stop-color:#3e3748;stop-opacity:0;"
+         offset="1"
+         id="stop5779" />
+    </linearGradient>
+    <linearGradient
+       id="linearGradient5648"
+       osb:paint="solid">
+      <stop
+         style="stop-color:#000000;stop-opacity:1;"
+         offset="0"
+         id="stop5650" />
+    </linearGradient>
+    <linearGradient
+       inkscape:collect="always"
+       xlink:href="#linearGradient5775"
+       id="linearGradient5781"
+       x1="215.35715"
+       y1="216.1122"
+       x2="215.35715"
+       y2="172.71935"
+       gradientUnits="userSpaceOnUse" />
+    <linearGradient
+       inkscape:collect="always"
+       xlink:href="#linearGradient5785"
+       id="linearGradient5791"
+       x1="209.10715"
+       y1="170.04077"
+       x2="222.85715"
+       y2="185.39792"
+       gradientUnits="userSpaceOnUse" />
+    <linearGradient
+       inkscape:collect="always"
+       xlink:href="#linearGradient5963"
+       id="linearGradient5969"
+       x1="310.62189"
+       y1="237.16911"
+       x2="282.96896"
+       y2="198.53076"
+       gradientUnits="userSpaceOnUse" />
+    <linearGradient
+       inkscape:collect="always"
+       xlink:href="#linearGradient5973"
+       id="linearGradient5979"
+       x1="265.29132"
+       y1="174.91844"
+       x2="290.67139"
+       y2="215.57709"
+       gradientUnits="userSpaceOnUse"
+       gradientTransform="translate(2.3214286,0)" />
+  </defs>
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="7.9195959"
+     inkscape:cx="213.4644"
+     inkscape:cy="911.78346"
+     inkscape:document-units="px"
+     inkscape:current-layer="g5842"
+     showgrid="false"
+     inkscape:window-width="932"
+     inkscape:window-height="571"
+     inkscape:window-x="4798"
+     inkscape:window-y="402"
+     inkscape:window-maximized="0"
+     inkscape:snap-to-guides="false" />
+  <metadata
+     id="metadata7">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1">
+    <rect
+       y="126.06153"
+       x="242.07922"
+       height="31.000004"
+       width="31.000002"
+       id="rect4160"
+       style="fill:#cccccc;fill-rule:evenodd;stroke:#000000;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+    <g
+       id="g5842">
+      <rect
+         inkscape:export-ydpi="168.75"
+         inkscape:export-xdpi="168.75"
+         inkscape:export-filename="C:\Users\miaodt\git\cs-2d-game\Game\Game\GameContent\frost-barrier-skill.png"
+         y="126.69288"
+         x="196.87491"
+         height="31.000004"
+         width="31.000002"
+         id="rect3336"
+         style="fill:#0088aa;fill-rule:evenodd;stroke:none;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+      <g
+         inkscape:export-ydpi="168.75"
+         inkscape:export-xdpi="168.75"
+         inkscape:export-filename="C:\Users\miaodt\git\cs-2d-game\Game\Game\GameContent\frost-barrier-skill.png"
+         transform="translate(-45.205171,0.63038063)"
+         id="g4186">
+        <path
+           style="fill:#87decd;fill-rule:evenodd;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+           d="m 242.08008,126.0625 0,4.64258 15.25624,11.50878 -7.2582,-16.15136 z"
+           id="path4140"
+           inkscape:connector-curvature="0"
+           sodipodi:nodetypes="ccccc" />
+        <path
+           style="fill:#87decd;fill-rule:evenodd;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+           d="m 260.10547,126.0625 -2.64317,15.90009 14.067,-15.90009 z"
+           id="path4142"
+           inkscape:connector-curvature="0"
+           sodipodi:nodetypes="cccc" />
+        <path
+           style="fill:#87decd;fill-rule:evenodd;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+           d="m 273.08008,138.75195 -16.12324,3.33584 16.12324,5.39854 z"
+           id="path4144"
+           inkscape:connector-curvature="0"
+           sodipodi:nodetypes="cccc" />
+        <path
+           style="fill:#87decd;fill-rule:evenodd;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+           d="m 257.58819,141.33077 5.27509,15.73173 9.9668,0 z"
+           id="path4146"
+           inkscape:connector-curvature="0"
+           sodipodi:nodetypes="cccc" />
+        <path
+           style="fill:#87decd;fill-rule:evenodd;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+           d="m 258.21991,141.96291 -16.13983,11.47068 0,3.62891 8.4414,0 z"
+           id="path4148"
+           inkscape:connector-curvature="0"
+           sodipodi:nodetypes="ccccc" />
+        <path
+           style="fill:#87decd;fill-rule:evenodd;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+           d="m 242.08008,137.90625 0,7.75 15.25703,-3.5669 z"
+           id="path4150"
+           inkscape:connector-curvature="0"
+           sodipodi:nodetypes="cccc" />
+      </g>
+      <path
+         inkscape:export-ydpi="168.75"
+         inkscape:export-xdpi="168.75"
+         inkscape:export-filename="C:\Users\miaodt\git\cs-2d-game\Game\Game\GameContent\frost-barrier-skill.png"
+         sodipodi:nodetypes="ccccc"
+         inkscape:connector-curvature="0"
+         id="path4138"
+         d="m 200.67952,131.42845 c 0,0 6.15044,3.56342 11.67989,0 5.75141,3.62589 11.67989,0 11.67989,0 0,0 -0.90357,17.93021 -11.67989,21.97082 -9.76617,-3.78807 -11.67989,-21.97082 -11.67989,-21.97082 z"
+         style="fill:#aaeeff;fill-rule:evenodd;stroke:#374548;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+      <rect
+         inkscape:export-ydpi="168.75"
+         inkscape:export-xdpi="168.75"
+         inkscape:export-filename="C:\Users\miaodt\git\cs-2d-game\Game\Game\GameContent\frost-barrier-skill.png"
+         style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+         id="rect4194"
+         width="31.000002"
+         height="31.000004"
+         x="196.87491"
+         y="126.69288" />
+      <g
+         inkscape:export-ydpi="168.75"
+         inkscape:export-xdpi="168.75"
+         inkscape:export-filename="C:\Users\miaodt\git\cs-2d-game\Game\Game\GameContent\frost-barrier-skill.png"
+         style="fill:#aaeeff;stroke:#e6fff6;stroke-width:1.47976422;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+         transform="matrix(0.54062665,0,0,0.54062665,41.282935,64.679736)"
+         id="g5732">
+        <path
+           inkscape:connector-curvature="0"
+           style="fill:#aaeeff;fill-rule:evenodd;stroke:#e6fff6;stroke-width:1.47976422;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+           d="m 307.77926,141.82649 17.29862,0"
+           id="path5692" />
+        <path
+           inkscape:connector-curvature="0"
+           style="fill:#aaeeff;fill-rule:evenodd;stroke:#e6fff6;stroke-width:1.47976422;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+           d="m 316.42857,133.17805 0,17.29883"
+           id="path5677" />
+        <path
+           inkscape:connector-curvature="0"
+           style="fill:#aaeeff;fill-rule:evenodd;stroke:#e6fff6;stroke-width:1.47976422;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+           d="m 310.31574,147.93933 12.22469,-12.22469"
+           id="path5682" />
+        <path
+           inkscape:connector-curvature="0"
+           style="fill:#aaeeff;fill-rule:evenodd;stroke:#e6fff6;stroke-width:1.47976422;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+           d="m 310.31566,135.71359 12.22581,12.2258"
+           id="path5687" />
+        <circle
+           style="fill:#aaeeff;stroke:#e6fff6;stroke-width:1.47976422;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+           id="path5664"
+           cx="316.42856"
+           cy="141.82649"
+           r="2.3994312" />
+        <g
+           style="fill:#aaeeff;stroke:#e6fff6;stroke-width:1.47976422;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+           id="g5701"
+           transform="translate(-5.0507627,0.2841054)">
+          <path
+             sodipodi:nodetypes="cccccc"
+             inkscape:connector-curvature="0"
+             d="m 329.21503,141.58341 2.19392,2.20972 m 0.31567,-2.20971 -2.54116,0 m 0,0 2.22549,-2.33598"
+             style="fill:#aaeeff;fill-rule:evenodd;stroke:#e6fff6;stroke-width:1.47976422;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+             id="path5698" />
+        </g>
+        <g
+           style="fill:#aaeeff;stroke:#e6fff6;stroke-width:1.47976422;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+           transform="matrix(-1,0,0,1,637.99024,0.2841054)"
+           id="g5704">
+          <path
+             id="path5706"
+             style="fill:#aaeeff;fill-rule:evenodd;stroke:#e6fff6;stroke-width:1.47976422;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+             d="m 329.21503,141.58341 2.19392,2.20972 m 0.31567,-2.20971 -2.54116,0 m 0,0 2.22549,-2.33598"
+             inkscape:connector-curvature="0"
+             sodipodi:nodetypes="cccccc" />
+        </g>
+        <g
+           style="fill:#aaeeff;stroke:#e6fff6;stroke-width:1.47976422;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+           id="g5708"
+           transform="matrix(0,-1,-1,0,458.02159,463.35645)">
+          <path
+             sodipodi:nodetypes="cccccc"
+             inkscape:connector-curvature="0"
+             d="m 329.21503,141.58341 2.19392,2.20972 m 0.31567,-2.20971 -2.54116,0 m 0,0 2.22549,-2.33598"
+             style="fill:#aaeeff;fill-rule:evenodd;stroke:#e6fff6;stroke-width:1.47976422;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+             id="path5710" />
+        </g>
+        <g
+           style="fill:#aaeeff;stroke:#e6fff6;stroke-width:1.47976422;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+           transform="matrix(0,1,-1,0,458.02159,-179.68455)"
+           id="g5712">
+          <path
+             id="path5714"
+             style="fill:#aaeeff;fill-rule:evenodd;stroke:#e6fff6;stroke-width:1.47976422;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+             d="m 329.21503,141.58341 2.19392,2.20972 m 0.31567,-2.20971 -2.54116,0 m 0,0 2.22549,-2.33598"
+             inkscape:connector-curvature="0"
+             sodipodi:nodetypes="cccccc" />
+        </g>
+        <g
+           style="fill:#aaeeff;stroke:#e6fff6;stroke-width:1.47976422;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+           id="g5716"
+           transform="matrix(0.70710678,0.70710678,-0.70710678,0.70710678,189.16296,-185.55841)">
+          <path
+             sodipodi:nodetypes="cccccc"
+             inkscape:connector-curvature="0"
+             d="m 329.21503,141.58341 2.19392,2.20972 m 0.31567,-2.20971 -2.54116,0 m 0,0 2.22549,-2.33598"
+             style="fill:#aaeeff;fill-rule:evenodd;stroke:#e6fff6;stroke-width:1.47976422;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+             id="path5718" />
+        </g>
+        <g
+           style="fill:#aaeeff;stroke:#e6fff6;stroke-width:1.47976422;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+           transform="matrix(0.70710678,-0.70710678,-0.70710678,-0.70710678,189.16296,469.34285)"
+           id="g5720">
+          <path
+             id="path5722"
+             style="fill:#aaeeff;fill-rule:evenodd;stroke:#e6fff6;stroke-width:1.47976422;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+             d="m 329.21503,141.58341 2.19392,2.20972 m 0.31567,-2.20971 -2.54116,0 m 0,0 2.22549,-2.33598"
+             inkscape:connector-curvature="0"
+             sodipodi:nodetypes="cccccc" />
+        </g>
+        <g
+           style="fill:#aaeeff;stroke:#e6fff6;stroke-width:1.47976422;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+           transform="matrix(-0.70710678,0.70710678,0.70710678,0.70710678,443.72171,-185.55841)"
+           id="g5724">
+          <path
+             id="path5726"
+             style="fill:#aaeeff;fill-rule:evenodd;stroke:#e6fff6;stroke-width:1.47976422;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+             d="m 329.21503,141.58341 2.19392,2.20972 m 0.31567,-2.20971 -2.54116,0 m 0,0 2.22549,-2.33598"
+             inkscape:connector-curvature="0"
+             sodipodi:nodetypes="cccccc" />
+        </g>
+        <g
+           style="fill:#aaeeff;stroke:#e6fff6;stroke-width:1.47976422;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+           id="g5728"
+           transform="matrix(-0.70710678,-0.70710678,0.70710678,-0.70710678,443.72171,469.34285)">
+          <path
+             sodipodi:nodetypes="cccccc"
+             inkscape:connector-curvature="0"
+             d="m 329.21503,141.58341 2.19392,2.20972 m 0.31567,-2.20971 -2.54116,0 m 0,0 2.22549,-2.33598"
+             style="fill:#aaeeff;fill-rule:evenodd;stroke:#e6fff6;stroke-width:1.47976422;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+             id="path5730" />
+        </g>
+      </g>
+    </g>
+    <g
+       id="g5832"
+       transform="translate(-4.2931483,-11.869292)"
+       inkscape:export-filename="C:\Users\miaodt\git\cs-2d-game\Game\Game\GameContent\condemn-skill.png"
+       inkscape:export-xdpi="168.75"
+       inkscape:export-ydpi="168.75">
+      <g
+         id="g5824">
+        <rect
+           inkscape:export-ydpi="168.75"
+           inkscape:export-xdpi="168.75"
+           inkscape:export-filename="C:\Users\miaodt\git\cs-2d-game\Game\Game\GameContent\frost-barrier-skill.png"
+           style="fill:#3e3748;fill-rule:evenodd;stroke:none;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+           id="rect5755"
+           width="31.000002"
+           height="31.000004"
+           x="200.44635"
+           y="175.44289" />
+        <path
+           style="fill:#5a2ca0;fill-rule:evenodd;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+           d="m 216.01562,175.44336 c -1.41307,1.95182 -2.68056,3.95468 -3.82812,6.04102 l -7.68164,-5.53126 1.85352,27.03126 25.08789,-5.31446 0,-1.14844 -7.91016,-6.80078 c 2.30365,-2.72307 5.02169,-5.15977 7.91016,-7.34179 l 0,-6.93555 -15.43165,0 z"
+           id="path5763"
+           inkscape:connector-curvature="0" />
+        <rect
+           y="175.44289"
+           x="200.44635"
+           height="31.000004"
+           width="31.000002"
+           id="rect5765"
+           style="fill:url(#linearGradient5781);fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+           inkscape:export-filename="C:\Users\miaodt\git\cs-2d-game\Game\Game\GameContent\frost-barrier-skill.png"
+           inkscape:export-xdpi="168.75"
+           inkscape:export-ydpi="168.75" />
+        <g
+           id="g5815">
+          <path
+             id="path5757"
+             d="m 220.31836,175.44336 c -2.99658,3.3231 -5.02297,6.75363 -6.9375,10.23437 l -5.25977,-3.9707 1.32813,16.63477 16.18164,-3.04102 -6.69531,-5.05273 c 3.37555,-5.31205 7.72315,-9.20826 12.51172,-12.46094 l 0,-2.34375 -11.12891,0 z"
+             style="fill:#decd87;fill-rule:evenodd;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+             inkscape:connector-curvature="0" />
+          <path
+             id="path5783"
+             d="m 220.31836,175.44336 c -2.99658,3.3231 -5.02297,6.75363 -6.9375,10.23437 l -5.25977,-3.9707 1.32813,16.63477 16.18164,-3.04102 -6.69531,-5.05273 c 3.37555,-5.31205 7.72315,-9.20826 12.51172,-12.46094 l 0,-2.34375 -11.12891,0 z"
+             style="fill:url(#linearGradient5791);fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+             inkscape:connector-curvature="0" />
+        </g>
+      </g>
+      <rect
+         inkscape:export-ydpi="168.75"
+         inkscape:export-xdpi="168.75"
+         inkscape:export-filename="C:\Users\miaodt\git\cs-2d-game\Game\Game\GameContent\frost-barrier-skill.png"
+         style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+         id="rect5822"
+         width="31.000002"
+         height="31.000004"
+         x="200.44681"
+         y="175.44289" />
+    </g>
+    <image
+       y="318.58896"
+       x="279.88715"
+       id="image5884"
+       xlink:href="data:image/png;base64,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
+"
+       style="image-rendering:optimizeSpeed"
+       preserveAspectRatio="none"
+       height="84.285713"
+       width="42.142857" />
+    <g
+       id="g5933">
+      <path
+         sodipodi:nodetypes="czccccczc"
+         inkscape:connector-curvature="0"
+         id="path5911"
+         d="m 354.93974,142.81044 c -4.9329,-0.45638 -12.74256,-4.5628 -13.32787,-12.63107 -0.58531,-8.06826 1.93353,-14.68806 6.8993,-18.05148 0.75761,3.91434 2.80484,5.25254 2.80484,5.25254 0,0 2.10587,-6.89142 6.65944,-10.55213 0,0 0.597,8.57405 2.67858,13.48214 3.56508,-2.89413 5.26786,-8.48213 5.26786,-8.48213 4.42673,9.32512 6.01214,12.9691 5.4554,19.92602 -0.55674,6.95692 -8.76059,11.66203 -16.43755,11.05611 z"
+         style="fill:#ff0000;fill-rule:evenodd;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+      <path
+         sodipodi:nodetypes="zzccccczz"
+         inkscape:connector-curvature="0"
+         id="path5913"
+         d="m 356.51886,140.98271 c -4.1599,-0.14118 -8.54953,-3.38687 -8.79922,-5.91298 -0.24968,-2.52611 3.24973,-5.86068 3.24973,-5.86068 0,0 0.81363,3.17576 2.77792,5.05076 0.71429,-3.48214 3.48323,-6.42703 3.48323,-6.42703 0,0 1.60823,4.21021 3.84037,6.1745 2.32143,-1.51786 2.40918,-3.54823 2.40918,-3.54823 0,0 2.79353,2.93888 2.66062,5.1464 -0.13291,2.20751 -5.46193,5.51845 -9.62183,5.37726 z"
+         style="fill:#ff2a2a;fill-rule:evenodd;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+    </g>
+    <g
+       id="g6029"
+       inkscape:export-filename="C:\Users\miaodt\git\cs-2d-game\Game\Game\GameContent\skill-icons\ignite-skill.png"
+       inkscape:export-xdpi="168.75"
+       inkscape:export-ydpi="168.75">
+      <rect
+         y="145.8481"
+         x="283.47626"
+         height="31.000004"
+         width="31.000002"
+         id="rect5909"
+         style="fill:#2b0000;fill-rule:evenodd;stroke:#000000;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+      <g
+         transform="matrix(0.83873741,0,0,0.83873741,14.152459,26.90085)"
+         id="g5929">
+        <path
+           sodipodi:nodetypes="czccccczc"
+           inkscape:connector-curvature="0"
+           id="path5925"
+           d="m 338.01969,178.41832 c -4.9329,-0.45638 -12.74256,-4.5628 -13.32787,-12.63107 -0.58531,-8.06826 1.93353,-14.68806 6.8993,-18.05148 0.75761,3.91434 2.80484,5.25254 2.80484,5.25254 0,0 2.10587,-6.89142 6.65944,-10.55213 0,0 0.597,8.57405 2.67858,13.48214 3.56508,-2.89413 5.26786,-8.48213 5.26786,-8.48213 4.42673,9.32512 6.01214,12.9691 5.4554,19.92602 -0.55674,6.95692 -8.76059,11.66203 -16.43755,11.05611 z"
+           style="fill:#550000;fill-rule:evenodd;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+        <path
+           sodipodi:nodetypes="zzccccczz"
+           inkscape:connector-curvature="0"
+           id="path5927"
+           d="m 339.59881,176.59059 c -4.1599,-0.14118 -8.54953,-3.38687 -8.79922,-5.91298 -0.24968,-2.52611 3.24973,-5.86068 3.24973,-5.86068 0,0 0.81363,3.17576 2.77792,5.05076 0.71429,-3.48214 3.48323,-6.42703 3.48323,-6.42703 0,0 1.60823,4.21021 3.84037,6.1745 2.32143,-1.51786 2.40918,-3.54823 2.40918,-3.54823 0,0 2.79353,2.93888 2.66062,5.1464 -0.13291,2.20751 -5.46193,5.51845 -9.62183,5.37726 z"
+           style="fill:#550000;fill-rule:evenodd;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+      </g>
+      <g
+         style="stroke:#d40000;stroke-width:2.45857167;stroke-miterlimit:4;stroke-dasharray:none"
+         transform="matrix(0.81326897,0,0,0.81369195,61.24031,13.565507)"
+         id="g5901">
+        <g
+           style="stroke:#d40000;stroke-width:5.98434877;stroke-miterlimit:4;stroke-dasharray:none"
+           id="g5897"
+           transform="matrix(0.42667513,0,0,0.39558031,167.61907,108.125)">
+          <path
+             sodipodi:nodetypes="ccczc"
+             inkscape:connector-curvature="0"
+             id="path5887"
+             d="m 275.49526,197.77315 c 10,0.35714 16.82352,9.29161 16.82352,9.29161 0,0 -5.93066,9.29161 -16.82352,9.64875 0,0 -8.39286,0.10497 -8.39286,-9.47018 0,-9.57515 8.39286,-9.47018 8.39286,-9.47018 z"
+             style="fill:none;fill-rule:evenodd;stroke:#d40000;stroke-width:5.98434877;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+          <path
+             style="fill:none;fill-rule:evenodd;stroke:#d40000;stroke-width:5.98434877;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+             d="m 309.03547,197.77315 c -10,0.35714 -16.82352,9.29161 -16.82352,9.29161 0,0 5.93066,9.29161 16.82352,9.64875 0,0 8.39286,0.10497 8.39286,-9.47018 0,-9.57515 -8.39286,-9.47018 -8.39286,-9.47018 z"
+             id="path5889"
+             inkscape:connector-curvature="0"
+             sodipodi:nodetypes="ccczc" />
+        </g>
+        <path
+           style="fill:none;fill-rule:evenodd;stroke:#d40000;stroke-width:2.45857167;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+           d="m 292.32143,190.21934 0,-19.82143"
+           id="path5891"
+           inkscape:connector-curvature="0" />
+        <path
+           style="fill:none;fill-rule:evenodd;stroke:#d40000;stroke-width:2.45857167;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+           d="m 286.96429,175.21934 10.71429,0"
+           id="path5893"
+           inkscape:connector-curvature="0" />
+        <path
+           style="fill:none;fill-rule:evenodd;stroke:#d40000;stroke-width:2.45857167;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+           d="m 283.83929,180.93363 16.96429,0"
+           id="path5895"
+           inkscape:connector-curvature="0" />
+      </g>
+    </g>
+    <g
+       id="g5957"
+       transform="translate(19.52819,-79.666237)">
+      <path
+         sodipodi:nodetypes="cccccc"
+         inkscape:connector-curvature="0"
+         id="path5939"
+         d="m 268.44253,209.9795 23.57143,-1.96429 4.01786,3.92857 -4.01786,3.92857 -23.57143,-1.96428 z"
+         style="fill:#b3b3b3;fill-rule:evenodd;stroke:#666666;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+      <path
+         sodipodi:nodetypes="cc"
+         inkscape:original-d="m 270.59263,211.94378 21.67188,0"
+         inkscape:path-effect="#path-effect5951"
+         inkscape:connector-curvature="0"
+         id="path5941"
+         d="m 270.59263,212.94378 13.65017,-0.35714 8.02171,-0.58036 a 0.06249994,0.06249994 90 0 0 0,-0.125 l -8.02171,-0.58036 -13.65017,-0.35714 a 0.99999994,0.99999994 90 0 0 0,2 z"
+         style="fill:#e6e6e6;fill-rule:evenodd;stroke:none;stroke-width:0.99999994px;stroke-linecap:round;stroke-linejoin:miter;stroke-opacity:1" />
+    </g>
+    <g
+       id="g6017"
+       transform="translate(-45.204326,-32.324881)"
+       inkscape:export-filename="C:\Users\miaodt\git\cs-2d-game\Game\Game\GameContent\skill-icons\assault-skill.png"
+       inkscape:export-xdpi="168.75"
+       inkscape:export-ydpi="168.75">
+      <rect
+         y="195.76205"
+         x="281.22263"
+         height="31.000004"
+         width="31.000002"
+         id="rect5937"
+         style="fill:#53676c;fill-rule:evenodd;stroke:none;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+      <rect
+         style="fill:url(#linearGradient5969);fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+         id="rect5961"
+         width="31.000002"
+         height="31.000004"
+         x="281.22263"
+         y="195.76205" />
+      <path
+         id="path5953"
+         d="m 281.22266,195.76172 0,31 20.56445,0 7.49414,-15.49219 -7.50195,-15.50781 -20.55664,0 z"
+         style="fill:#6f8a91;fill-rule:evenodd;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+         inkscape:connector-curvature="0" />
+      <path
+         id="path5955"
+         d="m 281.22266,196.29883 0,29.92578 23.51367,-14.96289 -23.51367,-14.96289 z"
+         style="fill:#b7c8c4;fill-rule:evenodd;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+         inkscape:connector-curvature="0" />
+      <path
+         id="path5971"
+         d="m 281.22266,195.76172 0,31 20.56445,0 7.49414,-15.49219 -7.50195,-15.50781 -20.55664,0 z"
+         style="fill:url(#linearGradient5979);fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+         inkscape:connector-curvature="0" />
+      <rect
+         style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+         id="rect5983"
+         width="31.000002"
+         height="31.000004"
+         x="281.22263"
+         y="195.76205" />
+      <path
+         id="path5999"
+         d="m 294.69336,207.33398 -13.4707,1.1211 0,5.61328 13.4707,1.12305 4.01758,-3.92969 -4.01758,-3.92774 z"
+         style="fill:#b3b3b3;fill-rule:evenodd;stroke:#666666;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+         inkscape:connector-curvature="0" />
+      <path
+         id="path6001"
+         d="m 281.22266,210.4707 0,1.58203 5.69922,-0.14843 8.02148,-0.58008 a 0.0625,0.0625 0 0 0 0,-0.125 l -8.02148,-0.58008 -5.69922,-0.14844 z"
+         style="fill:#e6e6e6;fill-rule:evenodd;stroke:none;stroke-width:0.99999994px;stroke-linecap:round;stroke-linejoin:miter;stroke-opacity:1"
+         inkscape:connector-curvature="0" />
+      <rect
+         y="195.76205"
+         x="281.22263"
+         height="31.000004"
+         width="31.000002"
+         id="rect6003"
+         style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+      <rect
+         style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+         id="rect6005"
+         width="31.000002"
+         height="31.000004"
+         x="281.22263"
+         y="195.76205" />
+    </g>
+  </g>
+</svg>
