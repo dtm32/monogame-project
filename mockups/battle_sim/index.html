@@ -1,13 +1,42 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <title>Idle Game v0.1.0</title>
+  <title>Battle Sim</title>
 
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link href="styles.css" type="text/css" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css?family=Roboto&display=swap" rel="stylesheet">
 </head>
 <body>
+
+  <div id="top-banner">
+    <div id="top-banner-buttons">
+      <button>Start Battle</button>
+      <button>Edit Units</button>
+    </div>
+  </div>
+
+  <div id="unit-banner">
+    <div id="unit-name">&#60;name&#62;</div>
+    <div id="unit-health">
+      <div id="unit-health-bar"></div>
+      <div id="unit-health-label">100/100</div>
+    </div>
+    <div id="unit-data">
+      <div id="unit-data-left">
+        <div class="unit-data-border">&#60;weapon&#62;</div>
+        <div class="unit-data-border">&#60;armor&#62;</div>
+        <div class="unit-data-border">&#60;trinket&#62;</div>    
+      </div>
+      <div id="unit-data-right" class="unit-data-border">
+        <div id="skill-1">&#60;skill 1&#62;</div>
+        <div id="skill-2">&#60;skill 2&#62;</div>
+        <div id="skill-3">&#60;skill 3&#62;</div>
+        <div id="skill-4">&#60;skill 4&#62;</div>
+        <div id="skill-5">&#60;skill 5&#62;</div>
+      </div>
+    </div>
+  </div>
 
   <div id="left">
     <table id="left-table" class="battlefield">
@@ -69,10 +98,10 @@
     </table>
   </div>
     
-  <div id="center">
+  <!-- <div id="center">
     <label>Power</label>
     <input id="power" type="number" name="quantity" min="5" max="200" value="20">
-  </div>
+  </div> -->
 
   <div id="unit-list-container">
     <ul id="unit-list">

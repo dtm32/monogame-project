@@ -20,6 +20,7 @@ namespace Game
   public class Game : Microsoft.Xna.Framework.Game
   {
     public static SpriteFont font;
+    public static ContentManager contentManager;
     //public static SpriteFont fontTimesNewRoman;
     //public static SpriteFont DamageFont;
 

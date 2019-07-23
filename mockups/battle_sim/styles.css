@@ -17,10 +17,87 @@ h3 {
   text-align: center;
 }
 
+#top-banner {
+  width: 60%;
+  position: absolute;
+  top: 0;
+  padding: 10px;
+  z-index: 10;
+  border-bottom: 1px solid #222;
+  border-left: 1px solid #222;
+  border-right: 1px solid #222;
+  transform: translate(-50%);
+  left: 50%;
+}
+#top-banner-buttons {
+  margin: auto;
+}
+
+#unit-banner {
+  width: 60%;
+  position: absolute;
+  bottom: 0;
+  padding: 10px;
+  padding-top: 4px;
+  z-index: 10;
+  border-top: 1px solid #222;
+  border-left: 1px solid #222;
+  border-right: 1px solid #222;
+  transform: translate(-50%);
+  left: 50%;
+}
+
+#unit-name {
+  margin: auto;
+  text-align: center;
+  padding-bottom: 2px;
+  font-size: 14px;
+}
+
+#unit-health {
+  width: 80%;
+  /* position: */
+  border: 1px solid #222;
+  height: 8px;
+  margin: auto;
+  padding: 2px;
+}
+
+#unit-health-bar {
+  height: 100%;
+  width: 100%;
+  background: rgb(141, 0, 0);
+}
+
+#unit-health-label {
+  margin: auto;
+  text-align: center;
+  padding-top: 3px;
+  font-size: 10px;
+}
+
+#unit-data {
+  display: flex;
+  flex-direction: row;
+  margin-top: 15px;
+  font-size: 14px;
+}
+
+#unit-data-left, #unit-data-right {
+  flex: 1;
+}
+
+.unit-data-border {
+  border: 1px solid #222;
+  padding: 3px;
+  margin: 2px;
+  margin-bottom: 4px;
+}
+
 #left, #right {
   width: 50%;
   height: 100%;
-  padding: 8px;
+  /* padding: 8px; */
   position: relative;
 }
 
@@ -60,6 +137,10 @@ table {
   text-align: center;
   position: relative;
   cursor: default;
+}
+
+.battlefield td:hover {
+  background: #373737;
 }
 
 .edit-unit-button {
