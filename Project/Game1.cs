@@ -24,10 +24,11 @@ namespace _2D_Game
         Color cursorColor;
         Rectangle cursorRect;
         Vector2 cursorPosition;
-        Texture2D cursorTexture;
+        Texture2D cursorTexture, cursorClickedTexture;
         Texture2D blankTexture;
         Texture2D puffFlyTexture, spikePigTexture;
         Texture2D animTest;
+        Cursor cursor;
 
         Rectangle[] tileRects = new Rectangle[8];
         Vector2[] tilePos = new Vector2[8];
@@ -37,7 +38,7 @@ namespace _2D_Game
 
         AnimatedSprite animSprite;
         AnimatedSprite spikePigSprite;
-        
+
 
         public Game1()
         {
@@ -71,6 +72,7 @@ namespace _2D_Game
                 graphics.GraphicsDevice.Viewport.Height);
             Color backgroundColor = Color.Blue;
 
+
             base.Initialize();
         }
 
@@ -88,6 +90,7 @@ namespace _2D_Game
             //C: \Users\Dylan\source\repos\2D Game\bin\Windows\x86\Debug\Content\Resources\cursor.png
             FileStream fileStream = new FileStream("../../../../Content/Resources/cursor.png", FileMode.Open);
             cursorTexture = Texture2D.FromStream(graphics.GraphicsDevice, fileStream);
+            cursorClickedTexture = LoadTexturePNG("cursor_clicked");
             fileStream = new FileStream("../../../../Content/Resources/square.png", FileMode.Open);
             blankTexture = Texture2D.FromStream(graphics.GraphicsDevice, fileStream);
             fileStream = new FileStream("../../../../Content/Resources/puff_fly.png", FileMode.Open);
@@ -99,6 +102,7 @@ namespace _2D_Game
             animSprite = new AnimatedSprite(animTest, 1, 2);
             spikePigSprite = new AnimatedSprite(spikePigTexture, 1, 1);
 
+            cursor = new Cursor(cursorTexture, cursorClickedTexture, graphics.GraphicsDevice.Viewport.Width, graphics.GraphicsDevice.Viewport.Height);
 
 
             fileStream.Dispose();
@@ -133,16 +137,16 @@ namespace _2D_Game
             int viewportWidth = graphics.GraphicsDevice.Viewport.Width;
             int viewportHeight = graphics.GraphicsDevice.Viewport.Height;
 
-            if(gameState == GameState.InitBattleManager)
+            if (gameState == GameState.InitBattleManager)
             {
                 ArrayList skills = new ArrayList();
                 skills.Add(new Skill("Assault", 40));
                 Unit defaultUnit1 = new Unit(animSprite, "Puff Fly", "common", "common", skills, 100, 100, 100, 100, 100, 100);
                 Unit defaultUnit2 = new Unit(spikePigSprite, "Spike Pig", "common", "common", skills, 100, 100, 100, 100, 100, 100);
 
-                for(int i = 0; i < 8; i++)
+                for (int i = 0; i < 8; i++)
                 {
-                    if(i%2 == 0)
+                    if (i % 2 == 0)
                         battleManager.AddUnit(defaultUnit1, i);
                     else
                         battleManager.AddUnit(defaultUnit2, i);
@@ -153,94 +157,7 @@ namespace _2D_Game
 
             battleManager.Update();
 
-            //animSprite.Update();
-
-            // Update mouse events
-            //if (Mouse.GetState().LeftButton == ButtonState.Pressed)
-            //{
-            //    if (!leftMousePressedLast)
-            //    {
-            //        leftMouseState = MouseState.MouseDown;
-            //    }
-            //    else
-            //    {
-            //        leftMouseState = MouseState.None;
-            //    }
-
-            //    leftMousePressedLast = true;
-            //}
-            //else
-            //{
-            //    if (leftMousePressedLast)
-            //    {
-            //        leftMouseState = MouseState.MouseUp;
-            //    }
-            //    else
-            //    {
-            //        leftMouseState = MouseState.None;
-            //    }
-
-            //    leftMousePressedLast = false;
-            //}
-
-            //if (Mouse.GetState().RightButton == ButtonState.Pressed)
-            //{
-            //    if (!rightMousePressedLast)
-            //    {
-            //        rightMouseState = MouseState.MouseDown;
-            //    }
-            //    else
-            //    {
-            //        rightMouseState = MouseState.None;
-            //    }
-
-            //    rightMousePressedLast = true;
-            //}
-            //else
-            //{
-            //    if (rightMousePressedLast)
-            //    {
-            //        rightMouseState = MouseState.MouseUp;
-            //    }
-            //    else
-            //    {
-            //        rightMouseState = MouseState.None;
-            //    }
-
-            //    rightMousePressedLast = false;
-            //}
-
-            // update cursor on click
-            //if (Mouse.GetState().LeftButton == ButtonState.Pressed)
-            //{
-            //    cursorColor = Color.LightSlateGray;
-            //}
-            //else if (selectedTile != null)
-            //{
-            //    // Signal unit can attack
-            //    cursorColor = Color.Red;
-            //}
-            //else
-            //{
-            //    cursorColor = Color.White;
-            //}
-
-            // Cursor
-            // TODO: Make cursor an object
-            cursorPosition.X = Mouse.GetState().X;
-            cursorPosition.Y = Mouse.GetState().Y;
-
-            if(cursorPosition.X >= 0 && cursorPosition.X <= viewportWidth &&
-                cursorPosition.Y >= 0 && cursorPosition.Y <= viewportHeight)
-            {
-                cursorPosition.X = MathHelper.Clamp(cursorPosition.X, 0, viewportWidth - cursorRect.Width);
-                cursorPosition.Y = MathHelper.Clamp(cursorPosition.Y, 0, viewportHeight - cursorRect.Height);
-
-                cursorRect.X = (int)cursorPosition.X;
-                cursorRect.Y = (int)cursorPosition.Y;
-            }
-
-            
+            cursor.Update(Mouse.GetState());
 
             base.Update(gameTime);
         }
@@ -257,21 +174,11 @@ namespace _2D_Game
             spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend);
             Texture2D rect = new Texture2D(graphics.GraphicsDevice, 80, 30);
 
-            //for(int i = 0; i < 8; i++)
-            //{
-            //    Color temp = Color.White;
-            //    if (i % 2 == 0)
-            //        temp = Color.Gray;
-            //    spriteBatch.Draw(blankTexture, tileRects[i], temp);
-            //}
-            if(battleManager != default(BattleManager)) // if initialized, draw; also check state
+
+            if (battleManager != default(BattleManager)) // if initialized, draw; also check state
                 battleManager.Draw(spriteBatch);
 
-            //spriteBatch.Draw()
-
-            //animSprite.Draw(spriteBatch, new Vector2(50, 50));
-
-            spriteBatch.Draw(cursorTexture, cursorRect, Color.White);
+            cursor.Draw(spriteBatch);
 
             spriteBatch.End();
 

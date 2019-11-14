@@ -43,6 +43,7 @@
   <ItemGroup>
     <Compile Include="Content\AnimatedSprite.cs" />
     <Compile Include="Content\BattleManager.cs" />
+    <Compile Include="Content\Cursor.cs" />
     <Compile Include="Content\Skill.cs" />
     <Compile Include="Content\Unit.cs" />
     <Compile Include="Game1.cs" />
@@ -59,6 +60,7 @@
   <ItemGroup>
     <Content Include="Content\Resources\anim_puff_fly.png" />
     <Content Include="Content\Resources\cursor.png" />
+    <Content Include="Content\Resources\cursor_clicked.png" />
     <Content Include="Content\Resources\puff_fly.png" />
     <Content Include="Content\Resources\spike_pig.png" />
     <Content Include="Content\Resources\square.png" />
