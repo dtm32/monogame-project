@@ -1,5 +1,4 @@
-﻿using Microsoft.Xna.Framework.Graphics;
-using System;
+﻿using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,7 +9,6 @@ namespace _2D_Game.Content
 {
     class Unit
     {
-        AnimatedSprite unitTexture;
         private Skill skill1;
         private string unitName;
         private String unitType;
@@ -22,9 +20,8 @@ namespace _2D_Game.Content
         private int statAmr;
         private int statRes;
 
-        public Unit(AnimatedSprite texture, String name, String type, String faction, ArrayList skills, int hp, int spd, int str, int fcs, int amr, int res)
+        public Unit(String name, String type, String faction, ArrayList skills, int hp, int spd, int str, int fcs, int amr, int res)
         {
-            unitTexture = texture;
             unitName = name;
             unitType = type;
             unitFaction = faction;
@@ -35,12 +32,6 @@ namespace _2D_Game.Content
             statFcs = fcs;
             statAmr = amr;
             statRes = res;
-        }
-
-        public AnimatedSprite Texture
-        {
-            get { return unitTexture; }
-            //set { _type = value; }
         }
     }
 }

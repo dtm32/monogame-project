@@ -41,7 +41,6 @@
     <ApplicationManifest>app.manifest</ApplicationManifest>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="Content\AnimatedSprite.cs" />
     <Compile Include="Content\BattleManager.cs" />
     <Compile Include="Content\Skill.cs" />
     <Compile Include="Content\Unit.cs" />
@@ -57,10 +56,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Content\Resources\anim_puff_fly.png" />
     <Content Include="Content\Resources\cursor.png" />
-    <Content Include="Content\Resources\puff_fly.png" />
-    <Content Include="Content\Resources\spike_pig.png" />
     <Content Include="Content\Resources\square.png" />
     <Content Include="Icon.ico" />
   </ItemGroup>

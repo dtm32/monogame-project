@@ -1,8 +1,6 @@
-﻿using _2D_Game.Content;
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
-using System.Collections;
 using System.IO;
 
 namespace _2D_Game
@@ -12,12 +10,6 @@ namespace _2D_Game
     /// </summary>
     public class Game1 : Game
     {
-        enum GameState
-        {
-            Run,
-            InitBattleManager
-        }
-
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
 
@@ -26,18 +18,9 @@ namespace _2D_Game
         Vector2 cursorPosition;
         Texture2D cursorTexture;
         Texture2D blankTexture;
-        Texture2D puffFlyTexture, spikePigTexture;
-        Texture2D animTest;
 
         Rectangle[] tileRects = new Rectangle[8];
         Vector2[] tilePos = new Vector2[8];
-
-        GameState gameState;
-        BattleManager battleManager;
-
-        AnimatedSprite animSprite;
-        AnimatedSprite spikePigSprite;
-        
 
         public Game1()
         {
@@ -56,9 +39,6 @@ namespace _2D_Game
             graphics.PreferredBackBufferWidth = 1280;  // set this value to the desired width of your window
             graphics.PreferredBackBufferHeight = 720;   // set this value to the desired height of your window
             graphics.ApplyChanges();
-
-            gameState = GameState.InitBattleManager;
-            battleManager = new BattleManager(graphics);
 
             // TODO: Add your initialization logic here
             cursorRect = new Rectangle(0, 0, 30, 30);
@@ -90,24 +70,7 @@ namespace _2D_Game
             cursorTexture = Texture2D.FromStream(graphics.GraphicsDevice, fileStream);
             fileStream = new FileStream("../../../../Content/Resources/square.png", FileMode.Open);
             blankTexture = Texture2D.FromStream(graphics.GraphicsDevice, fileStream);
-            fileStream = new FileStream("../../../../Content/Resources/puff_fly.png", FileMode.Open);
-            puffFlyTexture = Texture2D.FromStream(graphics.GraphicsDevice, fileStream);
-            fileStream = new FileStream("../../../../Content/Resources/spike_pig.png", FileMode.Open);
-            spikePigTexture = Texture2D.FromStream(graphics.GraphicsDevice, fileStream);
-
-            animTest = LoadTexturePNG("anim_puff_fly");
-            animSprite = new AnimatedSprite(animTest, 1, 2);
-            spikePigSprite = new AnimatedSprite(spikePigTexture, 1, 1);
-
-
-
             fileStream.Dispose();
-        }
-
-        private Texture2D LoadTexturePNG(string fileName)
-        {
-            FileStream fileStream = new FileStream("../../../../Content/Resources/" + fileName + ".png", FileMode.Open);
-            return Texture2D.FromStream(graphics.GraphicsDevice, fileStream);
         }
 
         /// <summary>
@@ -132,28 +95,6 @@ namespace _2D_Game
             // TODO: Add your update logic here
             int viewportWidth = graphics.GraphicsDevice.Viewport.Width;
             int viewportHeight = graphics.GraphicsDevice.Viewport.Height;
-
-            if(gameState == GameState.InitBattleManager)
-            {
-                ArrayList skills = new ArrayList();
-                skills.Add(new Skill("Assault", 40));
-                Unit defaultUnit1 = new Unit(animSprite, "Puff Fly", "common", "common", skills, 100, 100, 100, 100, 100, 100);
-                Unit defaultUnit2 = new Unit(spikePigSprite, "Spike Pig", "common", "common", skills, 100, 100, 100, 100, 100, 100);
-
-                for(int i = 0; i < 8; i++)
-                {
-                    if(i%2 == 0)
-                        battleManager.AddUnit(defaultUnit1, i);
-                    else
-                        battleManager.AddUnit(defaultUnit2, i);
-                }
-
-                gameState = GameState.Run;
-            }
-
-            battleManager.Update();
-
-            //animSprite.Update();
 
             // Update mouse events
             //if (Mouse.GetState().LeftButton == ButtonState.Pressed)
@@ -240,7 +181,22 @@ namespace _2D_Game
                 cursorRect.Y = (int)cursorPosition.Y;
             }
 
-            
+            int SPRITE_WIDTH = 96;
+            int SPRITE_HEIGHT = 128;
+            int TOP_OFFSET = 80;
+
+            for(int i = 0; i < 8; i++)
+            {
+                int posX = viewportWidth / 2 - 300;
+                int posY = (int) ((i % 4) * (SPRITE_HEIGHT * 0.9) + TOP_OFFSET);
+
+                if(i > 3)
+                {
+                    posX = viewportWidth / 2 + 300 - SPRITE_WIDTH;
+                }
+
+                tileRects[i] = new Rectangle(posX, posY, SPRITE_WIDTH, SPRITE_HEIGHT);
+            }
 
             base.Update(gameTime);
         }
@@ -257,19 +213,14 @@ namespace _2D_Game
             spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend);
             Texture2D rect = new Texture2D(graphics.GraphicsDevice, 80, 30);
 
-            //for(int i = 0; i < 8; i++)
-            //{
-            //    Color temp = Color.White;
-            //    if (i % 2 == 0)
-            //        temp = Color.Gray;
-            //    spriteBatch.Draw(blankTexture, tileRects[i], temp);
-            //}
-            if(battleManager != default(BattleManager)) // if initialized, draw; also check state
-                battleManager.Draw(spriteBatch);
-
+            for(int i = 0; i < 8; i++)
+            {
+                Color temp = Color.White;
+                if (i % 2 == 0)
+                    temp = Color.Gray;
+                spriteBatch.Draw(blankTexture, tileRects[i], temp);
+            }
             //spriteBatch.Draw()
-
-            //animSprite.Draw(spriteBatch, new Vector2(50, 50));
 
             spriteBatch.Draw(cursorTexture, cursorRect, Color.White);
 
