@@ -26,8 +26,8 @@ namespace _2D_Game
         Vector2 cursorPosition;
         Texture2D cursorTexture, cursorClickedTexture;
         Texture2D blankTexture;
-        Texture2D puffFlyTexture, spikePigTexture;
-        Texture2D animTest;
+        Texture2D puffFlyTexture, spikePigTexture, featherRaptorTexture;
+        Texture2D skillTexture;
         Cursor cursor;
 
         Rectangle[] tileRects = new Rectangle[8];
@@ -36,8 +36,14 @@ namespace _2D_Game
         GameState gameState;
         BattleManager battleManager;
 
-        AnimatedSprite animSprite;
+        AnimatedSprite puffFlySprite;
         AnimatedSprite spikePigSprite;
+        AnimatedSprite featherRaptorSprite;
+
+        Texture2D healthBarTexture;
+
+        // sprite fonts
+        private SpriteFont font;
 
 
         public Game1()
@@ -86,32 +92,40 @@ namespace _2D_Game
             spriteBatch = new SpriteBatch(GraphicsDevice);
 
             // TODO: use this.Content to load your game content here
-            //cursorTexture = Content.Load<Texture2D>("Resources/cursor.png");
-            //C: \Users\Dylan\source\repos\2D Game\bin\Windows\x86\Debug\Content\Resources\cursor.png
-            FileStream fileStream = new FileStream("../../../../Content/Resources/cursor.png", FileMode.Open);
-            cursorTexture = Texture2D.FromStream(graphics.GraphicsDevice, fileStream);
+
+            //C:\Users\Dylan\source\repos\2D Game\bin\Windows\x86\Debug\Content\Resources\cursor.png
+
+            // cursor textures
+            cursorTexture = LoadTexturePNG("cursor");
             cursorClickedTexture = LoadTexturePNG("cursor_clicked");
-            fileStream = new FileStream("../../../../Content/Resources/square.png", FileMode.Open);
-            blankTexture = Texture2D.FromStream(graphics.GraphicsDevice, fileStream);
-            fileStream = new FileStream("../../../../Content/Resources/puff_fly.png", FileMode.Open);
-            puffFlyTexture = Texture2D.FromStream(graphics.GraphicsDevice, fileStream);
-            fileStream = new FileStream("../../../../Content/Resources/spike_pig.png", FileMode.Open);
-            spikePigTexture = Texture2D.FromStream(graphics.GraphicsDevice, fileStream);
-
-            animTest = LoadTexturePNG("anim_puff_fly");
-            animSprite = new AnimatedSprite(animTest, 1, 2);
-            spikePigSprite = new AnimatedSprite(spikePigTexture, 1, 1);
-
             cursor = new Cursor(cursorTexture, cursorClickedTexture, graphics.GraphicsDevice.Viewport.Width, graphics.GraphicsDevice.Viewport.Height);
 
+            // setup unit sprites
+            puffFlyTexture = LoadTexturePNG("anim_puff_fly");
+            puffFlySprite = new AnimatedSprite(puffFlyTexture, 1, 2);
 
-            fileStream.Dispose();
+            spikePigTexture = LoadTexturePNG("spike_pig");
+            spikePigSprite = new AnimatedSprite(spikePigTexture, 1, 1);
+
+            featherRaptorTexture = LoadTexturePNG("anim_feather_raptor");
+            featherRaptorSprite = new AnimatedSprite(featherRaptorTexture, 1, 2);
+            featherRaptorSprite.UpdateSpeed = 80;
+
+            // additional textures
+            blankTexture = LoadTexturePNG("square");
+            healthBarTexture = LoadTexturePNG("health_bar");
+            skillTexture = LoadTexturePNG("skill_texture");
+
+            // fonts
+            font = Content.Load<SpriteFont>("SpriteFonts/Score");
         }
 
         private Texture2D LoadTexturePNG(string fileName)
         {
             FileStream fileStream = new FileStream("../../../../Content/Resources/" + fileName + ".png", FileMode.Open);
-            return Texture2D.FromStream(graphics.GraphicsDevice, fileStream);
+            Texture2D texture = Texture2D.FromStream(graphics.GraphicsDevice, fileStream);
+            fileStream.Dispose();
+            return texture;
         }
 
         /// <summary>
@@ -141,23 +155,35 @@ namespace _2D_Game
             {
                 ArrayList skills = new ArrayList();
                 skills.Add(new Skill("Assault", 40));
-                Unit defaultUnit1 = new Unit(animSprite, "Puff Fly", "common", "common", skills, 100, 100, 100, 100, 100, 100);
-                Unit defaultUnit2 = new Unit(spikePigSprite, "Spike Pig", "common", "common", skills, 100, 100, 100, 100, 100, 100);
+                skills.Add(new Skill("Assault", 45));
+                skills.Add(new Skill("Assault", 50));
+                skills.Add(new Skill("Assault", 10));
+                Unit defaultUnit1 = new Unit(puffFlySprite, "Puff Fly", "common", "common", skills, 100, 98, 100, 100, 100, 100);
+                Unit defaultUnit2 = new Unit(spikePigSprite, "Spike Pig", "common", "common", skills, 150, 70, 100, 100, 100, 100);
+                Unit defaultUnit3 = new Unit(featherRaptorSprite, "Feather Raptor", "common", "common", skills, 100, 105, 100, 100, 100, 100);
 
                 for (int i = 0; i < 8; i++)
                 {
-                    if (i % 2 == 0)
+                    if (i == 3)
+                        battleManager.AddUnit(defaultUnit3, i);
+                    else if (i % 2 == 0)
                         battleManager.AddUnit(defaultUnit1, i);
                     else
                         battleManager.AddUnit(defaultUnit2, i);
                 }
 
+                battleManager.AddTextures(blankTexture, healthBarTexture, skillTexture);
+                battleManager.AddFonts(font);
+
                 gameState = GameState.Run;
+                battleManager.Start();
             }
 
-            battleManager.Update();
 
             cursor.Update(Mouse.GetState());
+
+            battleManager.Update(cursor);
+
 
             base.Update(gameTime);
         }

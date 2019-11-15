@@ -11,16 +11,19 @@ namespace _2D_Game.Content
     class Unit
     {
         AnimatedSprite unitTexture;
+        private ArrayList unitSkills;
         private Skill skill1;
         private string unitName;
         private String unitType;
         private String unitFaction;
-        private int statHP;
-        private int statSpd;
-        private int statStr;
-        private int statFcs;
-        private int statAmr;
-        private int statRes;
+        public int HP { get; }
+        public int Spd { get; }
+        public int Str { get; }
+        public int Fcs { get; }
+        public int Amr { get; }
+        public int Res { get; }
+
+        // TODO: directly add all textures and animations to unit/skill
 
         public Unit(AnimatedSprite texture, String name, String type, String faction, ArrayList skills, int hp, int spd, int str, int fcs, int amr, int res)
         {
@@ -29,18 +32,24 @@ namespace _2D_Game.Content
             unitType = type;
             unitFaction = faction;
             skill1 = (Skill) skills[0];
-            statHP = hp;
-            statSpd = spd;
-            statStr = str;
-            statFcs = fcs;
-            statAmr = amr;
-            statRes = res;
+            unitSkills = skills;
+            HP = hp;
+            Spd = spd;
+            Str = str;
+            Fcs = fcs;
+            Amr = amr;
+            Res = res;
         }
 
         public AnimatedSprite Texture
         {
             get { return unitTexture; }
             //set { _type = value; }
+        }
+
+        public ArrayList GetSkills()
+        {
+            return unitSkills;
         }
     }
 }

@@ -8,16 +8,16 @@ namespace _2D_Game.Content
 {
     class Skill
     {
-        private String name;
+        public string Name;
         private int tier;
         private int tiers;
-        private int power;
+        public int Power { get; }
 
         public Skill(String name, int power)
         {
             tier = 0;
-            this.name = name;
-            this.power = power;
+            Name = name;
+            this.Power = power;
         }
 
         //public Boolean setTier(int tier, int power)
@@ -30,9 +30,9 @@ namespace _2D_Game.Content
         //    return false;
         //}
 
-        public int getPower()
-        {
-            return power;
-        }
+        //public int getPower()
+        //{
+        //    return power;
+        //}
     }
 }
