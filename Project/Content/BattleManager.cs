@@ -19,6 +19,7 @@ namespace _2D_Game.Content
             RoundStart, // calc turn order, update status/stats
             RoundRun, // runs anim
             RoundNext, // called after anims finish
+            RoundAI,
             RoundEnd,
             AttackAnimation
         }
@@ -53,6 +54,7 @@ namespace _2D_Game.Content
         int skillHover = -1;
         //int skillSelected = -1;
         Skill selectedSkill;
+        int skillIndex = -1;
         bool skillSelected = false;
 
 
@@ -136,6 +138,11 @@ namespace _2D_Game.Content
             {
                 units[index] = newUnit;
                 unitHealth[index] = newUnit.HP;
+
+                if(index >= SIZE / 2)
+                {
+                    units[index].IsEnemy = true;
+                }
             }
 
             return false;
@@ -157,6 +164,8 @@ namespace _2D_Game.Content
             unitHealthRects[unitIndex].X = (int)unitLocs[unitIndex].X + HEALTH_BAR_PADDING_X + HEALTH_BAR_WIDTH - (int)unitHealthRects[unitIndex].Width;
         }
 
+        int attackFrame = 0;
+
         public void Update(Cursor cursor)
         {
             // update animations
@@ -177,13 +186,14 @@ namespace _2D_Game.Content
             }
 
             // check mouse cursor position
-            if(cursor.LeftClick)
+            if(cursor.LeftClick && battleState == BattleState.Wait) // TODO: move to switch inside "wait" case
             {
                 int unitClicked = CheckUnitIntersect(cursor.Rect);
                 int skillClicked = CheckSkillIntersect(cursor.Rect);
+                skillIndex = skillClicked;
 
                 // attack unit with selected skill
-                if(unitSelected && skillSelected && unitClicked != -1)
+                if (unitSelected && skillSelected && unitClicked != -1)
                 {
                     int damage = selectedSkill.Power;
                     unitHealth[unitClicked] -= damage;
@@ -191,34 +201,26 @@ namespace _2D_Game.Content
                     SetUnitHealth(percentHealth, unitClicked);
 
                     // next unit's turn
+                    // run animation
                     battleState = BattleState.RoundNext;
                 }
+
                 // not clicking on unit panel
                 if(!cursor.Rect.Intersects(unitRect))
                 {
-                    unitSelected = false;
+                    //unitSelected = false;
                     skillSelected = false;
                 }
-                //for(int i = 0; i < unitRects.Length; i++)
-                //{
+
                 if(unitClicked != -1)
                 {
-                    // handled by move order
-                    //selectedUnit = units[unitClicked];
-                    //selectedIndex = unitClicked;
-                    //unitSelected = true;
-                    //break;
                 }
-                //}
                 else if(skillClicked != -1)
                 {
                     //skillSelected = i;
                     selectedSkill = (Skill) selectedUnit.GetSkills()[skillClicked];
+                    skillIndex = skillClicked;
                     skillSelected = true;
-                    //selectedIndex = i;
-                    //unitSelected = true;
-                    //SetUnitHealth(0.9, i);
-                    //break;
                 }
             }
 
@@ -317,7 +319,47 @@ namespace _2D_Game.Content
                     unitSelected = true;
 
                     // update battle state
-                    battleState = BattleState.RoundRun;
+                    if(selectedUnit.IsEnemy)
+                    {
+                        battleState = BattleState.RoundAI;
+                    }
+                    else
+                    {
+                        battleState = BattleState.Wait;
+                    }
+                    break;
+                case BattleState.RoundAI:
+                    if(attackFrame < 50)
+                    {
+                        // move enemy unit left
+                        unitLocs[selectedIndex].X = unitRects[selectedIndex].X - (attackFrame / 5);
+                        //unitHealthRects[selectedIndex].X;
+                    }
+                    else if(attackFrame == 50)
+                    {
+                        // deal damage
+                        int targetUnit = rnd.Next(4);
+                        int damage = selectedSkill.Power;
+                        unitHealth[targetUnit] -= damage;
+                        float percentHealth = unitHealth[targetUnit] / (float)units[targetUnit].HP;
+                        SetUnitHealth(percentHealth, targetUnit);
+
+                    }
+                    else if(attackFrame < 100)
+                    {
+                        unitLocs[selectedIndex].X = unitRects[selectedIndex].X - ((100 - attackFrame) / 5);
+                    }
+                    else if(attackFrame == 100)
+                    {
+                        unitLocs[selectedIndex].X = unitRects[selectedIndex].X;
+                    }
+                    else
+                    {
+                        attackFrame = 0;
+                        battleState = BattleState.RoundNext;
+                        break;
+                    }
+                    attackFrame++;
                     break;
             }
         }
@@ -392,8 +434,8 @@ namespace _2D_Game.Content
                 spriteBatch.Draw(blankTexture, unitHealthRects[i], Color.Red);
             }
 
-            // draw unit panel
-            if(unitSelected)
+            // draw unit panel if player unit is selected
+            if(unitSelected && !selectedUnit.IsEnemy)
             {
                 spriteBatch.Draw(blankTexture, unitRect, Color.DarkBlue);
 
@@ -401,7 +443,7 @@ namespace _2D_Game.Content
                 for(int i = 0; i < 4; i++)
                 {
                     Color skillColor = Color.White;
-                    if (skillHover == i)
+                    if (skillHover == i || skillIndex == i)
                         skillColor = Color.LightGray;
                     spriteBatch.Draw(skillTexture, skillRects[i], skillColor);
                     spriteBatch.DrawString(defaultFont, ((Skill)skills[i]).Name + "  " + ((Skill)skills[i]).Power.ToString(), skillTextLocs[i], Color.Black);

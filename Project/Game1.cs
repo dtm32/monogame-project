@@ -165,11 +165,11 @@ namespace _2D_Game
                 for (int i = 0; i < 8; i++)
                 {
                     if (i == 3)
-                        battleManager.AddUnit(defaultUnit3, i);
+                        battleManager.AddUnit(new Unit(defaultUnit3), i);
                     else if (i % 2 == 0)
-                        battleManager.AddUnit(defaultUnit1, i);
+                        battleManager.AddUnit(new Unit(defaultUnit1), i);
                     else
-                        battleManager.AddUnit(defaultUnit2, i);
+                        battleManager.AddUnit(new Unit(defaultUnit2), i);
                 }
 
                 battleManager.AddTextures(blankTexture, healthBarTexture, skillTexture);

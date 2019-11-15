@@ -11,17 +11,18 @@ namespace _2D_Game.Content
     class Unit
     {
         AnimatedSprite unitTexture;
-        private ArrayList unitSkills;
-        private Skill skill1;
-        private string unitName;
-        private String unitType;
-        private String unitFaction;
+        public ArrayList unitSkills;
+        public Skill skill1;
+        public string unitName;
+        public String unitType;
+        public String unitFaction;
         public int HP { get; }
         public int Spd { get; }
         public int Str { get; }
         public int Fcs { get; }
         public int Amr { get; }
         public int Res { get; }
+        public bool IsEnemy { get; set; }
 
         // TODO: directly add all textures and animations to unit/skill
 
@@ -39,6 +40,24 @@ namespace _2D_Game.Content
             Fcs = fcs;
             Amr = amr;
             Res = res;
+            IsEnemy = false;
+        }
+
+        public Unit(Unit unit)
+        {
+            this.unitTexture = unit.Texture;
+            this.unitName    = unit.unitName;
+            this.unitType    = unit.unitType;
+            this.unitFaction = unit.unitFaction;
+            //this.skill1      = (Skill)skills[0];
+            this.unitSkills  = unit.GetSkills();
+            this.HP          = unit.HP;
+            this.Spd         = unit.Spd;
+            this.Str         = unit.Str;
+            this.Fcs         = unit.Fcs;
+            this.Amr         = unit.Amr;
+            this.Res         = unit.Res;
+            this.IsEnemy     = false;
         }
 
         public AnimatedSprite Texture
