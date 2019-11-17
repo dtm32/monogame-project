@@ -10,7 +10,7 @@ namespace _2D_Game.Content
 {
     class Unit : BaseUnit
     {
-        public enum StatusEffect
+        public enum StatusEffect // TODO: update to own class (also needs turn counters, damage)
         {
             Bleed,
             Stun,

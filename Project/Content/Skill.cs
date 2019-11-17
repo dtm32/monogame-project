@@ -11,7 +11,8 @@ namespace _2D_Game.Content
         public enum SkillType
         {
             Physical,
-            Magical
+            Magical,
+            Buff
         }
 
         public delegate void SkillEffect(Unit self, Unit target);

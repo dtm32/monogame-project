@@ -45,6 +45,7 @@
     <Compile Include="Content\BaseUnit.cs" />
     <Compile Include="Content\BattleManager.cs" />
     <Compile Include="Content\Cursor.cs" />
+    <Compile Include="Content\HealthBar.cs" />
     <Compile Include="Content\Skill.cs" />
     <Compile Include="Content\SkillEffect.cs" />
     <Compile Include="Content\Unit.cs" />
@@ -65,6 +66,7 @@
     <Content Include="Content\Resources\cursor.png" />
     <Content Include="Content\Resources\cursor_clicked.png" />
     <Content Include="Content\Resources\health_bar.png" />
+    <Content Include="Content\Resources\panel_corner.png" />
     <Content Include="Content\Resources\puff_fly.png" />
     <Content Include="Content\Resources\skill_texture.png" />
     <Content Include="Content\Resources\spike_pig.png" />

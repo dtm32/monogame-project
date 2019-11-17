@@ -21,14 +21,13 @@ namespace _2D_Game
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
 
-        Color cursorColor;
-        Rectangle cursorRect;
         Vector2 cursorPosition;
         Texture2D cursorTexture, cursorClickedTexture;
         Texture2D blankTexture;
         Texture2D puffFlyTexture, spikePigTexture, featherRaptorTexture, woodThumbTexture;
         Texture2D fireTexture;
         Texture2D skillTexture;
+        Texture2D panelCornerTexture;
         Cursor cursor;
 
         Rectangle[] tileRects = new Rectangle[8];
@@ -71,10 +70,10 @@ namespace _2D_Game
             battleManager = new BattleManager(graphics);
 
             // TODO: Add your initialization logic here
-            cursorRect = new Rectangle(0, 0, 30, 30);
+            //cursorRect = new Rectangle(0, 0, 30, 30);
             cursorPosition.X = 0;
             cursorPosition.Y = 0;
-            cursorColor = Color.White;
+            //cursorColor = Color.White;
 
             Rectangle backgroundRect = new Rectangle(0, 0,
                 graphics.GraphicsDevice.Viewport.Width,
@@ -131,6 +130,7 @@ namespace _2D_Game
             blankTexture = LoadTexturePNG("square");
             healthBarTexture = LoadTexturePNG("health_bar");
             skillTexture = LoadTexturePNG("skill_texture");
+            panelCornerTexture = LoadTexturePNG("panel_corner");
 
             // fonts
             font = Content.Load<SpriteFont>("SpriteFonts/Score");
@@ -227,7 +227,8 @@ namespace _2D_Game
                         battleManager.AddUnit(spikePig, i);
                 }
 
-                battleManager.AddTextures(blankTexture, healthBarTexture, skillTexture, fireSprite);
+                battleManager.AddTextures(blankTexture, healthBarTexture, skillTexture, panelCornerTexture);
+                battleManager.AddSprites(fireSprite);
                 battleManager.AddFonts(font);
 
                 gameState = GameState.Run;

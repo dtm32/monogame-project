@@ -36,6 +36,8 @@ namespace _2D_Game.Content
         const int HEALTH_BAR_WIDTH = 72;
         const int HEALTH_BAR_HEIGHT = 6;
 
+        Vector2[] defaultUnitLocations = new Vector2[SIZE];
+
         // unit panel consts
         const int unitPanelWidth = 700;
         const int unitPanelHeight = 130;
@@ -60,7 +62,10 @@ namespace _2D_Game.Content
 
         Unit[] units = new Unit[SIZE];
         Rectangle[] unitRects = new Rectangle[SIZE];
-        Rectangle[] unitHealthRects = new Rectangle[SIZE];
+        //Rectangle[] unitHealthRects = new Rectangle[SIZE];
+        //Rectangle[] unitHealthRectsPrev = new Rectangle[SIZE];
+        //int[] healthBarDelay = new int[SIZE];
+        HealthBar[] healthBars = new HealthBar[SIZE];
         Vector2[] unitLocs = new Vector2[SIZE];
         Unit selectedUnit = null;
         int selectedIndex = 0;
@@ -70,6 +75,7 @@ namespace _2D_Game.Content
         Rectangle unitRect;
 
         //int[] unitHealth = new int[SIZE];
+        AnimatedSprite fireSprite;
 
         Queue<int> roundOrder;
 
@@ -90,8 +96,15 @@ namespace _2D_Game.Content
 
                 unitRects[i] = new Rectangle(posX, posY, SPRITE_WIDTH, SPRITE_HEIGHT);
                 unitLocs[i] = new Vector2(posX, posY);
-                unitHealthRects[i] = new Rectangle(posX + HEALTH_BAR_PADDING_X + HEALTH_BAR_WIDTH, 
-                    posY + HEALTH_BAR_PADDING_Y + HEALTH_BAR_OFFSET, 0, HEALTH_BAR_HEIGHT);
+                defaultUnitLocations[i] = new Vector2(posX, posY);
+                //unitHealthRects[i] = new Rectangle(posX + HEALTH_BAR_PADDING_X, 
+                //    posY + HEALTH_BAR_PADDING_Y + HEALTH_BAR_OFFSET, 
+                //    HEALTH_BAR_WIDTH, HEALTH_BAR_HEIGHT);
+                //unitHealthRectsPrev[i] = new Rectangle(posX + HEALTH_BAR_PADDING_X, 
+                //    posY + HEALTH_BAR_PADDING_Y + HEALTH_BAR_OFFSET, 
+                //    HEALTH_BAR_WIDTH, HEALTH_BAR_HEIGHT);
+                //healthBarDelay[i] = -1;
+                //healthBars[i] = new HealthBar(healthBarTexture, blankTexture, unitLocs[i].X, unitLocs[i].Y + HEALTH_BAR_OFFSET);
             }
 
             unitRect = new Rectangle(viewportWidth / 2 - unitPanelWidthHalf,
@@ -120,13 +133,18 @@ namespace _2D_Game.Content
                 viewportHeight - unitPanelHeight + unitPanelPadding + skillHeight + skillPadding);
         }
 
-        AnimatedSprite fireSprite;
+        Texture2D panelCornerTexture;
 
-        public void AddTextures(Texture2D blankTexture, Texture2D healthBarTexture, Texture2D skillTexture, AnimatedSprite fireSprite)
+        public void AddTextures(Texture2D blankTexture, Texture2D healthBarTexture, Texture2D skillTexture, Texture2D panelCornerTexture)
         {
             this.blankTexture = blankTexture;
             this.healthBarTexture = healthBarTexture;
             this.skillTexture = skillTexture;
+            this.panelCornerTexture = panelCornerTexture;
+        }
+
+        public void AddSprites(AnimatedSprite fireSprite)
+        {
             this.fireSprite = fireSprite;
         }
 
@@ -155,18 +173,30 @@ namespace _2D_Game.Content
         /// <summary>
         /// Run after passing all required resources to BattleManager.
         /// </summary>
-        public void Start()
+        public bool Start()
         {
+            for(int i = 0; i < SIZE; i++)
+            {
+                int posX = (int)unitLocs[i].X;
+                int posY = (int)unitLocs[i].Y + HEALTH_BAR_OFFSET;
+                healthBars[i] = new HealthBar(healthBarTexture, blankTexture, posX, posY);
+            }
+
+            // TODO: check that all required textures are loaded before starting
+
+            // update state
             battleState = BattleState.RoundStart;
+
+            return true;
         }
 
-        private void SetUnitHealth(float percentMax, int unitIndex)
-        {
-            percentMax = MathHelper.Clamp(percentMax, 0, 1);
+        //private void SetUnitHealth(float percentMax, int unitIndex)
+        //{
+        //    percentMax = MathHelper.Clamp(percentMax, 0, 1);
 
-            unitHealthRects[unitIndex].Width = (int) (HEALTH_BAR_WIDTH * (1.0 - percentMax));
-            unitHealthRects[unitIndex].X = (int)unitLocs[unitIndex].X + HEALTH_BAR_PADDING_X + HEALTH_BAR_WIDTH - (int)unitHealthRects[unitIndex].Width;
-        }
+        //    unitHealthRects[unitIndex].Width = (int) (HEALTH_BAR_WIDTH * percentMax);
+        //    //unitHealthRects[unitIndex].X = (int)unitLocs[unitIndex].X + HEALTH_BAR_PADDING_X + HEALTH_BAR_WIDTH - (int)unitHealthRects[unitIndex].Width;
+        //}
 
         int attackFrame = 0;
 
@@ -190,6 +220,13 @@ namespace _2D_Game.Content
                     skillHover = i;
                     break;
                 }
+            }
+
+            // check health bar updates
+            //int healthDelayConst = 30;
+            for (int i = 0; i < healthBars.Length; i++)
+            {
+                healthBars[i].Update();
             }
 
             fireSprite.Update();
@@ -310,7 +347,8 @@ namespace _2D_Game.Content
                         {
                             int damage = CombatCalculation(units[unitClicked], selectedUnit, selectedSkill);
                             //units[unitClicked].CurrHP = units[unitClicked].CurrHP - damage;
-                            SetUnitHealth(units[unitClicked].PercentHealth(), unitClicked);
+                            healthBars[unitClicked].Set(units[unitClicked].PercentHealth());
+                            //SetUnitHealth(units[unitClicked].PercentHealth(), unitClicked);
 
                             Console.WriteLine(selectedUnit.Name + " >> " + units[unitClicked].Name + " " + damage);
 
@@ -352,7 +390,8 @@ namespace _2D_Game.Content
                         Skill selectedSkill = (Skill)selectedUnit.Skills[rnd.Next(4)];
 
                         int damage = CombatCalculation(units[targetUnit], selectedUnit, selectedSkill);
-                        SetUnitHealth(units[targetUnit].PercentHealth(), targetUnit);
+                        //SetUnitHealth(units[targetUnit].PercentHealth(), targetUnit);
+                        healthBars[targetUnit].Set(units[targetUnit].PercentHealth());
                         Console.WriteLine(selectedUnit.Name + " >> " + units[targetUnit].Name + " " + damage);
                     }
                     else if(attackFrame < 100)
@@ -396,7 +435,9 @@ namespace _2D_Game.Content
                                             break;
                                     }
 
-                                    SetUnitHealth(units[i].PercentHealth(), i);
+                                    healthBars[i].Set(units[i].PercentHealth());
+
+                                    //SetUnitHealth(units[i].PercentHealth(), i);
                                 }
                             }
                         }
@@ -511,8 +552,6 @@ namespace _2D_Game.Content
             return state;
         }
 
-        //double healthbarFrames = 0;
-
         public void Draw(SpriteBatch spriteBatch)
         {
             // draw units
@@ -525,7 +564,7 @@ namespace _2D_Game.Content
                 }
 
                 Color unitColor = Color.White;
-                if(units[i].IsAlive())
+                if(units[i].IsAlive() || healthBars[i].Width > 0)
                 {
                     //unitColor = Color.Gray;
                     if(i >= SIZE / 2)
@@ -536,8 +575,7 @@ namespace _2D_Game.Content
                     {
                         units[i].Texture.Draw(spriteBatch, unitLocs[i], unitColor);
                     }
-                    spriteBatch.Draw(healthBarTexture, new Rectangle((int)unitLocs[i].X, (int)unitLocs[i].Y + HEALTH_BAR_OFFSET, SPRITE_WIDTH, 18), defaultColor);
-                    spriteBatch.Draw(blankTexture, unitHealthRects[i], Color.Red);
+                    healthBars[i].Draw(spriteBatch, defaultColor);
 
                     if(units[i].StatusEffects.Count > 0)
                     {
@@ -559,7 +597,7 @@ namespace _2D_Game.Content
                                     break;
                             }
 
-                            SetUnitHealth(units[i].PercentHealth(), i);
+                            healthBars[i].Set(units[i].PercentHealth());
                         }
                     }
                 }
@@ -569,7 +607,7 @@ namespace _2D_Game.Content
             // draw unit panel if player unit is selected
             if(unitSelected && !selectedUnit.IsEnemy)
             {
-                spriteBatch.Draw(blankTexture, unitRect, Color.SlateGray);
+                DrawUnitPanel(spriteBatch);
 
                 spriteBatch.DrawString(defaultFont, selectedUnit.Name, new Vector2(unitRect.X + unitPanelPadding, unitRect.Y + unitPanelPadding), Color.Black);
 
@@ -583,6 +621,19 @@ namespace _2D_Game.Content
                     spriteBatch.DrawString(defaultFont, ((Skill)skills[i]).Name + "  " + ((Skill)skills[i]).Power.ToString(), skillTextLocs[i], Color.Black);
                 }
             }
+        }
+
+        private void DrawUnitPanel(SpriteBatch spriteBatch)
+        {
+            Rectangle borderRect = new Rectangle(unitRect.X - 4, unitRect.Y - 4, unitRect.Width + 8, unitRect.Height + 4);
+            Rectangle leftCornerRect = new Rectangle(unitRect.X, unitRect.Y, 30, 30);
+            Rectangle rightCornerRect = new Rectangle(unitRect.X + unitRect.Width - 30, unitRect.Y, 30, 30);
+
+            spriteBatch.Draw(blankTexture, borderRect, new Color(64, 64, 64));
+            spriteBatch.Draw(blankTexture, unitRect, Color.SlateGray);
+
+            spriteBatch.Draw(panelCornerTexture, leftCornerRect, Color.White);
+            spriteBatch.Draw(panelCornerTexture, rightCornerRect, null, Color.White, 0f, Vector2.Zero, SpriteEffects.FlipHorizontally, 1f);
         }
     }
 }
