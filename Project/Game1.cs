@@ -26,7 +26,7 @@ namespace _2D_Game
         Vector2 cursorPosition;
         Texture2D cursorTexture, cursorClickedTexture;
         Texture2D blankTexture;
-        Texture2D puffFlyTexture, spikePigTexture, featherRaptorTexture;
+        Texture2D puffFlyTexture, spikePigTexture, featherRaptorTexture, woodThumbTexture;
         Texture2D skillTexture;
         Cursor cursor;
 
@@ -39,6 +39,7 @@ namespace _2D_Game
         AnimatedSprite puffFlySprite;
         AnimatedSprite spikePigSprite;
         AnimatedSprite featherRaptorSprite;
+        AnimatedSprite woodThumbSprite;
 
         Texture2D healthBarTexture;
 
@@ -111,6 +112,11 @@ namespace _2D_Game
             featherRaptorSprite = new AnimatedSprite(featherRaptorTexture, 1, 2);
             featherRaptorSprite.UpdateSpeed = 80;
 
+            woodThumbTexture = LoadTexturePNG("anim_wood_thumb");
+            woodThumbSprite = new AnimatedSprite(woodThumbTexture, 1, 4);
+            woodThumbSprite.UpdateSpeed = 5;
+            woodThumbSprite.Idle = 200;
+
             // additional textures
             blankTexture = LoadTexturePNG("square");
             healthBarTexture = LoadTexturePNG("health_bar");
@@ -154,22 +160,60 @@ namespace _2D_Game
             if (gameState == GameState.InitBattleManager)
             {
                 ArrayList skills = new ArrayList();
+                ArrayList skillsOP = new ArrayList();
                 skills.Add(new Skill("Assault", 40));
                 skills.Add(new Skill("Assault", 45));
                 skills.Add(new Skill("Assault", 50));
-                skills.Add(new Skill("Assault", 10));
-                Unit defaultUnit1 = new Unit(puffFlySprite, "Puff Fly", "common", "common", skills, 100, 98, 100, 100, 100, 100);
-                Unit defaultUnit2 = new Unit(spikePigSprite, "Spike Pig", "common", "common", skills, 150, 70, 100, 100, 100, 100);
-                Unit defaultUnit3 = new Unit(featherRaptorSprite, "Feather Raptor", "common", "common", skills, 100, 105, 100, 100, 100, 100);
+                skills.Add(new Skill("Tap", 10));
+                skillsOP.Add(new Skill("Assault", 40));
+                Skill fs = new Skill("False Swipe", 10);
+                fs.Effect = (self, target) =>
+                    {
+                        target.CurrHP = 1;
+                    };
+                skillsOP.Add(fs);
+                skillsOP.Add(new Skill("tap", 10));
+                skillsOP.Add(new Skill("DMG_OP_1", 800));
+
+
+                ArrayList woodysSkills = new ArrayList();
+                Skill highFive = new Skill("High Five", 5);
+                highFive.Effect = (self, target) =>
+                {
+                    target.CurrHP -= 100;
+                };
+                Skill finger = new Skill("Finger", 150);
+                finger.Effect = (self, target) =>
+                {
+                    target.Inflict(Unit.StatusEffect.Burn);
+                };
+                Skill thumb = new Skill("Middle Finger", 200);
+                thumb.Effect = (self, target) =>
+                {
+                    self.CurrHP += 200;
+                };
+                Skill asdf = new Skill("DMG_OP_1.1", 801);
+                woodysSkills.Add(highFive);
+                woodysSkills.Add(finger);
+                woodysSkills.Add(thumb);
+                woodysSkills.Add(asdf);
+
+
+                BaseUnit puffFly = new BaseUnit(puffFlySprite, "Puff Fly", "common", "common", skills, 100, 98, 75, 50, 55, 74);
+                BaseUnit spikePig = new BaseUnit(spikePigSprite, "Spike Pig", "common", "common", skills, 150, 70, 100, 100, 250, 110);
+                BaseUnit featherRaptor = new BaseUnit(new AnimatedSprite(featherRaptorSprite), "Feather Raptor", "common", "common", skillsOP, 110, 105, 98, 50, 95, 60);
+                BaseUnit WOODY_HAHA_XD = new BaseUnit(woodThumbSprite, "Woody =)", "Dragon", "Spirit", woodysSkills, 100, 999, 50, 50, 50, 50);
 
                 for (int i = 0; i < 8; i++)
                 {
-                    if (i == 3)
-                        battleManager.AddUnit(new Unit(defaultUnit3), i);
-                    else if (i % 2 == 0)
-                        battleManager.AddUnit(new Unit(defaultUnit1), i);
+                    if (i < 3)
+                        battleManager.AddUnit(featherRaptor, i);
+                    else if (i == 3)
+                        battleManager.AddUnit(WOODY_HAHA_XD, i);
+                    else if (i == 6)
+                        battleManager.AddUnit(puffFly, i);
                     else
-                        battleManager.AddUnit(new Unit(defaultUnit2), i);
+                        battleManager.AddUnit(spikePig, i);
                 }
 
                 battleManager.AddTextures(blankTexture, healthBarTexture, skillTexture);

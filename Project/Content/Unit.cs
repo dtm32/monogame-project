@@ -8,15 +8,29 @@ using System.Threading.Tasks;
 
 namespace _2D_Game.Content
 {
-    class Unit
+    class Unit : BaseUnit
     {
+        public enum StatusEffect
+        {
+            Bleed,
+            Stun,
+            Sleep,
+            Silence,
+            Burn,
+            Poison,
+            Bind,
+            Curse,
+            Fortified
+        }
+
         AnimatedSprite unitTexture;
-        public ArrayList unitSkills;
-        public Skill skill1;
-        public string unitName;
+        public ArrayList Skills { get; }
+        public ArrayList StatusEffects { get; }
+        public string Name { get; }
         public String unitType;
         public String unitFaction;
         public int HP { get; }
+        private int currHP;
         public int Spd { get; }
         public int Str { get; }
         public int Fcs { get; }
@@ -24,33 +38,37 @@ namespace _2D_Game.Content
         public int Res { get; }
         public bool IsEnemy { get; set; }
 
+        private BaseUnit baseUnit;
+
         // TODO: directly add all textures and animations to unit/skill
 
-        public Unit(AnimatedSprite texture, String name, String type, String faction, ArrayList skills, int hp, int spd, int str, int fcs, int amr, int res)
+        public int CurrHP
         {
-            unitTexture = texture;
-            unitName = name;
-            unitType = type;
-            unitFaction = faction;
-            skill1 = (Skill) skills[0];
-            unitSkills = skills;
-            HP = hp;
-            Spd = spd;
-            Str = str;
-            Fcs = fcs;
-            Amr = amr;
-            Res = res;
-            IsEnemy = false;
+            get { return currHP; }
+            set
+            {
+                Console.WriteLine("Setting " + Name + " CurrHP to " + value);
+                currHP = value;
+            }
+            
         }
 
-        public Unit(Unit unit)
+        public void Inflict(StatusEffect effect) // TODO: overload for poison/bleed
+        {
+            StatusEffects.Add(effect);
+        }
+
+        //public int DecreaseHP
+
+
+        public Unit(BaseUnit unit)
         {
             this.unitTexture = unit.Texture;
-            this.unitName    = unit.unitName;
+            Console.WriteLine("new Unit " + unitTexture);
+            this.Name        = unit.Name;
             this.unitType    = unit.unitType;
             this.unitFaction = unit.unitFaction;
-            //this.skill1      = (Skill)skills[0];
-            this.unitSkills  = unit.GetSkills();
+            this.Skills  = unit.GetSkills();
             this.HP          = unit.HP;
             this.Spd         = unit.Spd;
             this.Str         = unit.Str;
@@ -58,6 +76,10 @@ namespace _2D_Game.Content
             this.Amr         = unit.Amr;
             this.Res         = unit.Res;
             this.IsEnemy     = false;
+
+            currHP = unit.HP;
+            baseUnit = unit;
+            StatusEffects = new ArrayList();
         }
 
         public AnimatedSprite Texture
@@ -66,9 +88,14 @@ namespace _2D_Game.Content
             //set { _type = value; }
         }
 
-        public ArrayList GetSkills()
+        public bool IsAlive()
         {
-            return unitSkills;
+            return currHP > 0;
+        }
+
+        public float PercentHealth()
+        {
+            return (float)currHP / (float)HP;
         }
     }
 }
