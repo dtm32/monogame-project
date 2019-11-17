@@ -23,6 +23,7 @@ namespace _2D_Game.Content
         private Rectangle rect;
         private Rectangle prevRect;
         private int delay;
+        private int setWidth;
 
         public HealthBar(Texture2D healthBarTexture, Texture2D blankTexture, int x, int y)
         {
@@ -34,6 +35,7 @@ namespace _2D_Game.Content
             prevRect = new Rectangle(x + HEALTH_BAR_PADDING_X, y + HEALTH_BAR_PADDING_Y,
                 HEALTH_BAR_WIDTH, HEALTH_BAR_HEIGHT);
             delay = -1;
+            setWidth = 0;
         }
 
         public int Width
@@ -46,7 +48,16 @@ namespace _2D_Game.Content
         {
             percentMax = MathHelper.Clamp(percentMax, 0, 1);
 
-            rect.Width = (int)(HEALTH_BAR_WIDTH * percentMax);
+            setWidth = (int)(HEALTH_BAR_WIDTH * percentMax);
+
+            if(setWidth > rect.Width)
+            {
+                
+            }
+            else
+            {
+                rect.Width = setWidth;
+            }
         }
 
         public void Update()
@@ -65,6 +76,26 @@ namespace _2D_Game.Content
                 {
                     prevRect.Width--;
                     if (rect.Width == prevRect.Width)
+                    {
+                        delay = -1;
+                    }
+                }
+            }
+            else if(rect.Width < setWidth)
+            {
+                if (delay == -1)
+                {
+                    delay = HEALTH_DELAY;
+                }
+                else if (delay > 0)
+                {
+                    delay--;
+                }
+                else
+                {
+                    rect.Width++;
+                    prevRect.Width++;
+                    if (rect.Width == setWidth)
                     {
                         delay = -1;
                     }

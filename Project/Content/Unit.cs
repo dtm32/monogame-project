@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework.Graphics;
+﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -47,10 +48,14 @@ namespace _2D_Game.Content
             get { return currHP; }
             set
             {
-                Console.WriteLine("Setting " + Name + " CurrHP to " + value);
-                currHP = value;
+                value = MathHelper.Clamp(value, 0, HP);
+                if(value >= currHP)
+                    Console.WriteLine($"{Name} healed {value - currHP} Health!");
+                currHP = MathHelper.Clamp(value, 0, HP);
+                if(!IsAlive())
+                    Console.WriteLine($"{Name} is defeated!");
             }
-            
+
         }
 
         public void Inflict(StatusEffect effect) // TODO: overload for poison/bleed
@@ -64,7 +69,6 @@ namespace _2D_Game.Content
         public Unit(BaseUnit unit)
         {
             this.unitTexture = unit.Texture;
-            Console.WriteLine("new Unit " + unitTexture);
             this.Name        = unit.Name;
             this.unitType    = unit.unitType;
             this.unitFaction = unit.unitFaction;

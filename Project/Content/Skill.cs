@@ -34,6 +34,16 @@ namespace _2D_Game.Content
             Type = SkillType.Physical;
         }
 
+        public Skill(String name, int power, SkillEffect effect)
+        {
+            tier = 0;
+            Name = name;
+            this.Power = power;
+            Penetration = 1.0;
+            Type = SkillType.Physical;
+            Effect = effect;
+        }
+
         //public void SetEffect(SkillEffect effect)
         //{
         //    Effect = effect;

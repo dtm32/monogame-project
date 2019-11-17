@@ -157,9 +157,7 @@ namespace _2D_Game.Content
         {
             if(index < SIZE)
             {
-                Console.WriteLine("Adding unit at index " + index);
                 units[index] = new Unit(newUnit);
-                //units[index].CurrHP = newUnit.HP;
 
                 if(index >= SIZE / 2)
                 {
@@ -346,11 +344,8 @@ namespace _2D_Game.Content
                         if (unitSelected && skillSelected && unitClicked != -1)
                         {
                             int damage = CombatCalculation(units[unitClicked], selectedUnit, selectedSkill);
-                            //units[unitClicked].CurrHP = units[unitClicked].CurrHP - damage;
                             healthBars[unitClicked].Set(units[unitClicked].PercentHealth());
-                            //SetUnitHealth(units[unitClicked].PercentHealth(), unitClicked);
-
-                            Console.WriteLine(selectedUnit.Name + " >> " + units[unitClicked].Name + " " + damage);
+                            healthBars[selectedIndex].Set(selectedUnit.PercentHealth());
 
                             // next unit's turn
                             // run animation
@@ -386,13 +381,14 @@ namespace _2D_Game.Content
                     else if(attackFrame == 50)
                     {
                         // deal damage
-                        int targetUnit = rnd.Next(4);
+                        int targetUnit = FindTarget(selectedUnit);
                         Skill selectedSkill = (Skill)selectedUnit.Skills[rnd.Next(4)];
 
                         int damage = CombatCalculation(units[targetUnit], selectedUnit, selectedSkill);
-                        //SetUnitHealth(units[targetUnit].PercentHealth(), targetUnit);
+
                         healthBars[targetUnit].Set(units[targetUnit].PercentHealth());
-                        Console.WriteLine(selectedUnit.Name + " >> " + units[targetUnit].Name + " " + damage);
+                        healthBars[selectedIndex].Set(selectedUnit.PercentHealth());
+
                     }
                     else if(attackFrame < 100)
                     {
@@ -422,16 +418,23 @@ namespace _2D_Game.Content
                                 // handle round end status effects
                                 for(int j = 0; j < units[i].StatusEffects.Count; j++)
                                 {
+                                    int damage = 0;
                                     switch(units[i].StatusEffects[j])
                                     {
                                         case Unit.StatusEffect.Bleed:
+                                            damage = 10;
+                                            units[i].CurrHP -= damage;
+                                            Console.WriteLine($"{units[i].Name} takes {damage} damage from Bleed!");
                                             break;
                                         case Unit.StatusEffect.Burn:
-                                            Console.WriteLine("Burning " + units[i].Name + "start HP = " + units[i].CurrHP);
-                                            units[i].CurrHP -= (int)(units[i].HP * 0.1);
-                                            Console.WriteLine("after hp = " + units[i].CurrHP);
+                                            damage = (int)(units[i].HP * 0.1);
+                                            units[i].CurrHP -= damage;
+                                            Console.WriteLine($"{units[i].Name} takes {damage} damage from Burn!");
                                             break;
                                         case Unit.StatusEffect.Poison:
+                                            damage = 10;
+                                            units[i].CurrHP -= damage;
+                                            Console.WriteLine($"{units[i].Name} takes {damage} damage from Poison!");
                                             break;
                                     }
 
@@ -460,6 +463,18 @@ namespace _2D_Game.Content
             return -1;
         }
 
+        private int FindTarget(Unit unit)
+        {
+            // TODO: add move advanced target selecting logic
+            while (true)
+            {
+                int target = rnd.Next(4);
+
+                if (units[target].IsAlive())
+                    return target;
+            }
+        }
+
         private int CombatCalculation(Unit target, Unit attacker, Skill skill)
         {
             int damage = 0;
@@ -478,15 +493,20 @@ namespace _2D_Game.Content
                 defense = target.Res;
             }
 
+            if(rnd.Next(100) < 5)
+            {
+                crit = 1.5; // Also check for skill crit modifier
+            }
+
             damage = (int) ((skill.Power * attack) / (defense * skill.Penetration) * (rnd.Next(15) / 100 + 0.85) * crit);
 
             target.CurrHP -= damage;
 
-            try
-            {
-                skill.Effect(attacker, target);
-            }
-            catch(Exception e) { } // TODO: make this better :)
+            skill.Effect?.Invoke(attacker, target);
+
+            Console.WriteLine($"{attacker.Name} used {skill.Name} on {target.Name} for {damage} damage!");
+            if(crit > 1.0)
+                Console.WriteLine($"Critical hit!");
 
             return damage;
         }
@@ -547,8 +567,6 @@ namespace _2D_Game.Content
         {
             battleState = state;
 
-            Console.WriteLine("SetState() = " + state);
-
             return state;
         }
 
@@ -587,10 +605,6 @@ namespace _2D_Game.Content
                                 case Unit.StatusEffect.Bleed:
                                     break;
                                 case Unit.StatusEffect.Burn:
-                                    //Console.WriteLine("Burning " + units[i].Name + "start HP = " + units[i].CurrHP);
-                                    //units[i].CurrHP -= (int)(units[i].HP * 0.1);
-                                    //Console.WriteLine("after hp = " + units[i].CurrHP);
-
                                     fireSprite.Draw(spriteBatch, unitLocs[i]);
                                     break;
                                 case Unit.StatusEffect.Poison:

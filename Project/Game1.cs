@@ -170,20 +170,24 @@ namespace _2D_Game
             if (gameState == GameState.InitBattleManager)
             {
                 ArrayList skills = new ArrayList();
-                ArrayList skillsOP = new ArrayList();
                 skills.Add(new Skill("Assault", 40));
                 skills.Add(new Skill("Assault", 45));
                 skills.Add(new Skill("Assault", 50));
                 skills.Add(new Skill("Tap", 10));
-                skillsOP.Add(new Skill("Assault", 40));
-                Skill fs = new Skill("False Swipe", 10);
-                fs.Effect = (self, target) =>
+                ArrayList skillSet2 = new ArrayList();
+                skillSet2.Add(new Skill("Assault", 40));
+                Skill falseSwipe = new Skill("False Swipe", 10, 
+                    (self, target) =>
                     {
                         target.CurrHP = 1;
-                    };
-                skillsOP.Add(fs);
-                skillsOP.Add(new Skill("tap", 10));
-                skillsOP.Add(new Skill("DMG_OP_1", 800));
+                    });
+                skillSet2.Add(falseSwipe);
+                skillSet2.Add(new Skill("Tap", 10));
+                skillSet2.Add(new Skill("Gouge", 55,
+                    (self, target) =>
+                    {
+                        target.Inflict(Unit.StatusEffect.Bleed);
+                    }));
 
 
                 ArrayList woodysSkills = new ArrayList();
@@ -212,8 +216,8 @@ namespace _2D_Game
                 BaseUnit puffFly = new BaseUnit(puffFlySprite, "Puff Fly", "common", "common", skills, 100, 98, 75, 50, 55, 74);
                 BaseUnit spikePig = new BaseUnit(new AnimatedSprite(spikePigSprite), "Spike Pig", "common", "common", skills, 150, 70, 100, 100, 250, 110);
                 //BaseUnit spikePig = new BaseUnit(spikePigSprite, "Spike Pig", "common", "common", skills, 150, 70, 100, 100, 250, 110);
-                BaseUnit featherRaptor = new BaseUnit(new AnimatedSprite(featherRaptorSprite), "Feather Raptor", "common", "common", skillsOP, 110, 105, 98, 50, 95, 60);
-                BaseUnit WOODY_HAHA_XD = new BaseUnit(woodThumbSprite, "Woody =)", "Dragon", "Spirit", woodysSkills, 100, 999, 50, 50, 50, 50);
+                BaseUnit featherRaptor = new BaseUnit(new AnimatedSprite(featherRaptorSprite), "Feather Raptor", "common", "common", skillSet2, 110, 105, 98, 50, 95, 60);
+                BaseUnit WOODY_HAHA_XD = new BaseUnit(woodThumbSprite, "Woody", "Dragon", "Spirit", woodysSkills, 100, 999, 50, 50, 110, 80);
 
                 for (int i = 0; i < 8; i++)
                 {
