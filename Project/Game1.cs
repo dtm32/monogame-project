@@ -27,6 +27,7 @@ namespace _2D_Game
         Texture2D cursorTexture, cursorClickedTexture;
         Texture2D blankTexture;
         Texture2D puffFlyTexture, spikePigTexture, featherRaptorTexture, woodThumbTexture;
+        Texture2D fireTexture;
         Texture2D skillTexture;
         Cursor cursor;
 
@@ -40,6 +41,7 @@ namespace _2D_Game
         AnimatedSprite spikePigSprite;
         AnimatedSprite featherRaptorSprite;
         AnimatedSprite woodThumbSprite;
+        AnimatedSprite fireSprite;
 
         Texture2D healthBarTexture;
 
@@ -105,8 +107,10 @@ namespace _2D_Game
             puffFlyTexture = LoadTexturePNG("anim_puff_fly");
             puffFlySprite = new AnimatedSprite(puffFlyTexture, 1, 2);
 
-            spikePigTexture = LoadTexturePNG("spike_pig");
-            spikePigSprite = new AnimatedSprite(spikePigTexture, 1, 1);
+            spikePigTexture = LoadTexturePNG("anim_spike_pig");
+            spikePigSprite = new AnimatedSprite(spikePigTexture, 1, 5);
+            spikePigSprite.UpdateSpeed = 8;
+            spikePigSprite.Idle = 200;
 
             featherRaptorTexture = LoadTexturePNG("anim_feather_raptor");
             featherRaptorSprite = new AnimatedSprite(featherRaptorTexture, 1, 2);
@@ -116,6 +120,12 @@ namespace _2D_Game
             woodThumbSprite = new AnimatedSprite(woodThumbTexture, 1, 4);
             woodThumbSprite.UpdateSpeed = 5;
             woodThumbSprite.Idle = 200;
+
+            // combat animation sprites
+            fireTexture = LoadTexturePNG("anim_fire");
+            fireSprite = new AnimatedSprite(fireTexture, 1, 7);
+            fireSprite.Idle = 150;
+            fireSprite.UpdateSpeed = 5;
 
             // additional textures
             blankTexture = LoadTexturePNG("square");
@@ -200,7 +210,8 @@ namespace _2D_Game
 
 
                 BaseUnit puffFly = new BaseUnit(puffFlySprite, "Puff Fly", "common", "common", skills, 100, 98, 75, 50, 55, 74);
-                BaseUnit spikePig = new BaseUnit(spikePigSprite, "Spike Pig", "common", "common", skills, 150, 70, 100, 100, 250, 110);
+                BaseUnit spikePig = new BaseUnit(new AnimatedSprite(spikePigSprite), "Spike Pig", "common", "common", skills, 150, 70, 100, 100, 250, 110);
+                //BaseUnit spikePig = new BaseUnit(spikePigSprite, "Spike Pig", "common", "common", skills, 150, 70, 100, 100, 250, 110);
                 BaseUnit featherRaptor = new BaseUnit(new AnimatedSprite(featherRaptorSprite), "Feather Raptor", "common", "common", skillsOP, 110, 105, 98, 50, 95, 60);
                 BaseUnit WOODY_HAHA_XD = new BaseUnit(woodThumbSprite, "Woody =)", "Dragon", "Spirit", woodysSkills, 100, 999, 50, 50, 50, 50);
 
@@ -216,7 +227,7 @@ namespace _2D_Game
                         battleManager.AddUnit(spikePig, i);
                 }
 
-                battleManager.AddTextures(blankTexture, healthBarTexture, skillTexture);
+                battleManager.AddTextures(blankTexture, healthBarTexture, skillTexture, fireSprite);
                 battleManager.AddFonts(font);
 
                 gameState = GameState.Run;

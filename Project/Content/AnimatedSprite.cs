@@ -32,6 +32,7 @@ namespace _2D_Game.Content
 
         public AnimatedSprite(AnimatedSprite sprite)
         {
+            Console.WriteLine("New AS");
             Texture = sprite.Texture;
             Rows = sprite.Rows;
             Columns = sprite.Columns;
@@ -58,6 +59,11 @@ namespace _2D_Game.Content
             {
                 currentFrame = 0;
                 delta = 0;
+            }
+
+            if(UpdateSpeed == 8)
+            {
+                //Console.WriteLine("piggy " + delta);
             }
         }
 

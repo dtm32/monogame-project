@@ -120,11 +120,14 @@ namespace _2D_Game.Content
                 viewportHeight - unitPanelHeight + unitPanelPadding + skillHeight + skillPadding);
         }
 
-        public void AddTextures(Texture2D blankTexture, Texture2D healthBarTexture, Texture2D skillTexture)
+        AnimatedSprite fireSprite;
+
+        public void AddTextures(Texture2D blankTexture, Texture2D healthBarTexture, Texture2D skillTexture, AnimatedSprite fireSprite)
         {
             this.blankTexture = blankTexture;
             this.healthBarTexture = healthBarTexture;
             this.skillTexture = skillTexture;
+            this.fireSprite = fireSprite;
         }
 
         public void AddFonts(SpriteFont defaultFont)
@@ -189,7 +192,10 @@ namespace _2D_Game.Content
                 }
             }
 
-            switch(battleState)
+            fireSprite.Update();
+
+
+            switch (battleState)
             {
                 case BattleState.RoundStart:
                     // TODO: round start damage/healing
@@ -519,21 +525,45 @@ namespace _2D_Game.Content
                 }
 
                 Color unitColor = Color.White;
-                if(!units[i].IsAlive())
+                if(units[i].IsAlive())
                 {
-                    unitColor = Color.Gray;
+                    //unitColor = Color.Gray;
+                    if(i >= SIZE / 2)
+                    {
+                        units[i].Texture.Draw(spriteBatch, unitLocs[i], SpriteEffects.FlipHorizontally, unitColor);
+                    }
+                    else
+                    {
+                        units[i].Texture.Draw(spriteBatch, unitLocs[i], unitColor);
+                    }
+                    spriteBatch.Draw(healthBarTexture, new Rectangle((int)unitLocs[i].X, (int)unitLocs[i].Y + HEALTH_BAR_OFFSET, SPRITE_WIDTH, 18), defaultColor);
+                    spriteBatch.Draw(blankTexture, unitHealthRects[i], Color.Red);
+
+                    if(units[i].StatusEffects.Count > 0)
+                    {
+                        // handle round end status effects
+                        for (int j = 0; j < units[i].StatusEffects.Count; j++)
+                        {
+                            switch (units[i].StatusEffects[j])
+                            {
+                                case Unit.StatusEffect.Bleed:
+                                    break;
+                                case Unit.StatusEffect.Burn:
+                                    //Console.WriteLine("Burning " + units[i].Name + "start HP = " + units[i].CurrHP);
+                                    //units[i].CurrHP -= (int)(units[i].HP * 0.1);
+                                    //Console.WriteLine("after hp = " + units[i].CurrHP);
+
+                                    fireSprite.Draw(spriteBatch, unitLocs[i]);
+                                    break;
+                                case Unit.StatusEffect.Poison:
+                                    break;
+                            }
+
+                            SetUnitHealth(units[i].PercentHealth(), i);
+                        }
+                    }
                 }
 
-                if(i >= SIZE / 2)
-                {
-                    units[i].Texture.Draw(spriteBatch, unitLocs[i], SpriteEffects.FlipHorizontally, unitColor);
-                }
-                else
-                {
-                    units[i].Texture.Draw(spriteBatch, unitLocs[i], unitColor);
-                }
-                spriteBatch.Draw(healthBarTexture, new Rectangle((int)unitLocs[i].X, (int)unitLocs[i].Y + HEALTH_BAR_OFFSET, SPRITE_WIDTH, 18), defaultColor);
-                spriteBatch.Draw(blankTexture, unitHealthRects[i], Color.Red);
             }
 
             // draw unit panel if player unit is selected
