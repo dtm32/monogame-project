@@ -60,6 +60,16 @@ namespace _2D_Game.Content
             }
         }
 
+        public bool IsAnimating()
+        {
+            if(rect.Width < prevRect.Width || rect.Width < setWidth)
+            {
+                return true;
+            }
+
+            return false;
+        }
+
         public void Update()
         {
             if (rect.Width < prevRect.Width)

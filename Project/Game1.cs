@@ -24,8 +24,9 @@ namespace _2D_Game
         Vector2 cursorPosition;
         Texture2D cursorTexture, cursorClickedTexture;
         Texture2D blankTexture;
-        Texture2D puffFlyTexture, spikePigTexture, featherRaptorTexture, woodThumbTexture;
+        Texture2D puffFlyTexture, spikePigTexture, featherRaptorTexture, woodThumbTexture, pinkScytheTexture;
         Texture2D fireTexture;
+        Texture2D poisonedTexture;
         Texture2D skillTexture;
         Texture2D panelCornerTexture;
         Cursor cursor;
@@ -40,12 +41,15 @@ namespace _2D_Game
         AnimatedSprite spikePigSprite;
         AnimatedSprite featherRaptorSprite;
         AnimatedSprite woodThumbSprite;
-        AnimatedSprite fireSprite;
+        AnimatedSprite pinkScytheSprite;
+
+        AnimatedSprite fireSprite, poisonedSprite;
 
         Texture2D healthBarTexture;
 
         // sprite fonts
-        private SpriteFont font;
+        public static SpriteFont font;
+        public static SpriteFont FontSmallBold;
 
 
         public Game1()
@@ -120,11 +124,19 @@ namespace _2D_Game
             woodThumbSprite.UpdateSpeed = 5;
             woodThumbSprite.Idle = 200;
 
+            pinkScytheTexture = LoadTexturePNG("anim_pink_scythe");
+            pinkScytheSprite = new AnimatedSprite(pinkScytheTexture, 1, 4);
+
             // combat animation sprites
             fireTexture = LoadTexturePNG("anim_fire");
             fireSprite = new AnimatedSprite(fireTexture, 1, 7);
             fireSprite.Idle = 150;
             fireSprite.UpdateSpeed = 5;
+
+            poisonedTexture = LoadTexturePNG("anim_poisoned");
+            poisonedSprite = new AnimatedSprite(poisonedTexture, 1, 9);
+            poisonedSprite.Idle = 150;
+            poisonedSprite.UpdateSpeed = 4;
 
             // additional textures
             blankTexture = LoadTexturePNG("square");
@@ -134,6 +146,7 @@ namespace _2D_Game
 
             // fonts
             font = Content.Load<SpriteFont>("SpriteFonts/Score");
+            FontSmallBold = Content.Load<SpriteFont>("SpriteFonts/SmallBold");
         }
 
         private Texture2D LoadTexturePNG(string fileName)
@@ -169,11 +182,11 @@ namespace _2D_Game
 
             if (gameState == GameState.InitBattleManager)
             {
-                ArrayList skills = new ArrayList();
-                skills.Add(new Skill("Assault", 40));
-                skills.Add(new Skill("Assault", 45));
-                skills.Add(new Skill("Assault", 50));
-                skills.Add(new Skill("Tap", 10));
+                ArrayList skillSet1 = new ArrayList();
+                skillSet1.Add(new Skill("Assault", 40));
+                skillSet1.Add(new Skill("Assault", 45));
+                skillSet1.Add(new Skill("Assault", 50));
+                skillSet1.Add(new Skill("Tap", 10));
                 ArrayList skillSet2 = new ArrayList();
                 skillSet2.Add(new Skill("Assault", 40));
                 Skill falseSwipe = new Skill("False Swipe", 10, 
@@ -186,53 +199,70 @@ namespace _2D_Game
                 skillSet2.Add(new Skill("Gouge", 55,
                     (self, target) =>
                     {
-                        target.Inflict(Unit.StatusEffect.Bleed);
+                        target.Inflict(new StatusEffect(StatusEffect.Poison, 2, self, target));
                     }));
 
 
                 ArrayList woodysSkills = new ArrayList();
-                Skill highFive = new Skill("High Five", 5);
-                highFive.Effect = (self, target) =>
-                {
-                    target.CurrHP -= 100;
-                };
-                Skill finger = new Skill("Finger", 150);
+                Skill highFive = new Skill("High Five", 50);
+                //highFive.Effect = (self, target) =>
+                //{
+                //    target.CurrHP -= 100;
+                //};
+                Skill finger = new Skill("Hot Hands", 80);
                 finger.Effect = (self, target) =>
                 {
-                    target.Inflict(Unit.StatusEffect.Burn);
+                    target.Inflict(new StatusEffect(StatusEffect.Burn, 2, self, target));
                 };
-                Skill thumb = new Skill("Middle Finger", 200);
+                Skill thumb = new Skill("The Bird", 65);
                 thumb.Effect = (self, target) =>
                 {
-                    self.CurrHP += 200;
+                    self.CurrHP += self.CurrHP;
                 };
-                Skill asdf = new Skill("DMG_OP_1.1", 801);
+                Skill dmgOP1_1 = new Skill("DMG_OP_1.1", 801);
                 woodysSkills.Add(highFive);
                 woodysSkills.Add(finger);
                 woodysSkills.Add(thumb);
-                woodysSkills.Add(asdf);
+                woodysSkills.Add(dmgOP1_1);
 
+                ArrayList skillSet3 = new ArrayList();
+                skillSet3.Add(new Skill("Reap", 0,
+                    (self, target) =>
+                    {
+                        target.CurrHP = (int)(target.CurrHP * 0.75);
+                    }));
+                skillSet3.Add(new Skill("Drain", 60, Skill.SkillType.Magical,
+                    (self, target) =>
+                    {
+                        self.CurrHP += target.LastDamageTaken / 2;
+                    }));
+                skillSet3.Add(new Skill("Smooch", 0));
+                skillSet3.Add(new Skill("Big Magic Churro", 
+                    (self, target) =>
+                    {
+                        int heal = (int)(self.Fcs * 0.45);
+                        target.CurrHP += heal;
+                        self.CurrHP += heal;
+                    }));
 
-                BaseUnit puffFly = new BaseUnit(puffFlySprite, "Puff Fly", "common", "common", skills, 100, 98, 75, 50, 55, 74);
-                BaseUnit spikePig = new BaseUnit(new AnimatedSprite(spikePigSprite), "Spike Pig", "common", "common", skills, 150, 70, 100, 100, 250, 110);
-                //BaseUnit spikePig = new BaseUnit(spikePigSprite, "Spike Pig", "common", "common", skills, 150, 70, 100, 100, 250, 110);
-                BaseUnit featherRaptor = new BaseUnit(new AnimatedSprite(featherRaptorSprite), "Feather Raptor", "common", "common", skillSet2, 110, 105, 98, 50, 95, 60);
-                BaseUnit WOODY_HAHA_XD = new BaseUnit(woodThumbSprite, "Woody", "Dragon", "Spirit", woodysSkills, 100, 999, 50, 50, 110, 80);
+                BaseUnit puffFly = new BaseUnit(puffFlySprite, "Puff Fly", "common", "common", skillSet1, 100, 100, 100, 100, 100, 100);
+                BaseUnit spikePig = new BaseUnit(new AnimatedSprite(spikePigSprite), "Spike Pig", "common", "common", skillSet1, 150, 70, 100, 100, 175, 110);
+                BaseUnit pinkScythe = new BaseUnit(pinkScytheSprite, "Pink Scythe", "Mage", "Spirit", skillSet3, 97, 104, 109, 133, 100, 185);
+                BaseUnit featherRaptor = new BaseUnit(new AnimatedSprite(featherRaptorSprite), "Feather Raptor", "common", "common", skillSet2, 110, 105, 98, 70, 95, 60);
+                BaseUnit WOODY_HAHA_XD = new BaseUnit(woodThumbSprite, "Woody", "Dragon", "Spirit", woodysSkills, 100, 187, 85, 75, 110, 80);
 
-                for (int i = 0; i < 8; i++)
-                {
-                    if (i < 3)
-                        battleManager.AddUnit(featherRaptor, i);
-                    else if (i == 3)
-                        battleManager.AddUnit(WOODY_HAHA_XD, i);
-                    else if (i == 6)
-                        battleManager.AddUnit(puffFly, i);
-                    else
-                        battleManager.AddUnit(spikePig, i);
-                }
+                battleManager.AddUnit(featherRaptor, 0);
+                battleManager.AddUnit(pinkScythe, 1);
+                battleManager.AddUnit(featherRaptor, 2);
+                battleManager.AddUnit(WOODY_HAHA_XD, 3);
+
+                battleManager.AddUnit(puffFly, 4);
+                battleManager.AddUnit(spikePig, 5);
+                battleManager.AddUnit(pinkScythe, 6);
+                battleManager.AddUnit(spikePig, 7);
 
                 battleManager.AddTextures(blankTexture, healthBarTexture, skillTexture, panelCornerTexture);
-                battleManager.AddSprites(fireSprite);
+                battleManager.AddSprites(fireSprite, poisonedSprite);
                 battleManager.AddFonts(font);
 
                 gameState = GameState.Run;

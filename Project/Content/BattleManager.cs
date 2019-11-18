@@ -31,10 +31,6 @@ namespace _2D_Game.Content
         const int SPRITE_HEIGHT = 128;
         const int TOP_OFFSET = 30;
         const int HEALTH_BAR_OFFSET = SPRITE_HEIGHT - 16;
-        const int HEALTH_BAR_PADDING_X = 2;
-        const int HEALTH_BAR_PADDING_Y = 6;
-        const int HEALTH_BAR_WIDTH = 72;
-        const int HEALTH_BAR_HEIGHT = 6;
 
         Vector2[] defaultUnitLocations = new Vector2[SIZE];
 
@@ -46,6 +42,10 @@ namespace _2D_Game.Content
         const int skillWidth = 200;
         const int skillHeight = 45;
         const int skillPadding = 13;
+
+        // unit preview variables
+        Rectangle allyUnitPreviewRect;
+        Rectangle enemyUnitPreviewRect;
 
         BattleState battleState = BattleState.BattleStart;
 
@@ -76,6 +76,7 @@ namespace _2D_Game.Content
 
         //int[] unitHealth = new int[SIZE];
         AnimatedSprite fireSprite;
+        AnimatedSprite poisonedSprite;
 
         Queue<int> roundOrder;
 
@@ -84,12 +85,12 @@ namespace _2D_Game.Content
             int viewportWidth = graphics.GraphicsDevice.Viewport.Width;
             int viewportHeight = graphics.GraphicsDevice.Viewport.Height;
 
-            for (int i = 0; i < SIZE; i++)
+            for(int i = 0; i < SIZE; i++)
             {
                 int posX = viewportWidth / 2 - 300;
                 int posY = (int)((i % 4) * (SPRITE_HEIGHT * 1.0) + TOP_OFFSET);
 
-                if (i >= SIZE / 2)
+                if(i >= SIZE / 2)
                 {
                     posX = viewportWidth / 2 + 300 - SPRITE_WIDTH;
                 }
@@ -107,10 +108,16 @@ namespace _2D_Game.Content
                 //healthBars[i] = new HealthBar(healthBarTexture, blankTexture, unitLocs[i].X, unitLocs[i].Y + HEALTH_BAR_OFFSET);
             }
 
+            // position unit panel rect
             unitRect = new Rectangle(viewportWidth / 2 - unitPanelWidthHalf,
                 viewportHeight - unitPanelHeight,
                 unitPanelWidthHalf * 2, unitPanelHeight);
 
+            // position unit preview panel rects
+            allyUnitPreviewRect = new Rectangle(0, viewportHeight - unitPanelHeight, 200, unitPanelHeight);
+            enemyUnitPreviewRect = new Rectangle(viewportWidth - 200, viewportHeight - unitPanelHeight, 200, unitPanelHeight);
+
+            // position skill rects and text
             skillRects[0] = new Rectangle(viewportWidth / 2 + unitPanelWidthHalf - unitPanelPadding - skillWidth * 2,
                 viewportHeight - unitPanelHeight + unitPanelPadding,
                 skillWidth, skillHeight);
@@ -143,9 +150,10 @@ namespace _2D_Game.Content
             this.panelCornerTexture = panelCornerTexture;
         }
 
-        public void AddSprites(AnimatedSprite fireSprite)
+        public void AddSprites(AnimatedSprite fireSprite, AnimatedSprite poisonedSprite)
         {
             this.fireSprite = fireSprite;
+            this.poisonedSprite = poisonedSprite;
         }
 
         public void AddFonts(SpriteFont defaultFont)
@@ -205,7 +213,7 @@ namespace _2D_Game.Content
             {
                 if(units[i].IsAlive())
                 {
-                    units[i].Texture.Update();
+                    units[i].Update();
                 }
             }
 
@@ -213,7 +221,7 @@ namespace _2D_Game.Content
             skillHover = -1;
             for(int i = 0; i < 4; i++)
             {
-                if (cursor.Rect.Intersects(skillRects[i]))
+                if(cursor.Rect.Intersects(skillRects[i]))
                 {
                     skillHover = i;
                     break;
@@ -222,15 +230,41 @@ namespace _2D_Game.Content
 
             // check health bar updates
             //int healthDelayConst = 30;
-            for (int i = 0; i < healthBars.Length; i++)
+            for(int i = 0; i < healthBars.Length; i++)
             {
                 healthBars[i].Update();
             }
 
             fireSprite.Update();
+            poisonedSprite.Update();
+
+            // right click unit preview
+            if(cursor.RightClick)
+            {
+                int unitClicked = CheckUnitIntersect(cursor.Rect);
+                //int skillClicked = CheckSkillIntersect(cursor.Rect);
+                //skillIndex = skillClicked;
 
 
-            switch (battleState)
+                if(unitClicked != -1)
+                {
+                    if(units[unitClicked].IsEnemy)
+                    {
+                        previewEnemy = units[unitClicked];
+                    }
+                    else
+                    {
+                        previewAlly = units[unitClicked];
+                    }
+                }
+                else
+                {
+                    previewEnemy = null;
+                }
+            }
+
+
+            switch(battleState)
             {
                 case BattleState.RoundStart:
                     // TODO: round start damage/healing
@@ -246,7 +280,7 @@ namespace _2D_Game.Content
 
                     roundOrder = new Queue<int>();
 
-                    for (int i = 0; i < units.Length; i++)
+                    for(int i = 0; i < units.Length; i++)
                     {
                         speeds[i] = units[i].Spd; // TODO: make unit manager that will calc spd w/ modifiers
                     }
@@ -274,7 +308,7 @@ namespace _2D_Game.Content
                         {
                             // randomly pick between tied units
                             int randomIndex = rnd.Next(tiedUnits.Count);
-                            int unitIndex = (int) tiedUnits[randomIndex];
+                            int unitIndex = (int)tiedUnits[randomIndex];
                             // add to move order and set speed to -1
                             moveOrder[index] = unitIndex;
                             roundOrder.Enqueue(unitIndex);
@@ -282,7 +316,7 @@ namespace _2D_Game.Content
                         }
                         else if(tiedUnits.Count == 1)
                         {
-                            int unitIndex = (int) tiedUnits[0];
+                            int unitIndex = (int)tiedUnits[0];
                             // add to move order and set speed to -1
                             moveOrder[index] = unitIndex;
                             roundOrder.Enqueue(unitIndex);
@@ -291,7 +325,25 @@ namespace _2D_Game.Content
 
                         index++;
                     }
-                    
+
+                    // decrement status effects
+                    for(int i = 0; i < units.Length; i++)
+                    {
+                        if(units[i].IsAlive())
+                        {
+                            if(units[i].StatusEffects.Count > 0)
+                            {
+                                units[i].StatusEffects.ForEach((statusEffect) =>
+                                {
+                                    if(statusEffect.Turns > 0)
+                                        statusEffect.Turns--;
+                                });
+
+                                units[i].StatusEffects.RemoveAll(status => status.Turns <= 0);
+                            }
+                        }
+                    }
+
                     // update battle state
                     SetState(BattleState.RoundNext);
                     break;
@@ -320,12 +372,14 @@ namespace _2D_Game.Content
                     bool nextIsAlive = units[nextIndex].IsAlive();
 
                     // update battle state
-                    if (selectedUnit.IsEnemy && nextIsAlive)
+                    if(selectedUnit.IsEnemy && nextIsAlive)
                     {
+                        //enemy
                         SetState(BattleState.RoundAI);
                     }
                     else if(nextIsAlive)
                     {
+                        previewAlly = selectedUnit;
                         SetState(BattleState.Wait);
                     }
                     else
@@ -334,14 +388,14 @@ namespace _2D_Game.Content
                     }
                     break;
                 case BattleState.Wait:
-                    if (cursor.LeftClick)
+                    if(cursor.LeftClick)
                     {
                         int unitClicked = CheckUnitIntersect(cursor.Rect);
                         int skillClicked = CheckSkillIntersect(cursor.Rect);
                         skillIndex = skillClicked;
 
                         // attack unit with selected skill
-                        if (unitSelected && skillSelected && unitClicked != -1)
+                        if(unitSelected && skillSelected && unitClicked != -1)
                         {
                             int damage = CombatCalculation(units[unitClicked], selectedUnit, selectedSkill);
                             healthBars[unitClicked].Set(units[unitClicked].PercentHealth());
@@ -349,20 +403,23 @@ namespace _2D_Game.Content
 
                             // next unit's turn
                             // run animation
-                            SetState(BattleState.RoundNext);
+                            selectedUnit.StartAttackAnimation();
+
+                            // update game state
+                            SetState(BattleState.RoundRun);
                         }
 
                         // not clicking on unit panel
-                        if (!cursor.Rect.Intersects(unitRect))
+                        if(!cursor.Rect.Intersects(unitRect))
                         {
                             //unitSelected = false;
                             skillSelected = false;
                         }
 
-                        if (unitClicked != -1)
+                        if(unitClicked != -1)
                         {
                         }
-                        else if (skillClicked != -1)
+                        else if(skillClicked != -1)
                         {
                             //skillSelected = i;
                             selectedSkill = (Skill)selectedUnit.Skills[skillClicked];
@@ -372,40 +429,44 @@ namespace _2D_Game.Content
                     }
                     break;
                 case BattleState.RoundAI:
-                    if(attackFrame < 50)
-                    {
-                        // move enemy unit left
-                        unitLocs[selectedIndex].X = unitRects[selectedIndex].X - (attackFrame / 5);
-                        //unitHealthRects[selectedIndex].X;
-                    }
-                    else if(attackFrame == 50)
-                    {
-                        // deal damage
-                        int targetUnit = FindTarget(selectedUnit);
-                        Skill selectedSkill = (Skill)selectedUnit.Skills[rnd.Next(4)];
+                    // deal damage
+                    Skill aiSkill = (Skill)selectedUnit.Skills[rnd.Next(4)];
+                    int targetUnit = FindTarget(selectedUnit, aiSkill);
 
-                        int damage = CombatCalculation(units[targetUnit], selectedUnit, selectedSkill);
+                    int aiDamage = CombatCalculation(units[targetUnit], selectedUnit, aiSkill);
 
-                        healthBars[targetUnit].Set(units[targetUnit].PercentHealth());
-                        healthBars[selectedIndex].Set(selectedUnit.PercentHealth());
+                    healthBars[targetUnit].Set(units[targetUnit].PercentHealth());
+                    healthBars[selectedIndex].Set(selectedUnit.PercentHealth());
 
-                    }
-                    else if(attackFrame < 100)
+                    selectedUnit.StartAttackAnimation();
+                    SetState(BattleState.RoundRun);
+                    break;
+                case BattleState.RoundRun:
+                    // check for animations to wait for
+                    bool nextState = true;
+
+                    // check if health bars are animating
+                    for(int i = 0; i < healthBars.Length; i++)
                     {
-                        unitLocs[selectedIndex].X = unitRects[selectedIndex].X - ((100 - attackFrame) / 5);
+                        if(healthBars[i].IsAnimating())
+                        {
+                            nextState = false;
+                        }
                     }
-                    else if(attackFrame == 100)
+
+                    // check for attack animation
+                    for(int i = 0; i < units.Length; i++)
                     {
-                        unitLocs[selectedIndex].X = unitRects[selectedIndex].X;
+                        if(units[i].IsAnimating())
+                        {
+                            nextState = false;
+                        }
                     }
-                    else
+
+                    if(nextState)
                     {
-                        attackFrame = 0;
-                        //battleState = BattleState.RoundNext;
                         SetState(BattleState.RoundNext);
-                        break;
                     }
-                    attackFrame++;
                     break;
                 case BattleState.RoundEnd:
                     // calculate end round damage (bleed, poison, etc)
@@ -419,20 +480,20 @@ namespace _2D_Game.Content
                                 for(int j = 0; j < units[i].StatusEffects.Count; j++)
                                 {
                                     int damage = 0;
-                                    switch(units[i].StatusEffects[j])
+                                    switch(units[i].StatusEffects[j].Type)
                                     {
-                                        case Unit.StatusEffect.Bleed:
-                                            damage = 10;
+                                        case StatusEffect.Bleed:
+                                            damage = units[i].StatusEffects[j].Damage;
                                             units[i].CurrHP -= damage;
                                             Console.WriteLine($"{units[i].Name} takes {damage} damage from Bleed!");
                                             break;
-                                        case Unit.StatusEffect.Burn:
-                                            damage = (int)(units[i].HP * 0.1);
+                                        case StatusEffect.Burn:
+                                            damage = units[i].StatusEffects[j].Damage;
                                             units[i].CurrHP -= damage;
                                             Console.WriteLine($"{units[i].Name} takes {damage} damage from Burn!");
                                             break;
-                                        case Unit.StatusEffect.Poison:
-                                            damage = 10;
+                                        case StatusEffect.Poison:
+                                            damage = units[i].StatusEffects[j].Damage;
                                             units[i].CurrHP -= damage;
                                             Console.WriteLine($"{units[i].Name} takes {damage} damage from Poison!");
                                             break;
@@ -447,14 +508,29 @@ namespace _2D_Game.Content
                     }
                     SetState(BattleState.RoundStart);
                     break;
+                case BattleState.BattleEnd:
+                    Console.WriteLine("Battle over, ");
+                    bool win = false;
+                    for(int i = 0; i < SIZE / 2; i++)
+                    {
+                        if(units[i].IsAlive())
+                        {
+                            Console.WriteLine(" you win!");
+                            win = true;
+                            break;
+                        }
+                    }
+                    if(!win)
+                        Console.WriteLine(" you lose!");
+                    break;
             }
         }
 
         private int CheckUnitIntersect(Rectangle cursorRect)
         {
-            for (int i = 0; i < unitRects.Length; i++)
+            for(int i = 0; i < unitRects.Length; i++)
             {
-                if (cursorRect.Intersects(unitRects[i]))
+                if(cursorRect.Intersects(unitRects[i]))
                 {
                     return i;
                 }
@@ -463,14 +539,15 @@ namespace _2D_Game.Content
             return -1;
         }
 
-        private int FindTarget(Unit unit)
+        private int FindTarget(Unit unit, Skill skill)
         {
             // TODO: add move advanced target selecting logic
-            while (true)
+            //if(skill.Type )
+            while(true)
             {
                 int target = rnd.Next(4);
 
-                if (units[target].IsAlive())
+                if(units[target].IsAlive())
                     return target;
             }
         }
@@ -487,10 +564,18 @@ namespace _2D_Game.Content
                 attack = attacker.Str;
                 defense = target.Amr;
             }
-            else if (skill.Type == Skill.SkillType.Magical)
+            else if(skill.Type == Skill.SkillType.Magical)
             {
                 attack = attacker.Fcs;
                 defense = target.Res;
+            }
+            else if(skill.Type == Skill.SkillType.Effect)
+            {
+                skill.Effect?.Invoke(attacker, target);
+
+                Console.WriteLine($"{attacker.Name} used {skill.Name} on {target.Name}!");
+
+                return 0;
             }
 
             if(rnd.Next(100) < 5)
@@ -498,7 +583,12 @@ namespace _2D_Game.Content
                 crit = 1.5; // Also check for skill crit modifier
             }
 
-            damage = (int) ((skill.Power * attack) / (defense * skill.Penetration) * (rnd.Next(15) / 100 + 0.85) * crit);
+            //damage = (int)((skill.Power * attack * (attacker.Level * attacker.Level / 18 + 1)) / (defense * defense * skill.Penetration) * (rnd.Next(15) / 100 + 0.85) * crit);
+            //damage = (int)((skill.Power * attack / defense * (attacker.Level / 3 + 1) / 30) * (rnd.Next(15) / 100 + 0.85) * crit);
+            damage = (int)((skill.Power * attack / defense) * (rnd.Next(15) / 100 + 0.85) * crit);
+
+            if(damage < 1)
+                damage = 1;
 
             target.CurrHP -= damage;
 
@@ -536,7 +626,7 @@ namespace _2D_Game.Content
                     count++;
                 }
             }
-            if (count == SIZE / 2)
+            if(count == SIZE / 2)
             {
                 return true;
             }
@@ -552,9 +642,9 @@ namespace _2D_Game.Content
                 return -1;
             }
 
-            for (int i = 0; i < skillRects.Length; i++)
+            for(int i = 0; i < skillRects.Length; i++)
             {
-                if (cursorRect.Intersects(skillRects[i]))
+                if(cursorRect.Intersects(skillRects[i]))
                 {
                     return i;
                 }
@@ -573,10 +663,10 @@ namespace _2D_Game.Content
         public void Draw(SpriteBatch spriteBatch)
         {
             // draw units
-            for (int i = 0; i < 8; i++)
+            for(int i = 0; i < 8; i++)
             {
                 Color defaultColor = Color.White;
-                if (selectedIndex == i)
+                if(selectedIndex == i)
                 {
                     defaultColor = Color.MediumPurple;
                 }
@@ -584,30 +674,24 @@ namespace _2D_Game.Content
                 Color unitColor = Color.White;
                 if(units[i].IsAlive() || healthBars[i].Width > 0)
                 {
-                    //unitColor = Color.Gray;
-                    if(i >= SIZE / 2)
-                    {
-                        units[i].Texture.Draw(spriteBatch, unitLocs[i], SpriteEffects.FlipHorizontally, unitColor);
-                    }
-                    else
-                    {
-                        units[i].Texture.Draw(spriteBatch, unitLocs[i], unitColor);
-                    }
+                    units[i].Draw(spriteBatch, unitLocs[i]);
+
                     healthBars[i].Draw(spriteBatch, defaultColor);
 
                     if(units[i].StatusEffects.Count > 0)
                     {
                         // handle round end status effects
-                        for (int j = 0; j < units[i].StatusEffects.Count; j++)
+                        for(int j = 0; j < units[i].StatusEffects.Count; j++)
                         {
-                            switch (units[i].StatusEffects[j])
+                            switch(units[i].StatusEffects[j].Type)
                             {
-                                case Unit.StatusEffect.Bleed:
+                                case StatusEffect.Bleed:
                                     break;
-                                case Unit.StatusEffect.Burn:
+                                case StatusEffect.Burn:
                                     fireSprite.Draw(spriteBatch, unitLocs[i]);
                                     break;
-                                case Unit.StatusEffect.Poison:
+                                case StatusEffect.Poison:
+                                    poisonedSprite.Draw(spriteBatch, unitLocs[i]);
                                     break;
                             }
 
@@ -623,19 +707,34 @@ namespace _2D_Game.Content
             {
                 DrawUnitPanel(spriteBatch);
 
-                spriteBatch.DrawString(defaultFont, selectedUnit.Name, new Vector2(unitRect.X + unitPanelPadding, unitRect.Y + unitPanelPadding), Color.Black);
+                spriteBatch.DrawString(Game1.font, selectedUnit.Name.ToUpper(), new Vector2(unitRect.X + unitPanelPadding, unitRect.Y + unitPanelPadding - 5), Color.Black);
 
                 ArrayList skills = selectedUnit.Skills;
                 for(int i = 0; i < 4; i++)
                 {
                     Color skillColor = Color.White;
-                    if (skillHover == i || skillIndex == i)
+                    String skillText = ((Skill)skills[i]).Name;
+                    if(skillHover == i || skillIndex == i)
                         skillColor = Color.LightGray;
+                    if(((Skill)skills[i]).Type != Skill.SkillType.Effect)
+                        skillText += $" {((Skill)skills[i]).Power}";
                     spriteBatch.Draw(skillTexture, skillRects[i], skillColor);
-                    spriteBatch.DrawString(defaultFont, ((Skill)skills[i]).Name + "  " + ((Skill)skills[i]).Power.ToString(), skillTextLocs[i], Color.Black);
+                    spriteBatch.DrawString(Game1.FontSmallBold, skillText, skillTextLocs[i], Color.Black);
                 }
             }
+
+            if(previewAlly != null)
+            {
+                DrawUnitPreview(spriteBatch);
+            }
+            if(previewEnemy != null)
+            {
+                DrawEnemyPreview(spriteBatch);
+            }
         }
+
+        Unit previewAlly = null;
+        Unit previewEnemy = null;
 
         private void DrawUnitPanel(SpriteBatch spriteBatch)
         {
@@ -648,6 +747,71 @@ namespace _2D_Game.Content
 
             spriteBatch.Draw(panelCornerTexture, leftCornerRect, Color.White);
             spriteBatch.Draw(panelCornerTexture, rightCornerRect, null, Color.White, 0f, Vector2.Zero, SpriteEffects.FlipHorizontally, 1f);
+        }
+
+        private void DrawUnitPreview(SpriteBatch spriteBatch)
+        {
+            int unitPreviewPadding = 20;
+            Rectangle borderRect = new Rectangle(0, allyUnitPreviewRect.Y - 4, allyUnitPreviewRect.Width + 4, allyUnitPreviewRect.Height + 4);
+            Rectangle rightCornerRect = new Rectangle(allyUnitPreviewRect.Width - 30, allyUnitPreviewRect.Y, 30, 30);
+            Vector2 nameLoc = new Vector2(unitPreviewPadding, allyUnitPreviewRect.Y + unitPreviewPadding);
+            Vector2 spriteLoc = new Vector2(unitPreviewPadding + 50, allyUnitPreviewRect.Y + unitPreviewPadding);
+            Vector2 levelLoc = new Vector2(unitPreviewPadding, nameLoc.Y + 17);
+            Vector2 hpLoc = new Vector2(unitPreviewPadding, levelLoc.Y + 29);
+            Vector2 spdLoc = new Vector2(unitPreviewPadding + 80, hpLoc.Y);
+            Vector2 strLoc = new Vector2(unitPreviewPadding, spdLoc.Y + 17);
+            Vector2 fcsLoc = new Vector2(unitPreviewPadding + 80, strLoc.Y);
+            Vector2 amrLoc = new Vector2(unitPreviewPadding, fcsLoc.Y + 17);
+            Vector2 resLoc = new Vector2(unitPreviewPadding + 80, amrLoc.Y);
+            
+            spriteBatch.Draw(blankTexture, borderRect, new Color(64, 64, 64));
+            spriteBatch.Draw(blankTexture, allyUnitPreviewRect, Color.SlateGray);
+
+            spriteBatch.DrawString(Game1.FontSmallBold, previewAlly.Name, nameLoc, Color.Black);
+            spriteBatch.DrawString(Game1.FontSmallBold, $"HP  {previewAlly.HP}", hpLoc, Color.Black);
+            spriteBatch.DrawString(Game1.FontSmallBold, $"LVL  {previewAlly.Level}", levelLoc, Color.Black);
+            spriteBatch.DrawString(Game1.FontSmallBold, $"SPD  {previewAlly.Spd}", spdLoc, Color.Black);
+            spriteBatch.DrawString(Game1.FontSmallBold, $"STR  {previewAlly.Str}", strLoc, Color.Black);
+            spriteBatch.DrawString(Game1.FontSmallBold, $"FCS  {previewAlly.Fcs}", fcsLoc, Color.Black);
+            spriteBatch.DrawString(Game1.FontSmallBold, $"AMR  {previewAlly.Amr}", amrLoc, Color.Black);
+            spriteBatch.DrawString(Game1.FontSmallBold, $"RES  {previewAlly.Res}", resLoc, Color.Black);
+
+            spriteBatch.Draw(panelCornerTexture, rightCornerRect, null, Color.White, 0f, Vector2.Zero, SpriteEffects.FlipHorizontally, 1f);
+
+            //previewAlly.Draw(spriteBatch, spriteLoc);
+        }
+
+        private void DrawEnemyPreview(SpriteBatch spriteBatch)
+        {
+            int unitPreviewPadding = 20;
+            int unitPreviewPaddingLeft = 25;
+            Rectangle borderRect = new Rectangle(enemyUnitPreviewRect.X - 4, enemyUnitPreviewRect.Y - 4, enemyUnitPreviewRect.Width + 4, enemyUnitPreviewRect.Height + 4);
+            Rectangle leftCornerRect = new Rectangle(enemyUnitPreviewRect.X, enemyUnitPreviewRect.Y, 30, 30);
+            Vector2 nameLoc = new Vector2(enemyUnitPreviewRect.X + unitPreviewPaddingLeft, enemyUnitPreviewRect.Y + unitPreviewPadding);
+            Vector2 spriteLoc = new Vector2(nameLoc.X + 50, enemyUnitPreviewRect.Y + unitPreviewPadding);
+            Vector2 levelLoc = new Vector2(nameLoc.X, nameLoc.Y + 17);
+            Vector2 hpLoc = new Vector2(nameLoc.X, levelLoc.Y + 29);
+            Vector2 spdLoc = new Vector2(nameLoc.X + 80, hpLoc.Y);
+            Vector2 strLoc = new Vector2(nameLoc.X, spdLoc.Y + 17);
+            Vector2 fcsLoc = new Vector2(nameLoc.X + 80, strLoc.Y);
+            Vector2 amrLoc = new Vector2(nameLoc.X, fcsLoc.Y + 17);
+            Vector2 resLoc = new Vector2(nameLoc.X + 80, amrLoc.Y);
+
+            spriteBatch.Draw(blankTexture, borderRect, new Color(64, 64, 64));
+            spriteBatch.Draw(blankTexture, enemyUnitPreviewRect, Color.SlateGray);
+
+            spriteBatch.DrawString(Game1.FontSmallBold, previewEnemy.Name, nameLoc, Color.Black);
+            spriteBatch.DrawString(Game1.FontSmallBold, $"HP  {previewEnemy.HP}", hpLoc, Color.Black);
+            spriteBatch.DrawString(Game1.FontSmallBold, $"LVL  {previewEnemy.Level}", levelLoc, Color.Black);
+            spriteBatch.DrawString(Game1.FontSmallBold, $"SPD  {previewEnemy.Spd}", spdLoc, Color.Black);
+            spriteBatch.DrawString(Game1.FontSmallBold, $"STR  {previewEnemy.Str}", strLoc, Color.Black);
+            spriteBatch.DrawString(Game1.FontSmallBold, $"FCS  {previewEnemy.Fcs}", fcsLoc, Color.Black);
+            spriteBatch.DrawString(Game1.FontSmallBold, $"AMR  {previewEnemy.Amr}", amrLoc, Color.Black);
+            spriteBatch.DrawString(Game1.FontSmallBold, $"RES  {previewEnemy.Res}", resLoc, Color.Black);
+
+            spriteBatch.Draw(panelCornerTexture, leftCornerRect, Color.White);
+
+            //previewAlly.Draw(spriteBatch, spriteLoc);
         }
     }
 }

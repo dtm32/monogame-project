@@ -12,7 +12,7 @@ namespace _2D_Game.Content
         {
             Physical,
             Magical,
-            Buff
+            Effect
         }
 
         public delegate void SkillEffect(Unit self, Unit target);
@@ -41,6 +41,26 @@ namespace _2D_Game.Content
             this.Power = power;
             Penetration = 1.0;
             Type = SkillType.Physical;
+            Effect = effect;
+        }
+
+        public Skill(String name, int power, SkillType type, SkillEffect effect)
+        {
+            tier = 0;
+            Name = name;
+            this.Power = power;
+            Penetration = 1.0;
+            Type = type;
+            Effect = effect;
+        }
+
+        public Skill(String name, SkillEffect effect)
+        {
+            tier = 0;
+            Name = name;
+            Power = 0;
+            Penetration = 1.0;
+            Type = SkillType.Effect;
             Effect = effect;
         }
 

@@ -9,24 +9,11 @@ using System.Threading.Tasks;
 
 namespace _2D_Game.Content
 {
-    class Unit : BaseUnit
+    class Unit
     {
-        public enum StatusEffect // TODO: update to own class (also needs turn counters, damage)
-        {
-            Bleed,
-            Stun,
-            Sleep,
-            Silence,
-            Burn,
-            Poison,
-            Bind,
-            Curse,
-            Fortified
-        }
-
-        AnimatedSprite unitTexture;
+        AnimatedSprite Texture { get; }
         public ArrayList Skills { get; }
-        public ArrayList StatusEffects { get; }
+        public List<StatusEffect> StatusEffects { get; }
         public string Name { get; }
         public String unitType;
         public String unitFaction;
@@ -38,6 +25,7 @@ namespace _2D_Game.Content
         public int Amr { get; }
         public int Res { get; }
         public bool IsEnemy { get; set; }
+        public int LastDamageTaken { get; set; }
 
         private BaseUnit baseUnit;
 
@@ -49,8 +37,10 @@ namespace _2D_Game.Content
             set
             {
                 value = MathHelper.Clamp(value, 0, HP);
-                if(value >= currHP)
+                if (value >= currHP)
                     Console.WriteLine($"{Name} healed {value - currHP} Health!");
+                else
+                    LastDamageTaken = currHP - value > 0 ? CurrHP - value : currHP;
                 currHP = MathHelper.Clamp(value, 0, HP);
                 if(!IsAlive())
                     Console.WriteLine($"{Name} is defeated!");
@@ -66,31 +56,133 @@ namespace _2D_Game.Content
         //public int DecreaseHP
 
 
-        public Unit(BaseUnit unit)
+        public Unit(BaseUnit baseUnit)
         {
-            this.unitTexture = unit.Texture;
-            this.Name        = unit.Name;
-            this.unitType    = unit.unitType;
-            this.unitFaction = unit.unitFaction;
-            this.Skills  = unit.GetSkills();
-            this.HP          = unit.HP;
-            this.Spd         = unit.Spd;
-            this.Str         = unit.Str;
-            this.Fcs         = unit.Fcs;
-            this.Amr         = unit.Amr;
-            this.Res         = unit.Res;
+            this.Texture     = baseUnit.Texture;
+            this.Name        = baseUnit.Name;
+            this.unitType    = baseUnit.unitType;
+            this.unitFaction = baseUnit.unitFaction;
+            this.Skills      = baseUnit.GetSkills();
+            this.HP          = baseUnit.CalcHP;
+            this.Spd         = baseUnit.CalcSpd;
+            this.Str         = baseUnit.CalcStr;
+            this.Fcs         = baseUnit.CalcFcs;
+            this.Amr         = baseUnit.CalcAmr;
+            this.Res         = baseUnit.CalcRes;
             this.IsEnemy     = false;
+            this.baseUnit    = baseUnit;
 
-            currHP = unit.HP;
-            baseUnit = unit;
-            StatusEffects = new ArrayList();
+            currHP = this.HP;
+            StatusEffects = new List<StatusEffect>();
+            LastDamageTaken = 0;
         }
 
-        public AnimatedSprite Texture
+        public int Level
         {
-            get { return unitTexture; }
-            //set { _type = value; }
+            get
+            {
+                return baseUnit.Level;
+            }
         }
+
+        public void Update()
+        {
+            Texture.Update();
+
+            if(attackFrame > 0)
+            {
+                UpdateAttackAnimation();
+            }
+        }
+
+        public void Draw(SpriteBatch spriteBatch, Vector2 location)
+        {
+            if(attackFrame > 0)
+            {
+                location.X += attackFrameOffset.X;
+            }
+
+            if(IsEnemy)
+            {
+                Texture.Draw(spriteBatch, location, SpriteEffects.FlipHorizontally, Color.White);
+            }
+            else
+            {
+                Texture.Draw(spriteBatch, location, Color.White);
+            }
+        }
+
+        private int attackFrame = 0;
+        Vector2 attackFrameOffset = new Vector2();
+
+        public void StartAttackAnimation()
+        {
+            attackFrame = 1;
+        }
+
+        public void UpdateAttackAnimation()
+        {
+            attackFrame++;
+
+            if(attackFrame < 10)
+            {
+                // move unit right
+                attackFrameOffset.X = attackFrame * 2;
+                //unitHealthRects[selectedIndex].X;
+            }
+            else if(attackFrame == 10)
+            {
+                attackFrameOffset.X = attackFrame * 2;
+                // deal damage ??
+                //int targetUnit = FindTarget(selectedUnit);
+                //Skill selectedSkill = (Skill)selectedUnit.Skills[rnd.Next(4)];
+
+                //int damage = CombatCalculation(units[targetUnit], selectedUnit, selectedSkill);
+
+                //healthBars[targetUnit].Set(units[targetUnit].PercentHealth());
+                //healthBars[selectedIndex].Set(selectedUnit.PercentHealth());
+
+            }
+            else if(attackFrame < 20)
+            {
+                attackFrameOffset.X = (20 - attackFrame) * 2;
+                //unitLocs[selectedIndex].X = unitRects[selectedIndex].X - ((100 - attackFrame) / 5);
+            }
+            else if(attackFrame == 20)
+            {
+                attackFrameOffset.X = 0;
+                attackFrame = 0;
+                //unitLocs[selectedIndex].X = unitRects[selectedIndex].X;
+            }
+            else
+            {
+                attackFrameOffset.X = 0;
+                attackFrame = 0;
+                //battleState = BattleState.RoundNext;
+                //SetState(BattleState.RoundNext);
+            }
+
+            if(IsEnemy)
+            {
+                attackFrameOffset.X *= -1.0f;
+            }
+        }
+
+        public bool IsAnimating()
+        {
+            if(attackFrame > 0)
+            {
+                return true;
+            }
+
+            return false;
+        }
+
+        //public AnimatedSprite Texture
+        //{
+        //    get { return unitTexture; }
+        //    //set { _type = value; }
+        //}
 
         public bool IsAlive()
         {
