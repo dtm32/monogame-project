@@ -524,6 +524,8 @@ namespace _2D_Game.Content
                         Console.WriteLine(" you lose!");
                     break;
             }
+
+            UpdateHealthBars();
         }
 
         private int CheckUnitIntersect(Rectangle cursorRect)
@@ -569,9 +571,11 @@ namespace _2D_Game.Content
                 attack = attacker.Fcs;
                 defense = target.Res;
             }
-            else if(skill.Type == Skill.SkillType.Effect)
+            else if(skill.Type == Skill.SkillType.Effect||
+                skill.Type == Skill.SkillType.Buff)
             {
                 skill.Effect?.Invoke(attacker, target);
+                skill.EffectAll?.Invoke(attacker, units);
 
                 Console.WriteLine($"{attacker.Name} used {skill.Name} on {target.Name}!");
 
@@ -585,7 +589,9 @@ namespace _2D_Game.Content
 
             //damage = (int)((skill.Power * attack * (attacker.Level * attacker.Level / 18 + 1)) / (defense * defense * skill.Penetration) * (rnd.Next(15) / 100 + 0.85) * crit);
             //damage = (int)((skill.Power * attack / defense * (attacker.Level / 3 + 1) / 30) * (rnd.Next(15) / 100 + 0.85) * crit);
-            damage = (int)((skill.Power * attack / defense) * (rnd.Next(15) / 100 + 0.85) * crit);
+            //damage = (int)((skill.Power * attack / defense) * (rnd.Next(15) / 100 + 0.85) * crit);
+            damage = (int)((skill.Power * attack / defense * attacker.Level / 100) * (rnd.Next(15) / 100 + 0.85) * crit);
+            damage = (int)((skill.Power * attack / defense * attacker.Level / 100) * (rnd.Next(15) / 100 + 1.35) * crit);
 
             if(damage < 1)
                 damage = 1;
@@ -593,6 +599,7 @@ namespace _2D_Game.Content
             target.CurrHP -= damage;
 
             skill.Effect?.Invoke(attacker, target);
+            skill.EffectAll?.Invoke(attacker, units);
 
             Console.WriteLine($"{attacker.Name} used {skill.Name} on {target.Name} for {damage} damage!");
             if(crit > 1.0)
@@ -632,6 +639,14 @@ namespace _2D_Game.Content
             }
 
             return false;
+        }
+
+        private void UpdateHealthBars()
+        {
+            for(int i = 0; i < units.Length; i++)
+            {
+                healthBars[i].Set(units[i].PercentHealth());
+            }
         }
 
         private int CheckSkillIntersect(Rectangle cursorRect)
@@ -699,7 +714,6 @@ namespace _2D_Game.Content
                         }
                     }
                 }
-
             }
 
             // draw unit panel if player unit is selected
@@ -716,7 +730,8 @@ namespace _2D_Game.Content
                     String skillText = ((Skill)skills[i]).Name;
                     if(skillHover == i || skillIndex == i)
                         skillColor = Color.LightGray;
-                    if(((Skill)skills[i]).Type != Skill.SkillType.Effect)
+                    if(((Skill)skills[i]).Type != Skill.SkillType.Effect &&
+                        ((Skill)skills[i]).Type != Skill.SkillType.Buff)
                         skillText += $" {((Skill)skills[i]).Power}";
                     spriteBatch.Draw(skillTexture, skillRects[i], skillColor);
                     spriteBatch.DrawString(Game1.FontSmallBold, skillText, skillTextLocs[i], Color.Black);
@@ -770,11 +785,11 @@ namespace _2D_Game.Content
             spriteBatch.DrawString(Game1.FontSmallBold, previewAlly.Name, nameLoc, Color.Black);
             spriteBatch.DrawString(Game1.FontSmallBold, $"HP  {previewAlly.HP}", hpLoc, Color.Black);
             spriteBatch.DrawString(Game1.FontSmallBold, $"LVL  {previewAlly.Level}", levelLoc, Color.Black);
-            spriteBatch.DrawString(Game1.FontSmallBold, $"SPD  {previewAlly.Spd}", spdLoc, Color.Black);
-            spriteBatch.DrawString(Game1.FontSmallBold, $"STR  {previewAlly.Str}", strLoc, Color.Black);
-            spriteBatch.DrawString(Game1.FontSmallBold, $"FCS  {previewAlly.Fcs}", fcsLoc, Color.Black);
-            spriteBatch.DrawString(Game1.FontSmallBold, $"AMR  {previewAlly.Amr}", amrLoc, Color.Black);
-            spriteBatch.DrawString(Game1.FontSmallBold, $"RES  {previewAlly.Res}", resLoc, Color.Black);
+            spriteBatch.DrawString(Game1.FontSmallBold, $"SPD  {previewAlly.Spd}", spdLoc, previewAlly.StatColor(Unit.Speed));
+            spriteBatch.DrawString(Game1.FontSmallBold, $"STR  {previewAlly.Str}", strLoc, previewAlly.StatColor(Unit.Strength));
+            spriteBatch.DrawString(Game1.FontSmallBold, $"FCS  {previewAlly.Fcs}", fcsLoc, previewAlly.StatColor(Unit.Focus));
+            spriteBatch.DrawString(Game1.FontSmallBold, $"AMR  {previewAlly.Amr}", amrLoc, previewAlly.StatColor(Unit.Armor));
+            spriteBatch.DrawString(Game1.FontSmallBold, $"RES  {previewAlly.Res}", resLoc, previewAlly.StatColor(Unit.Resistance));
 
             spriteBatch.Draw(panelCornerTexture, rightCornerRect, null, Color.White, 0f, Vector2.Zero, SpriteEffects.FlipHorizontally, 1f);
 
@@ -803,11 +818,11 @@ namespace _2D_Game.Content
             spriteBatch.DrawString(Game1.FontSmallBold, previewEnemy.Name, nameLoc, Color.Black);
             spriteBatch.DrawString(Game1.FontSmallBold, $"HP  {previewEnemy.HP}", hpLoc, Color.Black);
             spriteBatch.DrawString(Game1.FontSmallBold, $"LVL  {previewEnemy.Level}", levelLoc, Color.Black);
-            spriteBatch.DrawString(Game1.FontSmallBold, $"SPD  {previewEnemy.Spd}", spdLoc, Color.Black);
-            spriteBatch.DrawString(Game1.FontSmallBold, $"STR  {previewEnemy.Str}", strLoc, Color.Black);
-            spriteBatch.DrawString(Game1.FontSmallBold, $"FCS  {previewEnemy.Fcs}", fcsLoc, Color.Black);
-            spriteBatch.DrawString(Game1.FontSmallBold, $"AMR  {previewEnemy.Amr}", amrLoc, Color.Black);
-            spriteBatch.DrawString(Game1.FontSmallBold, $"RES  {previewEnemy.Res}", resLoc, Color.Black);
+            spriteBatch.DrawString(Game1.FontSmallBold, $"SPD  {previewEnemy.Spd}", spdLoc, previewEnemy.StatColor(Unit.Speed));
+            spriteBatch.DrawString(Game1.FontSmallBold, $"STR  {previewEnemy.Str}", strLoc, previewEnemy.StatColor(Unit.Strength));
+            spriteBatch.DrawString(Game1.FontSmallBold, $"FCS  {previewEnemy.Fcs}", fcsLoc, previewEnemy.StatColor(Unit.Focus));
+            spriteBatch.DrawString(Game1.FontSmallBold, $"AMR  {previewEnemy.Amr}", amrLoc, previewEnemy.StatColor(Unit.Armor));
+            spriteBatch.DrawString(Game1.FontSmallBold, $"RES  {previewEnemy.Res}", resLoc, previewEnemy.StatColor(Unit.Resistance));
 
             spriteBatch.Draw(panelCornerTexture, leftCornerRect, Color.White);
 

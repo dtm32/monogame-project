@@ -63,7 +63,9 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\Resources\anim_feather_raptor.png" />
+    <Content Include="Content\Resources\anim_pink_scythe.png" />
     <Content Include="Content\Resources\anim_puff_fly.png" />
+    <Content Include="Content\Resources\anim_red_moth.png" />
     <Content Include="Content\Resources\cursor.png" />
     <Content Include="Content\Resources\cursor_clicked.png" />
     <Content Include="Content\Resources\health_bar.png" />

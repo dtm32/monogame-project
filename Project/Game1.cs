@@ -25,6 +25,7 @@ namespace _2D_Game
         Texture2D cursorTexture, cursorClickedTexture;
         Texture2D blankTexture;
         Texture2D puffFlyTexture, spikePigTexture, featherRaptorTexture, woodThumbTexture, pinkScytheTexture;
+        Texture2D redMothTexture;
         Texture2D fireTexture;
         Texture2D poisonedTexture;
         Texture2D skillTexture;
@@ -42,6 +43,7 @@ namespace _2D_Game
         AnimatedSprite featherRaptorSprite;
         AnimatedSprite woodThumbSprite;
         AnimatedSprite pinkScytheSprite;
+        AnimatedSprite redMothSprite;
 
         AnimatedSprite fireSprite, poisonedSprite;
 
@@ -127,6 +129,10 @@ namespace _2D_Game
             pinkScytheTexture = LoadTexturePNG("anim_pink_scythe");
             pinkScytheSprite = new AnimatedSprite(pinkScytheTexture, 1, 4);
 
+            redMothTexture = LoadTexturePNG("anim_red_moth");
+            redMothSprite = new AnimatedSprite(redMothTexture, 1, 4);
+            redMothSprite.UpdateSpeed = 5;
+
             // combat animation sprites
             fireTexture = LoadTexturePNG("anim_fire");
             fireSprite = new AnimatedSprite(fireTexture, 1, 7);
@@ -189,10 +195,10 @@ namespace _2D_Game
                 skillSet1.Add(new Skill("Tap", 10));
                 ArrayList skillSet2 = new ArrayList();
                 skillSet2.Add(new Skill("Assault", 40));
-                Skill falseSwipe = new Skill("False Swipe", 10, 
+                Skill falseSwipe = new Skill("Fast Swipe", 30, 
                     (self, target) =>
                     {
-                        target.CurrHP = 1;
+                        self.BuffStat(Unit.Speed, 1);
                     });
                 skillSet2.Add(falseSwipe);
                 skillSet2.Add(new Skill("Tap", 10));
@@ -205,10 +211,6 @@ namespace _2D_Game
 
                 ArrayList woodysSkills = new ArrayList();
                 Skill highFive = new Skill("High Five", 50);
-                //highFive.Effect = (self, target) =>
-                //{
-                //    target.CurrHP -= 100;
-                //};
                 Skill finger = new Skill("Hot Hands", 80);
                 finger.Effect = (self, target) =>
                 {
@@ -226,7 +228,7 @@ namespace _2D_Game
                 woodysSkills.Add(dmgOP1_1);
 
                 ArrayList skillSet3 = new ArrayList();
-                skillSet3.Add(new Skill("Reap", 0,
+                skillSet3.Add(new Skill("Reap",
                     (self, target) =>
                     {
                         target.CurrHP = (int)(target.CurrHP * 0.75);
@@ -236,24 +238,62 @@ namespace _2D_Game
                     {
                         self.CurrHP += target.LastDamageTaken / 2;
                     }));
-                skillSet3.Add(new Skill("Smooch", 0));
+                skillSet3.Add(new Skill("Smooch", 100, Skill.SkillType.Magical,
+                    (self, target) =>
+                    {
+                        target.DebuffStat(Unit.Resistance, 2);
+                    }));
                 skillSet3.Add(new Skill("Big Magic Churro", 
                     (self, target) =>
                     {
                         int heal = (int)(self.Fcs * 0.45);
                         target.CurrHP += heal;
                         self.CurrHP += heal;
+                        target.BuffStat(Unit.Speed, 1);
                     }));
 
-                BaseUnit puffFly = new BaseUnit(puffFlySprite, "Puff Fly", "common", "common", skillSet1, 100, 100, 100, 100, 100, 100);
-                BaseUnit spikePig = new BaseUnit(new AnimatedSprite(spikePigSprite), "Spike Pig", "common", "common", skillSet1, 150, 70, 100, 100, 175, 110);
-                BaseUnit pinkScythe = new BaseUnit(pinkScytheSprite, "Pink Scythe", "Mage", "Spirit", skillSet3, 97, 104, 109, 133, 100, 185);
-                BaseUnit featherRaptor = new BaseUnit(new AnimatedSprite(featherRaptorSprite), "Feather Raptor", "common", "common", skillSet2, 110, 105, 98, 70, 95, 60);
-                BaseUnit WOODY_HAHA_XD = new BaseUnit(woodThumbSprite, "Woody", "Dragon", "Spirit", woodysSkills, 100, 187, 85, 75, 110, 80);
+                ArrayList skillSet4 = new ArrayList();
+                skillSet4.Add(new Skill("Swarm", 65));
+                skillSet4.Add(new Skill("Corroding Bite", 40,
+                    (self, target) =>
+                    {
+                        target.DebuffStat(Unit.Armor, 2);
+                        target.DebuffStat(Unit.Resistance, 2);
+                    }));
+                skillSet4.Add(new Skill("Incantation", Skill.SkillType.Buff,
+                    (self, target) =>
+                    {
+                        target.CurrHP += (int)(target.HP * 0.15);
+                        target.BuffStat(Unit.Strength, 1);
+                        target.BuffStat(Unit.Focus, 1);
+                        target.BuffStat(Unit.Armor, 1);
+                        target.BuffStat(Unit.Resistance, 1);
+                    }));
+                skillSet4.Add(new Skill("Toxic Cloud", Skill.SkillType.Magical,
+                    (self, units) =>
+                    {
+                        for(int i = units.Length/2; i < units.Length; i++)
+                        {
+                            units[i].CurrHP -= (int)(self.Fcs * 0.50); // fix this xd
+                        }
+                    }));
+
+                BaseUnit puffFly = new BaseUnit(puffFlySprite, "Puff Fly", "common", "common", skillSet1, 
+                    100, 100, 100, 100, 100, 100);
+                BaseUnit spikePig = new BaseUnit(new AnimatedSprite(spikePigSprite), "Spike Pig", "common", "common", skillSet1, 
+                    150, 70, 100, 100, 175, 110);
+                BaseUnit pinkScythe = new BaseUnit(pinkScytheSprite, "Pink Scythe", "Mage", "Spirit", skillSet3, 
+                    97, 104, 109, 133, 100, 185);
+                BaseUnit featherRaptor = new BaseUnit(new AnimatedSprite(featherRaptorSprite), "Feather Raptor", "common", "common", skillSet2, 
+                    110, 105, 98, 70, 95, 60);
+                BaseUnit WOODY_HAHA_XD = new BaseUnit(woodThumbSprite, "Woody", "Dragon", "Spirit", woodysSkills, 
+                    100, 187, 85, 75, 110, 80);
+                BaseUnit redMoth = new BaseUnit(redMothSprite, "Red Moth", "Beast", "Wild", skillSet4,
+                    168, 151, 69, 103, 168, 169);
 
                 battleManager.AddUnit(featherRaptor, 0);
                 battleManager.AddUnit(pinkScythe, 1);
-                battleManager.AddUnit(featherRaptor, 2);
+                battleManager.AddUnit(redMoth, 2);
                 battleManager.AddUnit(WOODY_HAHA_XD, 3);
 
                 battleManager.AddUnit(puffFly, 4);

@@ -11,25 +11,59 @@ namespace _2D_Game.Content
 {
     class Unit
     {
+        public const int Health = 0;
+        public const int Speed = 1;
+        public const int Strength = 2;
+        public const int Focus = 3;
+        public const int Armor = 4;
+        public const int Resistance = 5;
+
         AnimatedSprite Texture { get; }
         public ArrayList Skills { get; }
         public List<StatusEffect> StatusEffects { get; }
         public string Name { get; }
         public String unitType;
         public String unitFaction;
-        public int HP { get; }
+        public int HP { get; private set; }
         private int currHP;
-        public int Spd { get; }
-        public int Str { get; }
-        public int Fcs { get; }
-        public int Amr { get; }
-        public int Res { get; }
+        public int Spd { get; private set; }
+        public int Str { get; private set;  }
+        public int Fcs { get; private set;  }
+        public int Amr { get; private set;  }
+        public int Res { get; private set; }
         public bool IsEnemy { get; set; }
         public int LastDamageTaken { get; set; }
+
+        private int[] statTiers = new int[6];
 
         private BaseUnit baseUnit;
 
         // TODO: directly add all textures and animations to unit/skill
+        public Unit(BaseUnit baseUnit)
+        {
+            this.Texture     = baseUnit.Texture;
+            this.Name        = baseUnit.Name;
+            this.unitType    = baseUnit.unitType;
+            this.unitFaction = baseUnit.unitFaction;
+            this.Skills      = baseUnit.GetSkills();
+            this.HP          = baseUnit.CalcHP;
+            this.Spd         = baseUnit.CalcSpd;
+            this.Str         = baseUnit.CalcStr;
+            this.Fcs         = baseUnit.CalcFcs;
+            this.Amr         = baseUnit.CalcAmr;
+            this.Res         = baseUnit.CalcRes;
+            this.IsEnemy     = false;
+            this.baseUnit    = baseUnit;
+
+            currHP = this.HP;
+            StatusEffects = new List<StatusEffect>();
+            LastDamageTaken = 0;
+
+            for(int i = 0; i < 6; i++)
+            {
+                statTiers[i] = 0;
+            }
+        }
 
         public int CurrHP
         {
@@ -53,29 +87,127 @@ namespace _2D_Game.Content
             StatusEffects.Add(effect);
         }
 
-        //public int DecreaseHP
-
-
-        public Unit(BaseUnit baseUnit)
+        public int DebuffStat(int stat, int tiers)
         {
-            this.Texture     = baseUnit.Texture;
-            this.Name        = baseUnit.Name;
-            this.unitType    = baseUnit.unitType;
-            this.unitFaction = baseUnit.unitFaction;
-            this.Skills      = baseUnit.GetSkills();
-            this.HP          = baseUnit.CalcHP;
-            this.Spd         = baseUnit.CalcSpd;
-            this.Str         = baseUnit.CalcStr;
-            this.Fcs         = baseUnit.CalcFcs;
-            this.Amr         = baseUnit.CalcAmr;
-            this.Res         = baseUnit.CalcRes;
-            this.IsEnemy     = false;
-            this.baseUnit    = baseUnit;
+            Console.WriteLine($"Debuffing {Name} stat by {tiers}");
 
-            currHP = this.HP;
-            StatusEffects = new List<StatusEffect>();
-            LastDamageTaken = 0;
+            int newStat = 0;
+
+            statTiers[stat] -= tiers;
+
+            if(statTiers[stat] < -8)
+                statTiers[stat] = -8;
+
+            switch(stat)
+            {
+                case Unit.Speed:
+                    newStat = (int)(CalcStatMod(statTiers[stat]) * baseUnit.CalcSpd);
+                    Spd = newStat;
+                    break;
+                case Unit.Strength:
+                    newStat = (int)(CalcStatMod(statTiers[stat]) * baseUnit.CalcStr);
+                    Str = newStat;
+                    break;
+                case Unit.Focus:
+                    newStat = (int)(CalcStatMod(statTiers[stat]) * baseUnit.CalcFcs);
+                    Fcs = newStat;
+                    break;
+                case Unit.Armor:
+                    newStat = (int)(CalcStatMod(statTiers[stat]) * baseUnit.CalcAmr);
+                    Amr = newStat;
+                    break;
+                case Unit.Resistance:
+                    newStat = (int)(CalcStatMod(statTiers[stat]) * baseUnit.CalcRes);
+                    Res = newStat;
+                    break;
+            }
+
+            return newStat;
         }
+
+        public int BuffStat(int stat, int tiers)
+        {
+            Console.WriteLine($"Buffing {Name} stat by {tiers}");
+            int newStat = 0;
+
+            statTiers[stat] += tiers;
+
+            if(statTiers[stat] > 8)
+                statTiers[stat] = 8;
+
+            switch(stat)
+            {
+                case Unit.Speed:
+                    newStat = (int)(CalcStatMod(statTiers[stat]) * baseUnit.CalcSpd);
+                    Spd = newStat;
+                    break;
+                case Unit.Strength:
+                    newStat = (int)(CalcStatMod(statTiers[stat]) * baseUnit.CalcStr);
+                    Str = newStat;
+                    break;
+                case Unit.Focus:
+                    newStat = (int)(CalcStatMod(statTiers[stat]) * baseUnit.CalcFcs);
+                    Fcs = newStat;
+                    break;
+                case Unit.Armor:
+                    newStat = (int)(CalcStatMod(statTiers[stat]) * baseUnit.CalcAmr);
+                    Amr = newStat;
+                    break;
+                case Unit.Resistance:
+                    newStat = (int)(CalcStatMod(statTiers[stat]) * baseUnit.CalcRes);
+                    Res = newStat;
+                    break;
+            }
+
+            return newStat;
+        }
+
+        private float CalcStatMod(int tier)
+        {
+            float statMod = 0.0f;
+
+            if(tier < 0)
+            {
+                //if(tier == -1)
+                //{
+                //    statMod = 4f / 6f;
+                //}
+                //else
+                //{
+                    statMod = 8f / (-1 * tier + 8);
+                //}
+            }
+            else if(tier > 0)
+            {
+                //if(tier == 1)
+                //{
+                //    statMod = 6f / 4f;
+                //}
+                //else if(tier < 10)
+                //{
+                    statMod = (tier + 8) / 8f;
+                //}
+            }
+
+            return statMod;
+        }
+
+        public Color StatColor(int stat)
+        {
+            Color color = Color.Black;
+
+            if(statTiers[stat] > 0)
+            {
+                color = Color.Green;
+            }
+            else if(statTiers[stat] < 0)
+            {
+                color = Color.DarkRed;
+            }
+
+            return color;
+        }
+
 
         public int Level
         {

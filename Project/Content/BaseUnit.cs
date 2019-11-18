@@ -43,7 +43,7 @@ namespace _2D_Game.Content
             Amr = amr;
             Res = res;
             IsEnemy = false;
-            Experience = 10000;
+            Experience = 20000;
         }
 
         public BaseUnit(BaseUnit unit)
@@ -119,6 +119,8 @@ namespace _2D_Game.Content
                 statMult = 0.05 * (level / 10) + 0.50;
             }
 
+            statMult *= 1.5;
+
             return statMult;
         }
 
@@ -144,12 +146,24 @@ namespace _2D_Game.Content
 
         public int CalcAmr
         {
-            get { return (int)(CalcStatMult(Level) * Amr); }
+            get
+            {
+                float earlyDefenseMod = 1.0f;
+                if(Level < 50)
+                    earlyDefenseMod = 0.015f * Level + 0.25f;
+                return (int)(CalcStatMult(Level) * Amr * earlyDefenseMod);
+            }
         }
 
         public int CalcRes
         {
-            get { return (int)(CalcStatMult(Level) * Res); }
+            get
+            {
+                float earlyDefenseMod = 1.0f;
+                if(Level < 50)
+                    earlyDefenseMod = 0.015f * Level + 0.25f;
+                return (int)(CalcStatMult(Level) * Res * earlyDefenseMod);
+            }
         }
     }
 }
