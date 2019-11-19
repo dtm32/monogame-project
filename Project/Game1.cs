@@ -2,6 +2,7 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using System;
 using System.Collections;
 using System.IO;
 
@@ -21,7 +22,10 @@ namespace _2D_Game
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
 
-        Vector2 cursorPosition;
+        // cursor variables
+        Cursor cursor;
+        //Vector2 cursorPosition;
+
         Texture2D cursorTexture, cursorClickedTexture;
         Texture2D blankTexture;
         Texture2D puffFlyTexture, spikePigTexture, featherRaptorTexture, woodThumbTexture, pinkScytheTexture;
@@ -30,7 +34,8 @@ namespace _2D_Game
         Texture2D poisonedTexture;
         Texture2D skillTexture;
         Texture2D panelCornerTexture;
-        Cursor cursor;
+        Texture2D poisonIconTexture, burnIconTexture, bleedIconTexture;
+        IconManager iconManager;
 
         Rectangle[] tileRects = new Rectangle[8];
         Vector2[] tilePos = new Vector2[8];
@@ -47,9 +52,14 @@ namespace _2D_Game
 
         AnimatedSprite fireSprite, poisonedSprite;
 
+        // health bar textures
         Texture2D healthBarTexture;
+        Texture2D healthBarHighlightedTexture;
+        Texture2D animHealthBarTexture;
+        AnimatedSprite animHealthBarSprite;
 
         // sprite fonts
+        FontManager fontManager;
         public static SpriteFont font;
         public static SpriteFont FontSmallBold;
 
@@ -77,15 +87,14 @@ namespace _2D_Game
 
             // TODO: Add your initialization logic here
             //cursorRect = new Rectangle(0, 0, 30, 30);
-            cursorPosition.X = 0;
-            cursorPosition.Y = 0;
+            //cursorPosition.X = 0;
+            //cursorPosition.Y = 0;
             //cursorColor = Color.White;
 
             Rectangle backgroundRect = new Rectangle(0, 0,
                 graphics.GraphicsDevice.Viewport.Width,
                 graphics.GraphicsDevice.Viewport.Height);
             Color backgroundColor = Color.Blue;
-
 
             base.Initialize();
         }
@@ -144,15 +153,27 @@ namespace _2D_Game
             poisonedSprite.Idle = 150;
             poisonedSprite.UpdateSpeed = 4;
 
+            // icon textures
+            bleedIconTexture = LoadTexturePNG("icon_bleed");
+            burnIconTexture = LoadTexturePNG("icon_burned");
+            poisonIconTexture = LoadTexturePNG("icon_poisoned");
+            iconManager = new IconManager(poisonIconTexture, burnIconTexture, bleedIconTexture);
+
             // additional textures
             blankTexture = LoadTexturePNG("square");
             healthBarTexture = LoadTexturePNG("health_bar");
+            healthBarHighlightedTexture = LoadTexturePNG("health_bar_highlighted");
+            animHealthBarTexture = LoadTexturePNG("anim_health_bar");
+            animHealthBarSprite = new AnimatedSprite(animHealthBarTexture, 4, 1);
+            animHealthBarSprite.UpdateSpeed = 5;
+            animHealthBarSprite.Idle = 40;
             skillTexture = LoadTexturePNG("skill_texture");
             panelCornerTexture = LoadTexturePNG("panel_corner");
 
             // fonts
-            font = Content.Load<SpriteFont>("SpriteFonts/Score");
-            FontSmallBold = Content.Load<SpriteFont>("SpriteFonts/SmallBold");
+            //font = Content.Load<SpriteFont>("SpriteFonts/Score");
+            //FontSmallBold = Content.Load<SpriteFont>("SpriteFonts/SmallBold");
+            fontManager = new FontManager(Content);
         }
 
         private Texture2D LoadTexturePNG(string fileName)
@@ -195,32 +216,32 @@ namespace _2D_Game
                 skillSet1.Add(new Skill("Tap", 10));
                 ArrayList skillSet2 = new ArrayList();
                 skillSet2.Add(new Skill("Assault", 40));
-                Skill falseSwipe = new Skill("Fast Swipe", 30, 
+                Skill falseSwipe = new Skill("Fast Swipe", 30, Skill.SkillType.Physical,
                     (self, target) =>
                     {
                         self.BuffStat(Unit.Speed, 1);
-                    });
+                    }, "Increase self Speed(1).");
                 skillSet2.Add(falseSwipe);
                 skillSet2.Add(new Skill("Tap", 10));
-                skillSet2.Add(new Skill("Gouge", 55,
+                skillSet2.Add(new Skill("Gouge", 55, Skill.SkillType.Physical,
                     (self, target) =>
                     {
                         target.Inflict(new StatusEffect(StatusEffect.Poison, 2, self, target));
-                    }));
+                    }, "Inflict Poison(2)."));
 
 
                 ArrayList woodysSkills = new ArrayList();
                 Skill highFive = new Skill("High Five", 50);
-                Skill finger = new Skill("Hot Hands", 80);
-                finger.Effect = (self, target) =>
-                {
-                    target.Inflict(new StatusEffect(StatusEffect.Burn, 2, self, target));
-                };
-                Skill thumb = new Skill("The Bird", 65);
-                thumb.Effect = (self, target) =>
-                {
-                    self.CurrHP += self.CurrHP;
-                };
+                Skill finger = new Skill("Hot Hands", 80, Skill.SkillType.Physical,
+                    (self, target) =>
+                    {
+                        target.Inflict(new StatusEffect(StatusEffect.Burn, 2, self, target));
+                    }, "Inflicts Burn(2).");
+                Skill thumb = new Skill("The Bird", 65, Skill.SkillType.Physical,
+                    (self, target) =>
+                    {
+                        self.CurrHP += (int)((self.HP - self.CurrHP) * 0.20);
+                    }, "Heal unit for 20% of missing health.");
                 Skill dmgOP1_1 = new Skill("DMG_OP_1.1", 801);
                 woodysSkills.Add(highFive);
                 woodysSkills.Add(finger);
@@ -254,12 +275,12 @@ namespace _2D_Game
 
                 ArrayList skillSet4 = new ArrayList();
                 skillSet4.Add(new Skill("Swarm", 65));
-                skillSet4.Add(new Skill("Corroding Bite", 40,
+                skillSet4.Add(new Skill("Corroding Bite", 40, Skill.SkillType.Physical,
                     (self, target) =>
                     {
                         target.DebuffStat(Unit.Armor, 2);
                         target.DebuffStat(Unit.Resistance, 2);
-                    }));
+                    }, "Decrease target Amr/Res(2)."));
                 skillSet4.Add(new Skill("Incantation", Skill.SkillType.Buff,
                     (self, target) =>
                     {
@@ -268,15 +289,16 @@ namespace _2D_Game
                         target.BuffStat(Unit.Focus, 1);
                         target.BuffStat(Unit.Armor, 1);
                         target.BuffStat(Unit.Resistance, 1);
-                    }));
-                skillSet4.Add(new Skill("Toxic Cloud", Skill.SkillType.Magical,
-                    (self, units) =>
+                    }, "Heal target ally (15% unit's Health) and increase Str/Fcs/Amr/Res(1)."));
+                skillSet4.Add(new Skill("Toxic Cloud", 15, Skill.SkillType.Magical,
+                    (self, target, units) =>
                     {
                         for(int i = units.Length/2; i < units.Length; i++)
                         {
-                            units[i].CurrHP -= (int)(self.Fcs * 0.50); // fix this xd
+                            units[i].CurrHP -= (int)(self.Fcs * 0.50); // fix this
+                            units[i].Inflict(new StatusEffect(StatusEffect.Poison, 1, self, units[i]));
                         }
-                    }));
+                    }, "Damage all enemies and inflicts Poison(1)."));
 
                 BaseUnit puffFly = new BaseUnit(puffFlySprite, "Puff Fly", "common", "common", skillSet1, 
                     100, 100, 100, 100, 100, 100);
@@ -301,9 +323,10 @@ namespace _2D_Game
                 battleManager.AddUnit(pinkScythe, 6);
                 battleManager.AddUnit(spikePig, 7);
 
-                battleManager.AddTextures(blankTexture, healthBarTexture, skillTexture, panelCornerTexture);
-                battleManager.AddSprites(fireSprite, poisonedSprite);
+                battleManager.AddTextures(blankTexture, healthBarTexture, healthBarHighlightedTexture, skillTexture, panelCornerTexture);
+                battleManager.AddSprites(fireSprite, poisonedSprite, animHealthBarSprite);
                 battleManager.AddFonts(font);
+                battleManager.AddIcons(iconManager);
 
                 gameState = GameState.Run;
                 battleManager.Start();
@@ -313,7 +336,6 @@ namespace _2D_Game
             cursor.Update(Mouse.GetState());
 
             battleManager.Update(cursor);
-
 
             base.Update(gameTime);
         }

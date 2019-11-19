@@ -70,13 +70,16 @@ namespace _2D_Game.Content
         Unit selectedUnit = null;
         int selectedIndex = 0;
         bool unitSelected = false;
-        Texture2D blankTexture, healthBarTexture, skillTexture;
+        Texture2D blankTexture, healthBarTexture, healthBarHighlightedTexture, skillTexture;
         SpriteFont defaultFont;
         Rectangle unitRect;
 
         //int[] unitHealth = new int[SIZE];
         AnimatedSprite fireSprite;
         AnimatedSprite poisonedSprite;
+        AnimatedSprite healthBarSprite;
+
+        IconManager iconManager;
 
         Queue<int> roundOrder;
 
@@ -142,23 +145,30 @@ namespace _2D_Game.Content
 
         Texture2D panelCornerTexture;
 
-        public void AddTextures(Texture2D blankTexture, Texture2D healthBarTexture, Texture2D skillTexture, Texture2D panelCornerTexture)
+        public void AddTextures(Texture2D blankTexture, Texture2D healthBarTexture, Texture2D healthBarHighlightedTexture, Texture2D skillTexture, Texture2D panelCornerTexture)
         {
             this.blankTexture = blankTexture;
             this.healthBarTexture = healthBarTexture;
+            this.healthBarHighlightedTexture = healthBarHighlightedTexture;
             this.skillTexture = skillTexture;
             this.panelCornerTexture = panelCornerTexture;
         }
 
-        public void AddSprites(AnimatedSprite fireSprite, AnimatedSprite poisonedSprite)
+        public void AddSprites(AnimatedSprite fireSprite, AnimatedSprite poisonedSprite, AnimatedSprite healthBarSprite)
         {
             this.fireSprite = fireSprite;
             this.poisonedSprite = poisonedSprite;
+            this.healthBarSprite = healthBarSprite;
         }
 
         public void AddFonts(SpriteFont defaultFont)
         {
             this.defaultFont = defaultFont;
+        }
+
+        public void AddIcons(IconManager iconManager)
+        {
+            this.iconManager = iconManager;
         }
 
         public bool AddUnit(BaseUnit newUnit, int index)
@@ -185,7 +195,7 @@ namespace _2D_Game.Content
             {
                 int posX = (int)unitLocs[i].X;
                 int posY = (int)unitLocs[i].Y + HEALTH_BAR_OFFSET;
-                healthBars[i] = new HealthBar(healthBarTexture, blankTexture, posX, posY);
+                healthBars[i] = new HealthBar(healthBarTexture, new AnimatedSprite(healthBarSprite), blankTexture, posX, posY);
             }
 
             // TODO: check that all required textures are loaded before starting
@@ -204,7 +214,9 @@ namespace _2D_Game.Content
         //    //unitHealthRects[unitIndex].X = (int)unitLocs[unitIndex].X + HEALTH_BAR_PADDING_X + HEALTH_BAR_WIDTH - (int)unitHealthRects[unitIndex].Width;
         //}
 
-        int attackFrame = 0;
+        int prevSkillHover = -1;
+        int skillHoverFrames = 0;
+        Skill skillPreview = null;
 
         public void Update(Cursor cursor)
         {
@@ -238,13 +250,10 @@ namespace _2D_Game.Content
             fireSprite.Update();
             poisonedSprite.Update();
 
-            // right click unit preview
             if(cursor.RightClick)
             {
+                // right click unit preview
                 int unitClicked = CheckUnitIntersect(cursor.Rect);
-                //int skillClicked = CheckSkillIntersect(cursor.Rect);
-                //skillIndex = skillClicked;
-
 
                 if(unitClicked != -1)
                 {
@@ -261,6 +270,67 @@ namespace _2D_Game.Content
                 {
                     previewEnemy = null;
                 }
+
+                // right click skill panel
+                //int skillClicked = CheckSkillIntersect(cursor.Rect);
+
+                //if(skillClicked != -1)
+                //{
+                //    skillPreview = (Skill)selectedUnit.Skills[skillClicked];
+                //    skillDescriptionRect.X = cursor.Rect.X;
+
+                //    string description = "Heal target ally (15% unit's missing Health) and increase Str/Fcs/Amr/Res(1).";
+
+                //    description = WrapText(FontManager.Default_Regular_9, description, skillDescriptionRect.Width - 2 * skillDescriptionRectPadding);
+
+                //    int numLines = description.Split('\n').Length;
+                //    int textHeight = FontManager.Default_Regular_9.LineSpacing * numLines;
+                //    int panelHeight = textHeight + 2 * skillDescriptionRectPadding;
+
+                //    skillDescriptionRect.Y = cursor.Rect.Y - panelHeight;
+                //}
+                //else
+                //{
+                //    skillPreview = null;
+                //}
+            }
+
+            int skillHovered = CheckSkillIntersect(cursor.Rect);
+
+            if(skillHovered > -1)
+            {
+                if(prevSkillHover == skillHovered)
+                {
+                    skillHoverFrames++;
+
+                    if(skillHoverFrames > 20)
+                    {
+                        skillPreview = (Skill)selectedUnit.Skills[skillHovered];
+
+                        skillPreview = (Skill)selectedUnit.Skills[skillHovered];
+                        skillDescriptionRect.X = cursor.Rect.X;
+
+                        string description = skillPreview.Description;
+
+                        description = WrapText(FontManager.Default_Regular_9, description, skillDescriptionRect.Width - 2 * skillDescriptionRectPadding);
+
+                        int numLines = description.Split('\n').Length;
+                        int textHeight = FontManager.Default_Regular_9.LineSpacing * numLines;
+                        int panelHeight = textHeight + 2 * skillDescriptionRectPadding + 1;
+
+                        skillDescriptionRect.Y = cursor.Rect.Y - panelHeight;
+                    }
+                }
+                else
+                {
+                    prevSkillHover = skillHovered;
+                    skillHoverFrames = 0;
+                    skillPreview = null;
+                }
+            }
+            else
+            {
+                skillPreview = null;
             }
 
 
@@ -366,8 +436,12 @@ namespace _2D_Game.Content
                     }
 
                     selectedUnit = units[nextIndex];
+                    healthBars[nextIndex].Reset();
                     selectedIndex = nextIndex;
                     unitSelected = true;
+
+                    // remove links to selected unit
+                    skillPreview = null;
 
                     bool nextIsAlive = units[nextIndex].IsAlive();
 
@@ -575,7 +649,7 @@ namespace _2D_Game.Content
                 skill.Type == Skill.SkillType.Buff)
             {
                 skill.Effect?.Invoke(attacker, target);
-                skill.EffectAll?.Invoke(attacker, units);
+                skill.EffectAll?.Invoke(attacker, target, units);
 
                 Console.WriteLine($"{attacker.Name} used {skill.Name} on {target.Name}!");
 
@@ -599,7 +673,7 @@ namespace _2D_Game.Content
             target.CurrHP -= damage;
 
             skill.Effect?.Invoke(attacker, target);
-            skill.EffectAll?.Invoke(attacker, units);
+            skill.EffectAll?.Invoke(attacker, target, units);
 
             Console.WriteLine($"{attacker.Name} used {skill.Name} on {target.Name} for {damage} damage!");
             if(crit > 1.0)
@@ -680,10 +754,10 @@ namespace _2D_Game.Content
             // draw units
             for(int i = 0; i < 8; i++)
             {
-                Color defaultColor = Color.White;
+                bool highlighted = false;
                 if(selectedIndex == i)
                 {
-                    defaultColor = Color.MediumPurple;
+                    highlighted = true; ;
                 }
 
                 Color unitColor = Color.White;
@@ -691,7 +765,7 @@ namespace _2D_Game.Content
                 {
                     units[i].Draw(spriteBatch, unitLocs[i]);
 
-                    healthBars[i].Draw(spriteBatch, defaultColor);
+                    healthBars[i].Draw(spriteBatch, highlighted);
 
                     if(units[i].StatusEffects.Count > 0)
                     {
@@ -720,22 +794,6 @@ namespace _2D_Game.Content
             if(unitSelected && !selectedUnit.IsEnemy)
             {
                 DrawUnitPanel(spriteBatch);
-
-                spriteBatch.DrawString(Game1.font, selectedUnit.Name.ToUpper(), new Vector2(unitRect.X + unitPanelPadding, unitRect.Y + unitPanelPadding - 5), Color.Black);
-
-                ArrayList skills = selectedUnit.Skills;
-                for(int i = 0; i < 4; i++)
-                {
-                    Color skillColor = Color.White;
-                    String skillText = ((Skill)skills[i]).Name;
-                    if(skillHover == i || skillIndex == i)
-                        skillColor = Color.LightGray;
-                    if(((Skill)skills[i]).Type != Skill.SkillType.Effect &&
-                        ((Skill)skills[i]).Type != Skill.SkillType.Buff)
-                        skillText += $" {((Skill)skills[i]).Power}";
-                    spriteBatch.Draw(skillTexture, skillRects[i], skillColor);
-                    spriteBatch.DrawString(Game1.FontSmallBold, skillText, skillTextLocs[i], Color.Black);
-                }
             }
 
             if(previewAlly != null)
@@ -745,6 +803,10 @@ namespace _2D_Game.Content
             if(previewEnemy != null)
             {
                 DrawEnemyPreview(spriteBatch);
+            }
+            if(skillPreview != null)
+            {
+                DrawSkillDescription(spriteBatch);
             }
         }
 
@@ -762,17 +824,33 @@ namespace _2D_Game.Content
 
             spriteBatch.Draw(panelCornerTexture, leftCornerRect, Color.White);
             spriteBatch.Draw(panelCornerTexture, rightCornerRect, null, Color.White, 0f, Vector2.Zero, SpriteEffects.FlipHorizontally, 1f);
+
+            spriteBatch.DrawString(FontManager.Default_Bold_15, selectedUnit.Name.ToUpper(), new Vector2(unitRect.X + unitPanelPadding, unitRect.Y + unitPanelPadding - 5), Color.Black);
+
+            ArrayList skills = selectedUnit.Skills;
+            for(int i = 0; i < 4; i++)
+            {
+                Color skillColor = Color.White;
+                String skillText = ((Skill)skills[i]).Name;
+                if(skillHover == i || skillIndex == i)
+                    skillColor = Color.LightGray;
+                //if(((Skill)skills[i]).Type != Skill.SkillType.Effect &&
+                //    ((Skill)skills[i]).Type != Skill.SkillType.Buff)
+                //    skillText += $" {((Skill)skills[i]).Power}";
+                spriteBatch.Draw(skillTexture, skillRects[i], skillColor);
+                spriteBatch.DrawString(FontManager.Default_Regular_11, skillText, skillTextLocs[i], Color.Black);
+            }
         }
 
         private void DrawUnitPreview(SpriteBatch spriteBatch)
         {
-            int unitPreviewPadding = 20;
+            int unitPreviewPadding = 18;
             Rectangle borderRect = new Rectangle(0, allyUnitPreviewRect.Y - 4, allyUnitPreviewRect.Width + 4, allyUnitPreviewRect.Height + 4);
             Rectangle rightCornerRect = new Rectangle(allyUnitPreviewRect.Width - 30, allyUnitPreviewRect.Y, 30, 30);
             Vector2 nameLoc = new Vector2(unitPreviewPadding, allyUnitPreviewRect.Y + unitPreviewPadding);
             Vector2 spriteLoc = new Vector2(unitPreviewPadding + 50, allyUnitPreviewRect.Y + unitPreviewPadding);
             Vector2 levelLoc = new Vector2(unitPreviewPadding, nameLoc.Y + 17);
-            Vector2 hpLoc = new Vector2(unitPreviewPadding, levelLoc.Y + 29);
+            Vector2 hpLoc = new Vector2(unitPreviewPadding, levelLoc.Y + 32);
             Vector2 spdLoc = new Vector2(unitPreviewPadding + 80, hpLoc.Y);
             Vector2 strLoc = new Vector2(unitPreviewPadding, spdLoc.Y + 17);
             Vector2 fcsLoc = new Vector2(unitPreviewPadding + 80, strLoc.Y);
@@ -782,14 +860,14 @@ namespace _2D_Game.Content
             spriteBatch.Draw(blankTexture, borderRect, new Color(64, 64, 64));
             spriteBatch.Draw(blankTexture, allyUnitPreviewRect, Color.SlateGray);
 
-            spriteBatch.DrawString(Game1.FontSmallBold, previewAlly.Name, nameLoc, Color.Black);
-            spriteBatch.DrawString(Game1.FontSmallBold, $"HP  {previewAlly.HP}", hpLoc, Color.Black);
-            spriteBatch.DrawString(Game1.FontSmallBold, $"LVL  {previewAlly.Level}", levelLoc, Color.Black);
-            spriteBatch.DrawString(Game1.FontSmallBold, $"SPD  {previewAlly.Spd}", spdLoc, previewAlly.StatColor(Unit.Speed));
-            spriteBatch.DrawString(Game1.FontSmallBold, $"STR  {previewAlly.Str}", strLoc, previewAlly.StatColor(Unit.Strength));
-            spriteBatch.DrawString(Game1.FontSmallBold, $"FCS  {previewAlly.Fcs}", fcsLoc, previewAlly.StatColor(Unit.Focus));
-            spriteBatch.DrawString(Game1.FontSmallBold, $"AMR  {previewAlly.Amr}", amrLoc, previewAlly.StatColor(Unit.Armor));
-            spriteBatch.DrawString(Game1.FontSmallBold, $"RES  {previewAlly.Res}", resLoc, previewAlly.StatColor(Unit.Resistance));
+            spriteBatch.DrawString(FontManager.Default_Bold_11, previewAlly.Name.ToUpper(), nameLoc, Color.Black);
+            spriteBatch.DrawString(FontManager.Default_Regular_9, $"HP  {previewAlly.HP}", hpLoc, Color.Black);
+            spriteBatch.DrawString(FontManager.Default_Regular_9, $"LVL  {previewAlly.Level}", levelLoc, Color.Black);
+            spriteBatch.DrawString(FontManager.Default_Regular_9, $"SPD  {previewAlly.Spd}", spdLoc, previewAlly.StatColor(Unit.Speed));
+            spriteBatch.DrawString(FontManager.Default_Regular_9, $"STR  {previewAlly.Str}", strLoc, previewAlly.StatColor(Unit.Strength));
+            spriteBatch.DrawString(FontManager.Default_Regular_9, $"FCS  {previewAlly.Fcs}", fcsLoc, previewAlly.StatColor(Unit.Focus));
+            spriteBatch.DrawString(FontManager.Default_Regular_9, $"AMR  {previewAlly.Amr}", amrLoc, previewAlly.StatColor(Unit.Armor));
+            spriteBatch.DrawString(FontManager.Default_Regular_9, $"RES  {previewAlly.Res}", resLoc, previewAlly.StatColor(Unit.Resistance));
 
             spriteBatch.Draw(panelCornerTexture, rightCornerRect, null, Color.White, 0f, Vector2.Zero, SpriteEffects.FlipHorizontally, 1f);
 
@@ -798,35 +876,108 @@ namespace _2D_Game.Content
 
         private void DrawEnemyPreview(SpriteBatch spriteBatch)
         {
-            int unitPreviewPadding = 20;
-            int unitPreviewPaddingLeft = 25;
+            int unitPreviewPadding = 18;
+            int unitPreviewPaddingLeft = 23;
             Rectangle borderRect = new Rectangle(enemyUnitPreviewRect.X - 4, enemyUnitPreviewRect.Y - 4, enemyUnitPreviewRect.Width + 4, enemyUnitPreviewRect.Height + 4);
             Rectangle leftCornerRect = new Rectangle(enemyUnitPreviewRect.X, enemyUnitPreviewRect.Y, 30, 30);
             Vector2 nameLoc = new Vector2(enemyUnitPreviewRect.X + unitPreviewPaddingLeft, enemyUnitPreviewRect.Y + unitPreviewPadding);
             Vector2 spriteLoc = new Vector2(nameLoc.X + 50, enemyUnitPreviewRect.Y + unitPreviewPadding);
-            Vector2 levelLoc = new Vector2(nameLoc.X, nameLoc.Y + 17);
-            Vector2 hpLoc = new Vector2(nameLoc.X, levelLoc.Y + 29);
+            Vector2 levelLoc = new Vector2(nameLoc.X, nameLoc.Y + 18);
+            Vector2 hpLoc = new Vector2(nameLoc.X, levelLoc.Y + 32);
             Vector2 spdLoc = new Vector2(nameLoc.X + 80, hpLoc.Y);
             Vector2 strLoc = new Vector2(nameLoc.X, spdLoc.Y + 17);
             Vector2 fcsLoc = new Vector2(nameLoc.X + 80, strLoc.Y);
             Vector2 amrLoc = new Vector2(nameLoc.X, fcsLoc.Y + 17);
             Vector2 resLoc = new Vector2(nameLoc.X + 80, amrLoc.Y);
 
+            // draw panel
             spriteBatch.Draw(blankTexture, borderRect, new Color(64, 64, 64));
             spriteBatch.Draw(blankTexture, enemyUnitPreviewRect, Color.SlateGray);
 
-            spriteBatch.DrawString(Game1.FontSmallBold, previewEnemy.Name, nameLoc, Color.Black);
-            spriteBatch.DrawString(Game1.FontSmallBold, $"HP  {previewEnemy.HP}", hpLoc, Color.Black);
-            spriteBatch.DrawString(Game1.FontSmallBold, $"LVL  {previewEnemy.Level}", levelLoc, Color.Black);
-            spriteBatch.DrawString(Game1.FontSmallBold, $"SPD  {previewEnemy.Spd}", spdLoc, previewEnemy.StatColor(Unit.Speed));
-            spriteBatch.DrawString(Game1.FontSmallBold, $"STR  {previewEnemy.Str}", strLoc, previewEnemy.StatColor(Unit.Strength));
-            spriteBatch.DrawString(Game1.FontSmallBold, $"FCS  {previewEnemy.Fcs}", fcsLoc, previewEnemy.StatColor(Unit.Focus));
-            spriteBatch.DrawString(Game1.FontSmallBold, $"AMR  {previewEnemy.Amr}", amrLoc, previewEnemy.StatColor(Unit.Armor));
-            spriteBatch.DrawString(Game1.FontSmallBold, $"RES  {previewEnemy.Res}", resLoc, previewEnemy.StatColor(Unit.Resistance));
+            // draw name and level
+            spriteBatch.DrawString(FontManager.Default_Bold_11, previewEnemy.Name.ToUpper(), nameLoc, Color.Black);
+            spriteBatch.DrawString(FontManager.Default_Regular_9, $"LVL  {previewEnemy.Level}", levelLoc, Color.Black);
+
+            // draw status condition icons
+            Rectangle statusRect = new Rectangle((int)nameLoc.X, (int)levelLoc.Y + 16, 16, 16);
+            previewEnemy.StatusEffects.ForEach((status) =>
+            {
+                int statusType = status.Type;
+
+                spriteBatch.Draw(iconManager.IconTexture(statusType), statusRect, Color.White);
+
+                statusRect.X += 16;
+            });
+
+            // draw unit stats
+            spriteBatch.DrawString(FontManager.Default_Regular_9, $"HP  {previewEnemy.HP}", hpLoc, Color.Black);
+            spriteBatch.DrawString(FontManager.Default_Regular_9, $"SPD  {previewEnemy.Spd}", spdLoc, previewEnemy.StatColor(Unit.Speed));
+            spriteBatch.DrawString(FontManager.Default_Regular_9, $"STR  {previewEnemy.Str}", strLoc, previewEnemy.StatColor(Unit.Strength));
+            spriteBatch.DrawString(FontManager.Default_Regular_9, $"FCS  {previewEnemy.Fcs}", fcsLoc, previewEnemy.StatColor(Unit.Focus));
+            spriteBatch.DrawString(FontManager.Default_Regular_9, $"AMR  {previewEnemy.Amr}", amrLoc, previewEnemy.StatColor(Unit.Armor));
+            spriteBatch.DrawString(FontManager.Default_Regular_9, $"RES  {previewEnemy.Res}", resLoc, previewEnemy.StatColor(Unit.Resistance));
 
             spriteBatch.Draw(panelCornerTexture, leftCornerRect, Color.White);
+        }
 
-            //previewAlly.Draw(spriteBatch, spriteLoc);
+        Rectangle skillDescriptionRect = new Rectangle(10, 10, 200, 0);
+        int skillDescriptionRectPadding = 10;
+
+        private void DrawSkillDescription(SpriteBatch spriteBatch)
+        {
+            Rectangle skillDescriptionBorderRect = new Rectangle(
+                skillDescriptionRect.X - 2, skillDescriptionRect.Y - 2,
+                skillDescriptionRect.Width + 4, skillDescriptionRect.Height + 4);
+            Vector2 textLoc = new Vector2(skillDescriptionRect.X + skillDescriptionRectPadding,
+                skillDescriptionRect.Y + skillDescriptionRectPadding);
+            string description = skillPreview.Description;
+
+            description = WrapText(FontManager.Default_Regular_9, description, skillDescriptionRect.Width - 2 * skillDescriptionRectPadding);
+
+            int numLines = description.Split('\n').Length;
+            int textHeight = FontManager.Default_Regular_9.LineSpacing * numLines;
+
+            skillDescriptionRect.Height = textHeight + 2 * skillDescriptionRectPadding;
+
+            //skillDescriptionRect.Y -= skillDescriptionRect.Height;
+
+            // draw panel
+            spriteBatch.Draw(blankTexture, skillDescriptionBorderRect, new Color(64, 64, 64));
+            spriteBatch.Draw(blankTexture, skillDescriptionRect, Color.SlateGray);
+
+            // draw text
+            spriteBatch.DrawString(FontManager.Default_Regular_9, description, textLoc, Color.Black);
+        }
+
+        public string WrapText(SpriteFont spriteFont, string text, float maxLineWidth)
+        {
+            string[] words = text.Split(' ');
+            StringBuilder sb = new StringBuilder();
+            float lineWidth = 0f;
+            float spaceWidth = spriteFont.MeasureString(" ").X;
+
+            foreach(string word in words)
+            {
+                Vector2 size = spriteFont.MeasureString(word);
+
+                if(word.Contains("\n"))
+                {
+                    lineWidth = size.X + spaceWidth;
+                    sb.Append(word + " ");
+                }
+                else if(lineWidth + size.X < maxLineWidth)
+                {
+                    sb.Append(word + " ");
+                    lineWidth += size.X + spaceWidth;
+                }
+                else
+                {
+                    sb.Append("\n" + word + " ");
+                    lineWidth = size.X + spaceWidth;
+                }
+            }
+
+            return sb.ToString();
         }
     }
 }

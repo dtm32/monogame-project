@@ -19,16 +19,18 @@ namespace _2D_Game.Content
         private const int HEALTH_DELAY = 30;
 
         private Texture2D texture, blankTexture;
+        private AnimatedSprite highlightSprite;
         private Rectangle textureRect;
         private Rectangle rect;
         private Rectangle prevRect;
         private int delay;
         private int setWidth;
 
-        public HealthBar(Texture2D healthBarTexture, Texture2D blankTexture, int x, int y)
+        public HealthBar(Texture2D healthBarTexture, AnimatedSprite highlightSprite, Texture2D blankTexture, int x, int y)
         {
             texture = healthBarTexture;
             this.blankTexture = blankTexture;
+            this.highlightSprite = highlightSprite;
             textureRect = new Rectangle(x, y, TEXTURE_WIDTH, TEXTURE_HEIGHT);
             rect = new Rectangle(x + HEALTH_BAR_PADDING_X, y + HEALTH_BAR_PADDING_Y,
                 HEALTH_BAR_WIDTH, HEALTH_BAR_HEIGHT);
@@ -70,8 +72,15 @@ namespace _2D_Game.Content
             return false;
         }
 
+        public void Reset()
+        {
+            highlightSprite.Reset();
+        }
+
         public void Update()
         {
+            highlightSprite.Update();
+
             if (rect.Width < prevRect.Width)
             {
                 if (delay == -1)
@@ -113,11 +122,24 @@ namespace _2D_Game.Content
             }
         }
 
-        public void Draw(SpriteBatch spriteBatch, Color textureColor)
+        public void Draw(SpriteBatch spriteBatch, bool highlighted)
         {
-            spriteBatch.Draw(texture, textureRect, textureColor);
-            spriteBatch.Draw(blankTexture, prevRect, Color.Orange);
-            spriteBatch.Draw(blankTexture, rect, Color.Green);
+            if(highlighted)
+            {
+                Rectangle highlightRect = new Rectangle(textureRect.X - 2, textureRect.Y - 2,
+                    textureRect.Width + 4, textureRect.Height + 4);
+                Vector2 highlightLoc = new Vector2(textureRect.X - 2, textureRect.Y - 2);
+                highlightSprite.Draw(spriteBatch, highlightLoc);
+                //spriteBatch.Draw(highlightTexture, highlightRect, Color.White);
+                spriteBatch.Draw(blankTexture, prevRect, Color.Orange);
+                spriteBatch.Draw(blankTexture, rect, Color.Green);
+            }
+            else
+            {
+                spriteBatch.Draw(texture, textureRect, Color.White);
+                spriteBatch.Draw(blankTexture, prevRect, Color.Orange);
+                spriteBatch.Draw(blankTexture, rect, Color.Green);
+            }
         }
     }
 }
