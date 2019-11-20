@@ -29,7 +29,7 @@ namespace _2D_Game.Content
         // unit sprite consts
         const int SPRITE_WIDTH = 96;
         const int SPRITE_HEIGHT = 128;
-        const int TOP_OFFSET = 30;
+        const int TOP_OFFSET = 70;
         const int HEALTH_BAR_OFFSET = SPRITE_HEIGHT - 16;
 
         Vector2[] defaultUnitLocations = new Vector2[SIZE];
@@ -70,9 +70,10 @@ namespace _2D_Game.Content
         //Unit selectedUnit = null;
         int selectedIndex = 0;
         bool unitSelected = false;
-        Texture2D blankTexture, healthBarTexture, healthBarHighlightedTexture, skillTexture;
+        Texture2D blankTexture, healthBarTexture, healthBarHighlightedTexture, skillTexture, grassBackgroundTexture;
         SpriteFont defaultFont;
         Rectangle unitRect;
+        Rectangle backgroundRect;
 
         //int[] unitHealth = new int[SIZE];
         AnimatedSprite burnSprite;
@@ -94,10 +95,12 @@ namespace _2D_Game.Content
             int viewportWidth = graphics.GraphicsDevice.Viewport.Width;
             int viewportHeight = graphics.GraphicsDevice.Viewport.Height;
 
+            backgroundRect = new Rectangle(0, 0, viewportWidth, viewportHeight);
+
             for(int i = 0; i < SIZE; i++)
             {
                 int posX = viewportWidth / 2 - 300;
-                int posY = (int)((i % 4) * (SPRITE_HEIGHT * 1.0) + TOP_OFFSET);
+                int posY = (int)((i % 4) * (SPRITE_HEIGHT * 0.9) + TOP_OFFSET);
 
                 if(i >= SIZE / 2)
                 {
@@ -151,13 +154,15 @@ namespace _2D_Game.Content
 
         Texture2D panelCornerTexture;
 
-        public void AddTextures(Texture2D blankTexture, Texture2D healthBarTexture, Texture2D healthBarHighlightedTexture, Texture2D skillTexture, Texture2D panelCornerTexture)
+        public void AddTextures(Texture2D blankTexture, Texture2D healthBarTexture, Texture2D healthBarHighlightedTexture, 
+            Texture2D skillTexture, Texture2D panelCornerTexture, Texture2D grassBackgroundTexture)
         {
             this.blankTexture = blankTexture;
             this.healthBarTexture = healthBarTexture;
             this.healthBarHighlightedTexture = healthBarHighlightedTexture;
             this.skillTexture = skillTexture;
             this.panelCornerTexture = panelCornerTexture;
+            this.grassBackgroundTexture = grassBackgroundTexture;
         }
 
         public void AddSprites(AnimatedSprite burnSprite, AnimatedSprite poisonedSprite,
@@ -330,7 +335,7 @@ namespace _2D_Game.Content
 
                         string description = skillPreview.Description;
 
-                        description = WrapText(FontManager.Default_Regular_9, description, skillDescriptionRect.Width - 2 * skillDescriptionRectPadding);
+                        description = FontManager.WrapText(FontManager.Default_Regular_9, description, skillDescriptionRect.Width - 2 * skillDescriptionRectPadding);
 
                         int numLines = description.Split('\n').Length;
                         int textHeight = FontManager.Default_Regular_9.LineSpacing * numLines;
@@ -796,6 +801,9 @@ namespace _2D_Game.Content
 
         public void Draw(SpriteBatch spriteBatch)
         {
+            // draw background
+            spriteBatch.Draw(grassBackgroundTexture, backgroundRect, Color.White);
+
             // draw units
             for(int i = 0; i < 8; i++)
             {
@@ -986,7 +994,7 @@ namespace _2D_Game.Content
                 skillDescriptionRect.Y + skillDescriptionRectPadding);
             string description = skillPreview.Description;
 
-            description = WrapText(FontManager.Default_Regular_9, description, 
+            description = FontManager.WrapText(FontManager.Default_Regular_9, description, 
                 skillDescriptionRect.Width - 2 * skillDescriptionRectPadding);
 
             int numLines = description.Split('\n').Length;
@@ -1007,37 +1015,6 @@ namespace _2D_Game.Content
             Rectangle typeRect = new Rectangle(skillDescriptionRect.X + skillDescriptionRectPadding - 1,
                 skillDescriptionRect.Y + skillDescriptionRectPadding + 13, 16, 16);
             spriteBatch.Draw(iconManager.SkillTypeIcon(skillPreview.Type), typeRect, Color.White);
-        }
-
-        public string WrapText(SpriteFont spriteFont, string text, float maxLineWidth)
-        {
-            string[] words = text.Split(' ');
-            StringBuilder sb = new StringBuilder();
-            float lineWidth = 0f;
-            float spaceWidth = spriteFont.MeasureString(" ").X;
-
-            foreach(string word in words)
-            {
-                Vector2 size = spriteFont.MeasureString(word);
-
-                if(word.Contains("\n"))
-                {
-                    lineWidth = size.X + spaceWidth;
-                    sb.Append(word + " ");
-                }
-                else if(lineWidth + size.X < maxLineWidth)
-                {
-                    sb.Append(word + " ");
-                    lineWidth += size.X + spaceWidth;
-                }
-                else
-                {
-                    sb.Append("\n" + word + " ");
-                    lineWidth = size.X + spaceWidth;
-                }
-            }
-
-            return sb.ToString();
         }
     }
 }

@@ -44,6 +44,7 @@
     <Compile Include="Content\AnimatedSprite.cs" />
     <Compile Include="Content\BaseUnit.cs" />
     <Compile Include="Content\BattleManager.cs" />
+    <Compile Include="Content\Button.cs" />
     <Compile Include="Content\Cursor.cs" />
     <Compile Include="Content\FontManager.cs" />
     <Compile Include="Content\HealthBar.cs" />
@@ -67,9 +68,13 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\Resources\anim_feather_raptor.png" />
+    <Content Include="Content\Resources\anim_long_hair.png" />
     <Content Include="Content\Resources\anim_pink_scythe.png" />
+    <Content Include="Content\Resources\anim_psychic_hands.png" />
     <Content Include="Content\Resources\anim_puff_fly.png" />
     <Content Include="Content\Resources\anim_red_moth.png" />
+    <Content Include="Content\Resources\anim_snow_spirit.png" />
+    <Content Include="Content\Resources\battle_background.png" />
     <Content Include="Content\Resources\cursor.png" />
     <Content Include="Content\Resources\cursor_clicked.png" />
     <Content Include="Content\Resources\health_bar.png" />

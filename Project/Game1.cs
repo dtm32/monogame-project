@@ -4,6 +4,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.IO;
 
 namespace _2D_Game
@@ -22,6 +23,8 @@ namespace _2D_Game
         }
 
         public static Random random = new Random();
+        public static int SpriteWidth = 96;
+        public static int SpriteHeight = 128;
 
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
@@ -32,11 +35,6 @@ namespace _2D_Game
 
         Texture2D cursorTexture, cursorClickedTexture;
         Texture2D blankTexture;
-        Texture2D puffFlyTexture, spikePigTexture, featherRaptorTexture, woodThumbTexture, pinkScytheTexture;
-        Texture2D redMothTexture;
-        Texture2D burnTexture;
-        Texture2D poisonedTexture;
-        Texture2D bleedTexture;
         Texture2D skillTexture;
         Texture2D panelCornerTexture;
         Texture2D poisonIconTexture, burnIconTexture, bleedIconTexture;
@@ -50,13 +48,21 @@ namespace _2D_Game
         BattleManager battleManager;
         MainMenu mainMenu;
 
+        List<AnimatedSprite> spriteList;
+        List<BaseUnit> baseUnitList;
+        Texture2D puffFlyTexture, spikePigTexture, featherRaptorTexture, woodThumbTexture, pinkScytheTexture,
+            redMothTexture, longHairTexture, psychicHandsTexture, snowSpiritTexture;
         AnimatedSprite puffFlySprite;
         AnimatedSprite spikePigSprite;
         AnimatedSprite featherRaptorSprite;
         AnimatedSprite woodThumbSprite;
         AnimatedSprite pinkScytheSprite;
         AnimatedSprite redMothSprite;
+        AnimatedSprite longHairSprite;
+        AnimatedSprite psychicHandsSprite;
+        AnimatedSprite snowSpiritSprite;
 
+        Texture2D burnTexture, poisonedTexture, bleedTexture;
         AnimatedSprite burnSprite, poisonedSprite, bleedSprite;
 
         // health bar textures
@@ -66,6 +72,8 @@ namespace _2D_Game
         AnimatedSprite animHealthBarSprite;
         Texture2D animHealthBarEnemyTexture;
         AnimatedSprite animHealthBarEnemySprite;
+
+        Texture2D grassBackgroundTexture;
 
         // sprite fonts
         FontManager fontManager;
@@ -105,6 +113,8 @@ namespace _2D_Game
                 graphics.GraphicsDevice.Viewport.Width,
                 graphics.GraphicsDevice.Viewport.Height);
             Color backgroundColor = Color.Blue;
+            spriteList = new List<AnimatedSprite>();
+            baseUnitList = new List<BaseUnit>();
 
             base.Initialize();
         }
@@ -152,6 +162,28 @@ namespace _2D_Game
             redMothSprite = new AnimatedSprite(redMothTexture, 1, 4);
             redMothSprite.UpdateSpeed = 5;
 
+            longHairTexture = LoadTexturePNG("anim_long_hair");
+            longHairSprite = new AnimatedSprite(longHairTexture, 1, 6);
+            longHairSprite.UpdateSpeed = 5;
+            longHairSprite.Idle = 200;
+
+            psychicHandsTexture = LoadTexturePNG("anim_psychic_hands");
+            psychicHandsSprite = new AnimatedSprite(psychicHandsTexture, 1, 4);
+            psychicHandsSprite.UpdateSpeed = 10;
+
+            snowSpiritTexture = LoadTexturePNG("anim_snow_spirit");
+            snowSpiritSprite = new AnimatedSprite(snowSpiritTexture, 1, 2);
+
+            spriteList.Add(puffFlySprite);
+            spriteList.Add(spikePigSprite);
+            spriteList.Add(featherRaptorSprite);
+            spriteList.Add(woodThumbSprite);
+            spriteList.Add(pinkScytheSprite);
+            spriteList.Add(redMothSprite);
+            spriteList.Add(longHairSprite);
+            spriteList.Add(psychicHandsSprite);
+            spriteList.Add(snowSpiritSprite);
+
             // combat animation sprites
             burnTexture = LoadTexturePNG("anim_fire");
             burnSprite = new AnimatedSprite(burnTexture, 1, 7);
@@ -195,6 +227,7 @@ namespace _2D_Game
             healthBarTexture = LoadTexturePNG("health_bar");
             skillTexture = LoadTexturePNG("skill_texture");
             panelCornerTexture = LoadTexturePNG("panel_corner");
+            grassBackgroundTexture = LoadTexturePNG("battle_background");
 
             // fonts
             //font = Content.Load<SpriteFont>("SpriteFonts/Score");
@@ -238,20 +271,10 @@ namespace _2D_Game
 
             if(gameState == GameState.InitMainMenu)
             {
-                mainMenu.AddTextures(blankTexture, skillTexture);
+                mainMenu.AddTextures(blankTexture, skillTexture, grassBackgroundTexture);
+                mainMenu.AddUnitSprites(spriteList);
                 gameState = GameState.RunMainMenu;
-            }
-            else if(gameState == GameState.RunMainMenu)
-            {
-                mainMenu.Update(cursor);
 
-                if(mainMenu.StartBattle)
-                {
-                    gameState = GameState.InitBattleManager;
-                }
-            }
-            else if(gameState == GameState.InitBattleManager)
-            {
                 ArrayList skillSet1 = new ArrayList();
                 skillSet1.Add(new Skill("Swarm", 0, Skill.SkillType.Physical,
                     (self, target, units) =>
@@ -332,7 +355,7 @@ namespace _2D_Game
                     (self, target) =>
                     {
                         self.CurrHP += target.LastDamageTaken / 2;
-                    }));
+                    }, "Heals self for half damage dealt."));
                 skillSet3.Add(new Skill("Smooch", 100, Skill.SkillType.Magical,
                     (self, target) =>
                     {
@@ -407,17 +430,37 @@ namespace _2D_Game
                 BaseUnit redMoth = new BaseUnit(redMothSprite, "Red Moth", "Beast", "Wild", skillSet4,
                     168, 64, 69, 103, 168, 169);
 
-                battleManager.AddUnit(puffFly, 0);
-                battleManager.AddUnit(pinkScythe, 1);
-                battleManager.AddUnit(redMoth, 2);
-                battleManager.AddUnit(WOODY_HAHA_XD, 3);
+                baseUnitList.Add(puffFly);       // 0
+                baseUnitList.Add(spikePig);      // 1
+                baseUnitList.Add(pinkScythe);    // 2
+                baseUnitList.Add(featherRaptor); // 3
+                baseUnitList.Add(WOODY_HAHA_XD); // 4
+                baseUnitList.Add(redMoth);       // 5
+            }
+            else if(gameState == GameState.RunMainMenu)
+            {
+                mainMenu.Update(cursor);
 
-                battleManager.AddUnit(puffFly, 4);
-                battleManager.AddUnit(featherRaptor, 5);
-                battleManager.AddUnit(pinkScythe, 6);
-                battleManager.AddUnit(spikePig, 7);
+                if(mainMenu.StartBattle)
+                {
+                    gameState = GameState.InitBattleManager;
+                }
+            }
+            else if(gameState == GameState.InitBattleManager)
+            {
 
-                battleManager.AddTextures(blankTexture, healthBarTexture, healthBarHighlightedTexture, skillTexture, panelCornerTexture);
+                battleManager.AddUnit(baseUnitList[0], 0);
+                battleManager.AddUnit(baseUnitList[2], 1);
+                battleManager.AddUnit(baseUnitList[5], 2);
+                battleManager.AddUnit(baseUnitList[4], 3);
+
+                battleManager.AddUnit(baseUnitList[2], 4);
+                battleManager.AddUnit(baseUnitList[3], 5);
+                battleManager.AddUnit(baseUnitList[0], 6);
+                battleManager.AddUnit(baseUnitList[1], 7);
+
+                battleManager.AddTextures(blankTexture, healthBarTexture, healthBarHighlightedTexture, 
+                    skillTexture, panelCornerTexture, grassBackgroundTexture);
                 battleManager.AddSprites(burnSprite, poisonedSprite, bleedSprite, animHealthBarSprite, animHealthBarEnemySprite);
                 battleManager.AddFonts(font);
                 battleManager.AddIcons(iconManager);
@@ -434,9 +477,6 @@ namespace _2D_Game
                     gameState = GameState.RunMainMenu;
                 }
             }
-
-
-            
 
             base.Update(gameTime);
         }
