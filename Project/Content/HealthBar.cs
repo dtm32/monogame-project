@@ -20,17 +20,20 @@ namespace _2D_Game.Content
 
         private Texture2D texture, blankTexture;
         private AnimatedSprite highlightSprite;
+        private AnimatedSprite highlightEnemySprite;
         private Rectangle textureRect;
         private Rectangle rect;
         private Rectangle prevRect;
         private int delay;
         private int setWidth;
 
-        public HealthBar(Texture2D healthBarTexture, AnimatedSprite highlightSprite, Texture2D blankTexture, int x, int y)
+        public HealthBar(Texture2D healthBarTexture, AnimatedSprite highlightSprite, 
+            AnimatedSprite highlightEnemySprite, Texture2D blankTexture, int x, int y)
         {
             texture = healthBarTexture;
             this.blankTexture = blankTexture;
             this.highlightSprite = highlightSprite;
+            this.highlightEnemySprite = highlightEnemySprite;
             textureRect = new Rectangle(x, y, TEXTURE_WIDTH, TEXTURE_HEIGHT);
             rect = new Rectangle(x + HEALTH_BAR_PADDING_X, y + HEALTH_BAR_PADDING_Y,
                 HEALTH_BAR_WIDTH, HEALTH_BAR_HEIGHT);
@@ -75,11 +78,13 @@ namespace _2D_Game.Content
         public void Reset()
         {
             highlightSprite.Reset();
+            highlightEnemySprite.Reset();
         }
 
         public void Update()
         {
             highlightSprite.Update();
+            highlightEnemySprite.Update();
 
             if (rect.Width < prevRect.Width)
             {
@@ -130,6 +135,30 @@ namespace _2D_Game.Content
                     textureRect.Width + 4, textureRect.Height + 4);
                 Vector2 highlightLoc = new Vector2(textureRect.X - 2, textureRect.Y - 2);
                 highlightSprite.Draw(spriteBatch, highlightLoc);
+                //highlightEnemySprite.Draw(spriteBatch, highlightLoc);
+                //spriteBatch.Draw(highlightTexture, highlightRect, Color.White);
+                spriteBatch.Draw(blankTexture, prevRect, Color.Orange);
+                spriteBatch.Draw(blankTexture, rect, Color.Green);
+            }
+            else
+            {
+                spriteBatch.Draw(texture, textureRect, Color.White);
+                spriteBatch.Draw(blankTexture, prevRect, Color.Orange);
+                spriteBatch.Draw(blankTexture, rect, Color.Green);
+            }
+        }
+
+        public void Draw(SpriteBatch spriteBatch, bool highlighted, bool isEnemy)
+        {
+            if(highlighted)
+            {
+                Rectangle highlightRect = new Rectangle(textureRect.X - 2, textureRect.Y - 2,
+                    textureRect.Width + 4, textureRect.Height + 4);
+                Vector2 highlightLoc = new Vector2(textureRect.X - 2, textureRect.Y - 2);
+                if(isEnemy)
+                    highlightEnemySprite.Draw(spriteBatch, highlightLoc);
+                else
+                    highlightSprite.Draw(spriteBatch, highlightLoc);
                 //spriteBatch.Draw(highlightTexture, highlightRect, Color.White);
                 spriteBatch.Draw(blankTexture, prevRect, Color.Orange);
                 spriteBatch.Draw(blankTexture, rect, Color.Green);

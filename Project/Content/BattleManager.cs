@@ -60,14 +60,14 @@ namespace _2D_Game.Content
         bool skillSelected = false;
 
 
-        Unit[] units = new Unit[SIZE];
+        //Unit[] units = new Unit[SIZE];
         Rectangle[] unitRects = new Rectangle[SIZE];
         //Rectangle[] unitHealthRects = new Rectangle[SIZE];
         //Rectangle[] unitHealthRectsPrev = new Rectangle[SIZE];
         //int[] healthBarDelay = new int[SIZE];
         HealthBar[] healthBars = new HealthBar[SIZE];
         Vector2[] unitLocs = new Vector2[SIZE];
-        Unit selectedUnit = null;
+        //Unit selectedUnit = null;
         int selectedIndex = 0;
         bool unitSelected = false;
         Texture2D blankTexture, healthBarTexture, healthBarHighlightedTexture, skillTexture;
@@ -75,16 +75,22 @@ namespace _2D_Game.Content
         Rectangle unitRect;
 
         //int[] unitHealth = new int[SIZE];
-        AnimatedSprite fireSprite;
+        AnimatedSprite burnSprite;
         AnimatedSprite poisonedSprite;
+        AnimatedSprite bleedSprite;
         AnimatedSprite healthBarSprite;
+        AnimatedSprite healthBarEnemySprite;
 
         IconManager iconManager;
 
         Queue<int> roundOrder;
 
+        UnitList unitList;
+
         public BattleManager(GraphicsDeviceManager graphics)
         {
+            unitList = new UnitList(SIZE); // TODO: get size from param
+
             int viewportWidth = graphics.GraphicsDevice.Viewport.Width;
             int viewportHeight = graphics.GraphicsDevice.Viewport.Height;
 
@@ -154,11 +160,14 @@ namespace _2D_Game.Content
             this.panelCornerTexture = panelCornerTexture;
         }
 
-        public void AddSprites(AnimatedSprite fireSprite, AnimatedSprite poisonedSprite, AnimatedSprite healthBarSprite)
+        public void AddSprites(AnimatedSprite burnSprite, AnimatedSprite poisonedSprite,
+            AnimatedSprite bleedSprite, AnimatedSprite healthBarSprite, AnimatedSprite healthBarEnemySprite)
         {
-            this.fireSprite = fireSprite;
+            this.burnSprite = burnSprite;
             this.poisonedSprite = poisonedSprite;
+            this.bleedSprite = bleedSprite;
             this.healthBarSprite = healthBarSprite;
+            this.healthBarEnemySprite = healthBarEnemySprite;
         }
 
         public void AddFonts(SpriteFont defaultFont)
@@ -173,15 +182,17 @@ namespace _2D_Game.Content
 
         public bool AddUnit(BaseUnit newUnit, int index)
         {
-            if(index < SIZE)
-            {
-                units[index] = new Unit(newUnit);
+            //if(index < SIZE)
+            //{
+            //    units[index] = new Unit(newUnit, index);
 
-                if(index >= SIZE / 2)
-                {
-                    units[index].IsEnemy = true;
-                }
-            }
+            //    if(index >= SIZE / 2)
+            //    {
+            //        units[index].IsEnemy = true;
+            //    }
+            //}
+
+            unitList.AddAt(new Unit(newUnit, index), index);
 
             return false;
         }
@@ -195,7 +206,9 @@ namespace _2D_Game.Content
             {
                 int posX = (int)unitLocs[i].X;
                 int posY = (int)unitLocs[i].Y + HEALTH_BAR_OFFSET;
-                healthBars[i] = new HealthBar(healthBarTexture, new AnimatedSprite(healthBarSprite), blankTexture, posX, posY);
+                //healthBars[i] = new HealthBar(healthBarTexture, new AnimatedSprite(healthBarSprite), blankTexture, posX, posY);
+                healthBars[i] = new HealthBar(healthBarTexture, new AnimatedSprite(healthBarSprite),
+                    new AnimatedSprite(healthBarEnemySprite), blankTexture, posX, posY);
             }
 
             // TODO: check that all required textures are loaded before starting
@@ -221,13 +234,14 @@ namespace _2D_Game.Content
         public void Update(Cursor cursor)
         {
             // update animations
-            for(int i = 0; i < units.Length; i++)
-            {
-                if(units[i].IsAlive())
-                {
-                    units[i].Update();
-                }
-            }
+            //for(int i = 0; i < unitList.Length; i++)
+            //{
+            //    if(unitList[i].IsAlive())
+            //    {
+            //        unitList[i].Update();
+            //    }
+            //}
+            unitList.Update();
 
             // check cursor hover
             skillHover = -1;
@@ -247,29 +261,33 @@ namespace _2D_Game.Content
                 healthBars[i].Update();
             }
 
-            fireSprite.Update();
+            burnSprite.Update();
             poisonedSprite.Update();
+            bleedSprite.Update();
 
             if(cursor.RightClick)
             {
                 // right click unit preview
                 int unitClicked = CheckUnitIntersect(cursor.Rect);
 
-                if(unitClicked != -1)
-                {
-                    if(units[unitClicked].IsEnemy)
-                    {
-                        previewEnemy = units[unitClicked];
-                    }
-                    else
-                    {
-                        previewAlly = units[unitClicked];
-                    }
-                }
-                else
-                {
-                    previewEnemy = null;
-                }
+                unitList.SetPreviewUnit(unitClicked);
+
+                //if(unitClicked != -1)
+                //{
+                //    if(units[unitClicked].IsEnemy)
+                //    {
+                //        previewEnemy = units[unitClicked];
+                //    }
+                //    else
+                //    {
+                //        previewAlly = units[unitClicked];
+                //    }
+
+                //}
+                //else
+                //{
+                //    previewEnemy = null;
+                //}
 
                 // right click skill panel
                 //int skillClicked = CheckSkillIntersect(cursor.Rect);
@@ -305,9 +323,9 @@ namespace _2D_Game.Content
 
                     if(skillHoverFrames > 20)
                     {
-                        skillPreview = (Skill)selectedUnit.Skills[skillHovered];
+                        skillPreview = (Skill)unitList.Selected.Skills[skillHovered];
 
-                        skillPreview = (Skill)selectedUnit.Skills[skillHovered];
+                        skillPreview = (Skill)unitList.Selected.Skills[skillHovered];
                         skillDescriptionRect.X = cursor.Rect.X;
 
                         string description = skillPreview.Description;
@@ -334,6 +352,43 @@ namespace _2D_Game.Content
             }
 
 
+            // unit targeting hover
+            int unitHovered = CheckUnitIntersect(cursor.Rect);
+
+            healthBarHighlighted.Clear();
+
+            if(unitHovered > -1)
+            {
+                if(skillSelected)
+                {
+                    if(selectedSkill.GetTargetType == Skill.TargetAll)
+                    {
+                        if(unitList[unitHovered].IsEnemy)
+                        {
+                            for(int i = unitList.Length / 2; i < unitList.Length; i++)
+                            {
+                                healthBarHighlighted.Add(i);
+                            }
+                        }
+                    }
+                    else if(selectedSkill.GetTargetType == Skill.TargetAlly)
+                    {
+                        if(!unitList[unitHovered].IsEnemy)
+                        {
+                            healthBarHighlighted.Add(unitHovered);
+                        }
+                    }
+                    else if(selectedSkill.GetTargetType == Skill.TargetSingle)
+                    {
+                        if(unitList[unitHovered].IsEnemy)
+                        {
+                            healthBarHighlighted.Add(unitHovered);
+                        }
+                    }
+                }
+            }
+
+
             switch(battleState)
             {
                 case BattleState.RoundStart:
@@ -343,76 +398,80 @@ namespace _2D_Game.Content
 
                     // calculate character move order
                     //ArrayList moveOrder = new ArrayList();
-                    ArrayList unitsArray = new ArrayList();
-                    int[] moveOrder = new int[units.Length];
-                    int[] speeds = new int[units.Length];
-                    int index = 0;
+                    //ArrayList unitsArray = new ArrayList();
+                    //int[] moveOrder = new int[units.Length];
+                    //int[] speeds = new int[units.Length];
+                    //int index = 0;
 
-                    roundOrder = new Queue<int>();
+                    //roundOrder = new Queue<int>();
 
-                    for(int i = 0; i < units.Length; i++)
-                    {
-                        speeds[i] = units[i].Spd; // TODO: make unit manager that will calc spd w/ modifiers
-                    }
+                    //for(int i = 0; i < units.Length; i++)
+                    //{
+                    //    speeds[i] = units[i].Spd; // TODO: make unit manager that will calc spd w/ modifiers
+                    //}
 
-                    for(int i = 0; i < units.Length; i++)
-                    {
-                        ArrayList tiedUnits = new ArrayList();
-                        int highestSpeed = 0;
+                    //for(int i = 0; i < units.Length; i++)
+                    //{
+                    //    ArrayList tiedUnits = new ArrayList();
+                    //    int highestSpeed = 0;
 
-                        for(int j = 0; j < speeds.Length; j++)
-                        {
-                            if(speeds[j] > highestSpeed)
-                            {
-                                highestSpeed = speeds[j];
-                                tiedUnits.Clear();
-                                tiedUnits.Add(j);
-                            }
-                            else if(speeds[j] == highestSpeed)
-                            {
-                                tiedUnits.Add(j);
-                            }
-                        }
+                    //    for(int j = 0; j < speeds.Length; j++)
+                    //    {
+                    //        if(speeds[j] > highestSpeed)
+                    //        {
+                    //            highestSpeed = speeds[j];
+                    //            tiedUnits.Clear();
+                    //            tiedUnits.Add(j);
+                    //        }
+                    //        else if(speeds[j] == highestSpeed)
+                    //        {
+                    //            tiedUnits.Add(j);
+                    //        }
+                    //    }
 
-                        if(tiedUnits.Count > 1)
-                        {
-                            // randomly pick between tied units
-                            int randomIndex = rnd.Next(tiedUnits.Count);
-                            int unitIndex = (int)tiedUnits[randomIndex];
-                            // add to move order and set speed to -1
-                            moveOrder[index] = unitIndex;
-                            roundOrder.Enqueue(unitIndex);
-                            speeds[unitIndex] = -1;
-                        }
-                        else if(tiedUnits.Count == 1)
-                        {
-                            int unitIndex = (int)tiedUnits[0];
-                            // add to move order and set speed to -1
-                            moveOrder[index] = unitIndex;
-                            roundOrder.Enqueue(unitIndex);
-                            speeds[unitIndex] = -1;
-                        }
+                    //    if(tiedUnits.Count > 1)
+                    //    {
+                    //        // randomly pick between tied units
+                    //        int randomIndex = rnd.Next(tiedUnits.Count);
+                    //        int unitIndex = (int)tiedUnits[randomIndex];
+                    //        // add to move order and set speed to -1
+                    //        moveOrder[index] = unitIndex;
+                    //        roundOrder.Enqueue(unitIndex);
+                    //        speeds[unitIndex] = -1;
+                    //    }
+                    //    else if(tiedUnits.Count == 1)
+                    //    {
+                    //        int unitIndex = (int)tiedUnits[0];
+                    //        // add to move order and set speed to -1
+                    //        moveOrder[index] = unitIndex;
+                    //        roundOrder.Enqueue(unitIndex);
+                    //        speeds[unitIndex] = -1;
+                    //    }
 
-                        index++;
-                    }
+                    //    index++;
+                    //}
+
+                    roundOrder = unitList.CalcMoveOrder();
+
+                    unitList.RoundStart();
 
                     // decrement status effects
-                    for(int i = 0; i < units.Length; i++)
-                    {
-                        if(units[i].IsAlive())
-                        {
-                            if(units[i].StatusEffects.Count > 0)
-                            {
-                                units[i].StatusEffects.ForEach((statusEffect) =>
-                                {
-                                    if(statusEffect.Turns > 0)
-                                        statusEffect.Turns--;
-                                });
+                    //for(int i = 0; i < units.Length; i++)
+                    //{
+                    //    if(units[i].IsAlive())
+                    //    {
+                    //        if(units[i].StatusEffects.Count > 0)
+                    //        {
+                    //            units[i].StatusEffects.ForEach((statusEffect) =>
+                    //            {
+                    //                if(statusEffect.Turns > 0)
+                    //                    statusEffect.Turns--;
+                    //            });
 
-                                units[i].StatusEffects.RemoveAll(status => status.Turns <= 0);
-                            }
-                        }
-                    }
+                    //            units[i].StatusEffects.RemoveAll(status => status.Turns <= 0);
+                    //        }
+                    //    }
+                    //}
 
                     // update battle state
                     SetState(BattleState.RoundNext);
@@ -420,46 +479,58 @@ namespace _2D_Game.Content
                 case BattleState.RoundNext:
                     int nextIndex;
 
-                    if(BattleOver())
+                    //if(BattleOver())
+                    //{
+                    //    SetState(BattleState.BattleEnd);
+                    //    break;
+                    //}
+                    //else if(roundOrder.Count > 0)
+                    //{
+                    //    nextIndex = roundOrder.Dequeue();
+                    //}
+                    //else
+                    //{
+                    //    SetState(BattleState.RoundEnd);
+                    //    break;
+                    //}
+                    if(unitList.BattleOver())
                     {
                         SetState(BattleState.BattleEnd);
                         break;
                     }
-                    else if(roundOrder.Count > 0)
-                    {
-                        nextIndex = roundOrder.Dequeue();
-                    }
-                    else
+                    if(unitList.Next() == null)
                     {
                         SetState(BattleState.RoundEnd);
                         break;
                     }
 
-                    selectedUnit = units[nextIndex];
-                    healthBars[nextIndex].Reset();
-                    selectedIndex = nextIndex;
-                    unitSelected = true;
+                    //selectedUnit = units[nextIndex];
+                    for(int i = 0; i < healthBars.Length; i++)
+                    {
+                        healthBars[i].Reset();
+                    }
+                    //healthBars[unitList.SelectedIndex].Reset();
 
                     // remove links to selected unit
                     skillPreview = null;
 
-                    bool nextIsAlive = units[nextIndex].IsAlive();
+                    //bool nextIsAlive = units[nextIndex].IsAlive();
 
                     // update battle state
-                    if(selectedUnit.IsEnemy && nextIsAlive)
+                    if(unitList.SelectedIsEnemy)
                     {
                         //enemy
                         SetState(BattleState.RoundAI);
                     }
-                    else if(nextIsAlive)
-                    {
-                        previewAlly = selectedUnit;
-                        SetState(BattleState.Wait);
-                    }
                     else
                     {
-                        SetState(BattleState.RoundNext);
+                        //previewAlly = selectedUnit;
+                        SetState(BattleState.Wait);
                     }
+                    //else
+                    //{
+                    //    SetState(BattleState.RoundNext);
+                    //}
                     break;
                 case BattleState.Wait:
                     if(cursor.LeftClick)
@@ -469,15 +540,16 @@ namespace _2D_Game.Content
                         skillIndex = skillClicked;
 
                         // attack unit with selected skill
-                        if(unitSelected && skillSelected && unitClicked != -1)
+                        //if(unitSelected && skillSelected && unitClicked != -1)
+                        if(skillSelected && unitClicked != -1)
                         {
-                            int damage = CombatCalculation(units[unitClicked], selectedUnit, selectedSkill);
-                            healthBars[unitClicked].Set(units[unitClicked].PercentHealth());
-                            healthBars[selectedIndex].Set(selectedUnit.PercentHealth());
+                            int damage = CombatCalculation(unitList[unitClicked], unitList.Selected, selectedSkill);
+                            healthBars[unitClicked].Set(unitList[unitClicked].PercentHealth());
+                            healthBars[unitList.SelectedIndex].Set(unitList.Selected.PercentHealth());
 
                             // next unit's turn
                             // run animation
-                            selectedUnit.StartAttackAnimation();
+                            unitList.Selected.StartAttackAnimation();
 
                             // update game state
                             SetState(BattleState.RoundRun);
@@ -490,13 +562,10 @@ namespace _2D_Game.Content
                             skillSelected = false;
                         }
 
-                        if(unitClicked != -1)
-                        {
-                        }
-                        else if(skillClicked != -1)
+                        if(skillClicked != -1)
                         {
                             //skillSelected = i;
-                            selectedSkill = (Skill)selectedUnit.Skills[skillClicked];
+                            selectedSkill = (Skill)unitList.Selected.Skills[skillClicked];
                             skillIndex = skillClicked;
                             skillSelected = true;
                         }
@@ -504,15 +573,15 @@ namespace _2D_Game.Content
                     break;
                 case BattleState.RoundAI:
                     // deal damage
-                    Skill aiSkill = (Skill)selectedUnit.Skills[rnd.Next(4)];
-                    int targetUnit = FindTarget(selectedUnit, aiSkill);
+                    Skill aiSkill = (Skill)unitList.Selected.Skills[rnd.Next(4)];
+                    int targetUnit = FindTarget(unitList.Selected, aiSkill);
 
-                    int aiDamage = CombatCalculation(units[targetUnit], selectedUnit, aiSkill);
+                    int aiDamage = CombatCalculation(unitList[targetUnit], unitList.Selected, aiSkill);
 
-                    healthBars[targetUnit].Set(units[targetUnit].PercentHealth());
-                    healthBars[selectedIndex].Set(selectedUnit.PercentHealth());
+                    healthBars[targetUnit].Set(unitList[targetUnit].PercentHealth());
+                    healthBars[unitList.SelectedIndex].Set(unitList.Selected.PercentHealth());
 
-                    selectedUnit.StartAttackAnimation();
+                    unitList.Selected.StartAttackAnimation();
                     SetState(BattleState.RoundRun);
                     break;
                 case BattleState.RoundRun:
@@ -529,12 +598,9 @@ namespace _2D_Game.Content
                     }
 
                     // check for attack animation
-                    for(int i = 0; i < units.Length; i++)
+                    if(unitList.IsAnimating())
                     {
-                        if(units[i].IsAnimating())
-                        {
-                            nextState = false;
-                        }
+                        nextState = false;
                     }
 
                     if(nextState)
@@ -544,36 +610,36 @@ namespace _2D_Game.Content
                     break;
                 case BattleState.RoundEnd:
                     // calculate end round damage (bleed, poison, etc)
-                    for(int i = 0; i < units.Length; i++)
+                    for(int i = 0; i < unitList.Length; i++)
                     {
-                        if(units[i].IsAlive())
+                        if(unitList[i].IsAlive())
                         {
-                            if(units[i].StatusEffects.Count > 0)
+                            if(unitList[i].StatusEffects.Count > 0)
                             {
                                 // handle round end status effects
-                                for(int j = 0; j < units[i].StatusEffects.Count; j++)
+                                for(int j = 0; j < unitList[i].StatusEffects.Count; j++)
                                 {
                                     int damage = 0;
-                                    switch(units[i].StatusEffects[j].Type)
+                                    switch(unitList[i].StatusEffects[j].Type)
                                     {
                                         case StatusEffect.Bleed:
-                                            damage = units[i].StatusEffects[j].Damage;
-                                            units[i].CurrHP -= damage;
-                                            Console.WriteLine($"{units[i].Name} takes {damage} damage from Bleed!");
+                                            damage = unitList[i].StatusEffects[j].Damage;
+                                            unitList[i].CurrHP -= damage;
+                                            Console.WriteLine($"{unitList[i].Name} takes {damage} damage from Bleed!");
                                             break;
                                         case StatusEffect.Burn:
-                                            damage = units[i].StatusEffects[j].Damage;
-                                            units[i].CurrHP -= damage;
-                                            Console.WriteLine($"{units[i].Name} takes {damage} damage from Burn!");
+                                            damage = unitList[i].StatusEffects[j].Damage;
+                                            unitList[i].CurrHP -= damage;
+                                            Console.WriteLine($"{unitList[i].Name} takes {damage} damage from Burn!");
                                             break;
                                         case StatusEffect.Poison:
-                                            damage = units[i].StatusEffects[j].Damage;
-                                            units[i].CurrHP -= damage;
-                                            Console.WriteLine($"{units[i].Name} takes {damage} damage from Poison!");
+                                            damage = unitList[i].StatusEffects[j].Damage;
+                                            unitList[i].CurrHP -= damage;
+                                            Console.WriteLine($"{unitList[i].Name} takes {damage} damage from Poison!");
                                             break;
                                     }
 
-                                    healthBars[i].Set(units[i].PercentHealth());
+                                    healthBars[i].Set(unitList[i].PercentHealth());
 
                                     //SetUnitHealth(units[i].PercentHealth(), i);
                                 }
@@ -587,7 +653,7 @@ namespace _2D_Game.Content
                     bool win = false;
                     for(int i = 0; i < SIZE / 2; i++)
                     {
-                        if(units[i].IsAlive())
+                        if(unitList[i].IsAlive())
                         {
                             Console.WriteLine(" you win!");
                             win = true;
@@ -596,10 +662,19 @@ namespace _2D_Game.Content
                     }
                     if(!win)
                         Console.WriteLine(" you lose!");
+                    exitBattleManager = true;
                     break;
             }
 
             UpdateHealthBars();
+        }
+
+        public bool exitBattleManager = false;
+
+        public bool ExitBattleManager
+        {
+            get { return exitBattleManager; }
+            private set { exitBattleManager = value; }
         }
 
         private int CheckUnitIntersect(Rectangle cursorRect)
@@ -623,13 +698,14 @@ namespace _2D_Game.Content
             {
                 int target = rnd.Next(4);
 
-                if(units[target].IsAlive())
+                if(unitList[target].IsAlive())
                     return target;
             }
         }
 
-        private int CombatCalculation(Unit target, Unit attacker, Skill skill)
+        public int CombatCalculation(Unit target, Unit attacker, Skill skill)
         {
+            //Random rnd = new Random();
             int damage = 0;
             int attack = 0;
             int defense = 0;
@@ -649,7 +725,7 @@ namespace _2D_Game.Content
                 skill.Type == Skill.SkillType.Buff)
             {
                 skill.Effect?.Invoke(attacker, target);
-                skill.EffectAll?.Invoke(attacker, target, units);
+                skill.EffectAll?.Invoke(attacker, target, unitList.ToArray());
 
                 Console.WriteLine($"{attacker.Name} used {skill.Name} on {target.Name}!");
 
@@ -664,7 +740,7 @@ namespace _2D_Game.Content
             //damage = (int)((skill.Power * attack * (attacker.Level * attacker.Level / 18 + 1)) / (defense * defense * skill.Penetration) * (rnd.Next(15) / 100 + 0.85) * crit);
             //damage = (int)((skill.Power * attack / defense * (attacker.Level / 3 + 1) / 30) * (rnd.Next(15) / 100 + 0.85) * crit);
             //damage = (int)((skill.Power * attack / defense) * (rnd.Next(15) / 100 + 0.85) * crit);
-            damage = (int)((skill.Power * attack / defense * attacker.Level / 100) * (rnd.Next(15) / 100 + 0.85) * crit);
+            //damage = (int)((skill.Power * attack / defense * attacker.Level / 100) * (rnd.Next(15) / 100 + 0.85) * crit);
             damage = (int)((skill.Power * attack / defense * attacker.Level / 100) * (rnd.Next(15) / 100 + 1.35) * crit);
 
             if(damage < 1)
@@ -673,7 +749,7 @@ namespace _2D_Game.Content
             target.CurrHP -= damage;
 
             skill.Effect?.Invoke(attacker, target);
-            skill.EffectAll?.Invoke(attacker, target, units);
+            skill.EffectAll?.Invoke(attacker, target, unitList.ToArray());
 
             Console.WriteLine($"{attacker.Name} used {skill.Name} on {target.Name} for {damage} damage!");
             if(crit > 1.0)
@@ -682,51 +758,18 @@ namespace _2D_Game.Content
             return damage;
         }
 
-        private bool BattleOver()
-        {
-            int count = 0;
-
-            for(int i = 0; i < SIZE / 2; i++)
-            {
-                if(!units[i].IsAlive())
-                {
-                    count++;
-                }
-            }
-            if(count == SIZE / 2)
-            {
-                return true;
-            }
-
-            count = 0;
-
-            for(int i = SIZE / 2; i < SIZE; i++)
-            {
-                if(!units[i].IsAlive())
-                {
-                    count++;
-                }
-            }
-            if(count == SIZE / 2)
-            {
-                return true;
-            }
-
-            return false;
-        }
-
         private void UpdateHealthBars()
         {
-            for(int i = 0; i < units.Length; i++)
+            for(int i = 0; i < unitList.Length; i++)
             {
-                healthBars[i].Set(units[i].PercentHealth());
+                healthBars[i].Set(unitList[i].PercentHealth());
             }
         }
 
         private int CheckSkillIntersect(Rectangle cursorRect)
         {
             // if no unit is selected, a skill cannot be selected
-            if(!unitSelected)
+            if(unitList.Selected == null)
             {
                 return -1;
             }
@@ -749,72 +792,80 @@ namespace _2D_Game.Content
             return state;
         }
 
+        List<int> healthBarHighlighted = new List<int>();
+
         public void Draw(SpriteBatch spriteBatch)
         {
             // draw units
             for(int i = 0; i < 8; i++)
             {
                 bool highlighted = false;
-                if(selectedIndex == i)
+                if(unitList.SelectedIndex == i || healthBarHighlighted.Contains(i))
                 {
                     highlighted = true; ;
                 }
 
                 Color unitColor = Color.White;
-                if(units[i].IsAlive() || healthBars[i].Width > 0)
+                if(unitList[i].IsAlive() || healthBars[i].Width > 0)
                 {
-                    units[i].Draw(spriteBatch, unitLocs[i]);
+                    unitList[i].Draw(spriteBatch, unitLocs[i]);
 
-                    healthBars[i].Draw(spriteBatch, highlighted);
+                    if(unitList[i].IsEnemy)
+                        healthBars[i].Draw(spriteBatch, highlighted, true);
+                    else
+                        healthBars[i].Draw(spriteBatch, highlighted);
 
-                    if(units[i].StatusEffects.Count > 0)
+                    if(unitList[i].StatusEffects.Count > 0)
                     {
                         // handle round end status effects
-                        for(int j = 0; j < units[i].StatusEffects.Count; j++)
+                        for(int j = 0; j < unitList[i].StatusEffects.Count; j++)
                         {
-                            switch(units[i].StatusEffects[j].Type)
+                            switch(unitList[i].StatusEffects[j].Type)
                             {
                                 case StatusEffect.Bleed:
+                                    bleedSprite.Draw(spriteBatch, unitLocs[i]);
                                     break;
                                 case StatusEffect.Burn:
-                                    fireSprite.Draw(spriteBatch, unitLocs[i]);
+                                    burnSprite.Draw(spriteBatch, unitLocs[i]);
                                     break;
                                 case StatusEffect.Poison:
                                     poisonedSprite.Draw(spriteBatch, unitLocs[i]);
                                     break;
                             }
 
-                            healthBars[i].Set(units[i].PercentHealth());
+                            healthBars[i].Set(unitList[i].PercentHealth());
                         }
                     }
                 }
             }
 
             // draw unit panel if player unit is selected
-            if(unitSelected && !selectedUnit.IsEnemy)
+            if(unitList.SelectedIsAlly)
             {
                 DrawUnitPanel(spriteBatch);
+
+                if(skillPreview != null)
+                {
+                    DrawSkillDescription(spriteBatch);
+                }
             }
 
-            if(previewAlly != null)
+            if(unitList.PreviewedAlly != null)
             {
                 DrawUnitPreview(spriteBatch);
             }
-            if(previewEnemy != null)
+            if(unitList.PreviewedEnemy != null)
             {
                 DrawEnemyPreview(spriteBatch);
             }
-            if(skillPreview != null)
-            {
-                DrawSkillDescription(spriteBatch);
-            }
         }
 
-        Unit previewAlly = null;
-        Unit previewEnemy = null;
+        //Unit previewAlly = null;
+        //Unit previewEnemy = null;
 
         private void DrawUnitPanel(SpriteBatch spriteBatch)
         {
+            Unit selectedUnit = unitList.Selected;
             Rectangle borderRect = new Rectangle(unitRect.X - 4, unitRect.Y - 4, unitRect.Width + 8, unitRect.Height + 4);
             Rectangle leftCornerRect = new Rectangle(unitRect.X, unitRect.Y, 30, 30);
             Rectangle rightCornerRect = new Rectangle(unitRect.X + unitRect.Width - 30, unitRect.Y, 30, 30);
@@ -825,7 +876,8 @@ namespace _2D_Game.Content
             spriteBatch.Draw(panelCornerTexture, leftCornerRect, Color.White);
             spriteBatch.Draw(panelCornerTexture, rightCornerRect, null, Color.White, 0f, Vector2.Zero, SpriteEffects.FlipHorizontally, 1f);
 
-            spriteBatch.DrawString(FontManager.Default_Bold_15, selectedUnit.Name.ToUpper(), new Vector2(unitRect.X + unitPanelPadding, unitRect.Y + unitPanelPadding - 5), Color.Black);
+            spriteBatch.DrawString(FontManager.Default_Bold_15, selectedUnit.Name.ToUpper(), 
+                new Vector2(unitRect.X + unitPanelPadding, unitRect.Y + unitPanelPadding - 5), Color.Black);
 
             ArrayList skills = selectedUnit.Skills;
             for(int i = 0; i < 4; i++)
@@ -844,6 +896,7 @@ namespace _2D_Game.Content
 
         private void DrawUnitPreview(SpriteBatch spriteBatch)
         {
+            Unit previewAlly = unitList.PreviewedAlly;
             int unitPreviewPadding = 18;
             Rectangle borderRect = new Rectangle(0, allyUnitPreviewRect.Y - 4, allyUnitPreviewRect.Width + 4, allyUnitPreviewRect.Height + 4);
             Rectangle rightCornerRect = new Rectangle(allyUnitPreviewRect.Width - 30, allyUnitPreviewRect.Y, 30, 30);
@@ -876,6 +929,7 @@ namespace _2D_Game.Content
 
         private void DrawEnemyPreview(SpriteBatch spriteBatch)
         {
+            Unit previewEnemy = unitList.PreviewedEnemy;
             int unitPreviewPadding = 18;
             int unitPreviewPaddingLeft = 23;
             Rectangle borderRect = new Rectangle(enemyUnitPreviewRect.X - 4, enemyUnitPreviewRect.Y - 4, enemyUnitPreviewRect.Width + 4, enemyUnitPreviewRect.Height + 4);
@@ -932,7 +986,8 @@ namespace _2D_Game.Content
                 skillDescriptionRect.Y + skillDescriptionRectPadding);
             string description = skillPreview.Description;
 
-            description = WrapText(FontManager.Default_Regular_9, description, skillDescriptionRect.Width - 2 * skillDescriptionRectPadding);
+            description = WrapText(FontManager.Default_Regular_9, description, 
+                skillDescriptionRect.Width - 2 * skillDescriptionRectPadding);
 
             int numLines = description.Split('\n').Length;
             int textHeight = FontManager.Default_Regular_9.LineSpacing * numLines;
@@ -947,6 +1002,11 @@ namespace _2D_Game.Content
 
             // draw text
             spriteBatch.DrawString(FontManager.Default_Regular_9, description, textLoc, Color.Black);
+
+            // draw skill type icon
+            Rectangle typeRect = new Rectangle(skillDescriptionRect.X + skillDescriptionRectPadding - 1,
+                skillDescriptionRect.Y + skillDescriptionRectPadding + 13, 16, 16);
+            spriteBatch.Draw(iconManager.SkillTypeIcon(skillPreview.Type), typeRect, Color.White);
         }
 
         public string WrapText(SpriteFont spriteFont, string text, float maxLineWidth)

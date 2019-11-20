@@ -16,6 +16,19 @@ namespace _2D_Game.Content
             Buff
         }
 
+        //public enum TargetType
+        //{
+        //    Single,
+        //    All,
+        //    FrontLine,
+        //    Adjacent
+        //}
+        public static int TargetSingle = 0;
+        public static int TargetAll = 1;
+        public static int TargetFront = 2;
+        public static int TargetAdjacent = 3;
+        public static int TargetAlly = 3;
+
         public delegate void SkillEffect(Unit self, Unit target);
         public delegate void SkillEffectAll(Unit self, Unit target, Unit[] units);
 
@@ -29,21 +42,35 @@ namespace _2D_Game.Content
         public SkillEffect Effect { get; set; }
         public SkillEffectAll EffectAll { get; set; }
 
+        private int targetType = 0;
+
         public string Description
         {
             get
             {
                 string result = $"{Name}";
                 if(Power > 0)
-                    result += $"\nP {Power}";
+                    result += $"\n      P {Power}";
                 else
-                    result += $"\nP --";
+                    result += $"\n      P --";
                 if(description.Length > 0)
                     result += "\n" + description;
 
                 return result;
             }
             set { description = value; }
+        }
+
+        public int GetTargetType
+        {
+            get { return targetType; }
+        }
+
+        public Skill SetTargetType(int targetType)
+        {
+            this.targetType = targetType;
+
+            return this;
         }
 
         public Skill(String name, int power)

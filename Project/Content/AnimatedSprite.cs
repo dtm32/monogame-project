@@ -32,7 +32,6 @@ namespace _2D_Game.Content
 
         public AnimatedSprite(AnimatedSprite sprite)
         {
-            Console.WriteLine("New AS");
             Texture = sprite.Texture;
             Rows = sprite.Rows;
             Columns = sprite.Columns;

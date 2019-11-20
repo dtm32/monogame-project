@@ -36,10 +36,12 @@ namespace _2D_Game.Content
 
         private int[] statTiers = new int[6];
 
+        public int Index { get; set; }
+
         private BaseUnit baseUnit;
 
         // TODO: directly add all textures and animations to unit/skill
-        public Unit(BaseUnit baseUnit)
+        public Unit(BaseUnit baseUnit, int index)
         {
             this.Texture     = baseUnit.Texture;
             this.Name        = baseUnit.Name;
@@ -54,6 +56,7 @@ namespace _2D_Game.Content
             this.Res         = baseUnit.CalcRes;
             this.IsEnemy     = false;
             this.baseUnit    = baseUnit;
+            this.Index       = index;
 
             currHP = this.HP;
             StatusEffects = new List<StatusEffect>();
@@ -164,29 +167,15 @@ namespace _2D_Game.Content
 
         private float CalcStatMod(int tier)
         {
-            float statMod = 0.0f;
+            float statMod = 1.0f;
 
             if(tier < 0)
             {
-                //if(tier == -1)
-                //{
-                //    statMod = 4f / 6f;
-                //}
-                //else
-                //{
-                    statMod = 8f / (-1 * tier + 8);
-                //}
+                statMod = 8f / (-1 * tier + 8);
             }
             else if(tier > 0)
             {
-                //if(tier == 1)
-                //{
-                //    statMod = 6f / 4f;
-                //}
-                //else if(tier < 10)
-                //{
-                    statMod = (tier + 8) / 8f;
-                //}
+                statMod = (tier + 8) / 8f;
             }
 
             return statMod;

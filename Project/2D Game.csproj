@@ -47,11 +47,13 @@
     <Compile Include="Content\Cursor.cs" />
     <Compile Include="Content\FontManager.cs" />
     <Compile Include="Content\HealthBar.cs" />
+    <Compile Include="Content\MainMenu.cs" />
     <Compile Include="Content\Skill.cs" />
     <Compile Include="Content\SkillEffect.cs" />
     <Compile Include="Content\StatusEffect.cs" />
     <Compile Include="Content\StatusIcon.cs" />
     <Compile Include="Content\Unit.cs" />
+    <Compile Include="Content\UnitList.cs" />
     <Compile Include="Game1.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
