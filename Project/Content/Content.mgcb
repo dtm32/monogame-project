@@ -13,10 +13,31 @@
 
 #---------------------------------- Content ---------------------------------#
 
-#begin SpriteFonts/Score.spritefont
+#begin SpriteFonts/CenturySchoolbookBold_11.spritefont
 /importer:FontDescriptionImporter
 /processor:FontDescriptionProcessor
 /processorParam:PremultiplyAlpha=True
 /processorParam:TextureFormat=Compressed
-/build:SpriteFonts/Score.spritefont
+/build:SpriteFonts/CenturySchoolbookBold_11.spritefont
+
+#begin SpriteFonts/CenturySchoolbookBold_15.spritefont
+/importer:FontDescriptionImporter
+/processor:FontDescriptionProcessor
+/processorParam:PremultiplyAlpha=True
+/processorParam:TextureFormat=Compressed
+/build:SpriteFonts/CenturySchoolbookBold_15.spritefont
+
+#begin SpriteFonts/CenturySchoolbookRegular_11.spritefont
+/importer:FontDescriptionImporter
+/processor:FontDescriptionProcessor
+/processorParam:PremultiplyAlpha=True
+/processorParam:TextureFormat=Compressed
+/build:SpriteFonts/CenturySchoolbookRegular_11.spritefont
+
+#begin SpriteFonts/CenturySchoolbookRegular_9.spritefont
+/importer:FontDescriptionImporter
+/processor:FontDescriptionProcessor
+/processorParam:PremultiplyAlpha=True
+/processorParam:TextureFormat=Compressed
+/build:SpriteFonts/CenturySchoolbookRegular_9.spritefont
 

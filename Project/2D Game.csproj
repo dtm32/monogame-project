@@ -44,11 +44,17 @@
     <Compile Include="Content\AnimatedSprite.cs" />
     <Compile Include="Content\BaseUnit.cs" />
     <Compile Include="Content\BattleManager.cs" />
+    <Compile Include="Content\Button.cs" />
     <Compile Include="Content\Cursor.cs" />
+    <Compile Include="Content\FontManager.cs" />
     <Compile Include="Content\HealthBar.cs" />
+    <Compile Include="Content\MainMenu.cs" />
     <Compile Include="Content\Skill.cs" />
     <Compile Include="Content\SkillEffect.cs" />
+    <Compile Include="Content\StatusEffect.cs" />
+    <Compile Include="Content\StatusIcon.cs" />
     <Compile Include="Content\Unit.cs" />
+    <Compile Include="Content\UnitList.cs" />
     <Compile Include="Game1.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -62,7 +68,13 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\Resources\anim_feather_raptor.png" />
+    <Content Include="Content\Resources\anim_long_hair.png" />
+    <Content Include="Content\Resources\anim_pink_scythe.png" />
+    <Content Include="Content\Resources\anim_psychic_hands.png" />
     <Content Include="Content\Resources\anim_puff_fly.png" />
+    <Content Include="Content\Resources\anim_red_moth.png" />
+    <Content Include="Content\Resources\anim_snow_spirit.png" />
+    <Content Include="Content\Resources\battle_background.png" />
     <Content Include="Content\Resources\cursor.png" />
     <Content Include="Content\Resources\cursor_clicked.png" />
     <Content Include="Content\Resources\health_bar.png" />
@@ -76,7 +88,11 @@
   <ItemGroup>
     <MonoGameContentReference Include="Content\Content.mgcb" />
     <None Include="app.manifest" />
-    <None Include="Content\SpriteFonts\Score.spritefont" />
+    <None Include="Content\SpriteFonts\CenturySchoolbookBold_15.spritefont" />
+    <None Include="Content\SpriteFonts\CenturySchoolbookRegular_9.spritefont" />
+    <None Include="Content\SpriteFonts\Score - Copy.spritefont" />
+    <None Include="Content\SpriteFonts\CenturySchoolbookRegular_11.spritefont" />
+    <None Include="Content\SpriteFonts\CenturySchoolbookBold_11.spritefont" />
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

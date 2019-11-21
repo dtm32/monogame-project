@@ -32,7 +32,6 @@ namespace _2D_Game.Content
 
         public AnimatedSprite(AnimatedSprite sprite)
         {
-            Console.WriteLine("New AS");
             Texture = sprite.Texture;
             Rows = sprite.Rows;
             Columns = sprite.Columns;
@@ -40,6 +39,12 @@ namespace _2D_Game.Content
             Idle = sprite.Idle;
             currentFrame = 0;
             totalFrames = Rows * Columns;
+        }
+
+        public void Reset()
+        {
+            delta = 0;
+            currentFrame = 0;
         }
 
         public void Update()

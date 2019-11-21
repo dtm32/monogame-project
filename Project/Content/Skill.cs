@@ -12,18 +12,66 @@ namespace _2D_Game.Content
         {
             Physical,
             Magical,
+            Effect,
             Buff
         }
 
+        //public enum TargetType
+        //{
+        //    Single,
+        //    All,
+        //    FrontLine,
+        //    Adjacent
+        //}
+        public static int TargetSingle = 0;
+        public static int TargetAll = 1;
+        public static int TargetFront = 2;
+        public static int TargetAdjacent = 3;
+        public static int TargetAlly = 3;
+
         public delegate void SkillEffect(Unit self, Unit target);
+        public delegate void SkillEffectAll(Unit self, Unit target, Unit[] units);
 
         public string Name;
         private int tier;
         private int tiers;
+        private string description = "";
         public int Power { get; }
         public double Penetration { get; set; }
         public SkillType Type { get; set; }
         public SkillEffect Effect { get; set; }
+        public SkillEffectAll EffectAll { get; set; }
+
+        private int targetType = 0;
+
+        public string Description
+        {
+            get
+            {
+                string result = $"{Name}";
+                if(Power > 0)
+                    result += $"\n      P {Power}";
+                else
+                    result += $"\n      P --";
+                if(description.Length > 0)
+                    result += "\n" + description;
+
+                return result;
+            }
+            set { description = value; }
+        }
+
+        public int GetTargetType
+        {
+            get { return targetType; }
+        }
+
+        public Skill SetTargetType(int targetType)
+        {
+            this.targetType = targetType;
+
+            return this;
+        }
 
         public Skill(String name, int power)
         {
@@ -42,6 +90,110 @@ namespace _2D_Game.Content
             Penetration = 1.0;
             Type = SkillType.Physical;
             Effect = effect;
+        }
+
+        public Skill(String name, int power, SkillType type)
+        {
+            tier = 0;
+            Name = name;
+            this.Power = power;
+            Penetration = 1.0;
+            Type = type;
+            //Effect = effect;
+        }
+
+        public Skill(String name, int power, SkillType type, SkillEffect effect)
+        {
+            tier = 0;
+            Name = name;
+            this.Power = power;
+            Penetration = 1.0;
+            Type = type;
+            Effect = effect;
+        }
+
+        public Skill(String name, SkillEffect effect)
+        {
+            tier = 0;
+            Name = name;
+            Power = 0;
+            Penetration = 1.0;
+            Type = SkillType.Effect;
+            Effect = effect;
+        }
+
+        public Skill(String name, SkillType type, SkillEffect effect)
+        {
+            tier = 0;
+            Name = name;
+            Power = 0;
+            Penetration = 1.0;
+            Type = type;
+            Effect = effect;
+        }
+
+        public Skill(String name, SkillType type, SkillEffect effect, string description)
+        {
+            tier = 0;
+            Name = name;
+            Power = 0;
+            Penetration = 1.0;
+            Type = type;
+            Effect = effect;
+            this.description = description;
+        }
+
+        public Skill(String name, int power, SkillType type, SkillEffect effect, string description)
+        {
+            tier = 0;
+            Name = name;
+            Power = power;
+            Penetration = 1.0;
+            Type = type;
+            Effect = effect;
+            this.description = description;
+        }
+
+        public Skill(String name, SkillEffectAll effect)
+        {
+            tier = 0;
+            Name = name;
+            Power = 0;
+            Penetration = 1.0;
+            Type = SkillType.Effect;
+            EffectAll = effect;
+        }
+
+        public Skill(String name, SkillType type, SkillEffectAll effect)
+        {
+            tier = 0;
+            Name = name;
+            Power = 0;
+            Penetration = 1.0;
+            Type = type;
+            EffectAll = effect;
+        }
+
+        public Skill(String name, SkillType type, SkillEffectAll effect, string description)
+        {
+            tier = 0;
+            Name = name;
+            Power = 0;
+            Penetration = 1.0;
+            Type = type;
+            EffectAll = effect;
+            this.description = description;
+        }
+
+        public Skill(String name, int power, SkillType type, SkillEffectAll effect, string description)
+        {
+            tier = 0;
+            Name = name;
+            Power = power;
+            Penetration = 1.0;
+            Type = type;
+            EffectAll = effect;
+            this.description = description;
         }
 
         //public void SetEffect(SkillEffect effect)
