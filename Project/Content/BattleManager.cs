@@ -390,6 +390,10 @@ namespace _2D_Game.Content
                             healthBarHighlighted.Add(unitHovered);
                         }
                     }
+                    else if(selectedSkill.GetTargetType == Skill.TargetSelf)
+                    {
+
+                    }
                 }
             }
 
@@ -730,7 +734,7 @@ namespace _2D_Game.Content
                 skill.Type == Skill.SkillType.Buff)
             {
                 skill.Effect?.Invoke(attacker, target);
-                skill.EffectAll?.Invoke(attacker, target, unitList.ToArray());
+                skill.EffectAll?.Invoke(attacker, target, unitList);
 
                 Console.WriteLine($"{attacker.Name} used {skill.Name} on {target.Name}!");
 
@@ -756,7 +760,7 @@ namespace _2D_Game.Content
             target.CurrHP -= damage;
 
             skill.Effect?.Invoke(attacker, target);
-            skill.EffectAll?.Invoke(attacker, target, unitList.ToArray());
+            skill.EffectAll?.Invoke(attacker, target, unitList);
 
             Console.WriteLine($"{attacker.Name} used {skill.Name} on {target.Name} for {damage} damage!");
             if(crit > 1.0)

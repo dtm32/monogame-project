@@ -297,13 +297,15 @@ namespace _2D_Game
                             int targetOffset = 0;
                             if(!self.IsEnemy)
                                 targetOffset += units.Length / 2;
-                            int targetIndex;
-                            while(true)
+                            int targetIndex = -1;
+                            while(!units.BattleOver())
                             {
                                 targetIndex = random.Next(units.Length / 2) + targetOffset;
                                 if(units[targetIndex].IsAlive())
                                     break;
                             }
+                            if(units.BattleOver() || targetIndex < 0)
+                                return;
                             int damage = (int)((power * self.Str / units[targetIndex].Amr * self.Level / 100) *
                                     (random.Next(15) / 100 + 1.35) * crit);
                             units[targetIndex].CurrHP -= damage;
@@ -312,8 +314,12 @@ namespace _2D_Game
 
                     }, "Randomly damages enemies 5-8 times.")
                     .SetTargetType(Skill.TargetAll));
-                skillSet1.Add(new Skill("Assault", 45));
-                skillSet1.Add(new Skill("Assault", 50));
+                skillSet1.Add(new Skill("Assault", 55));
+                skillSet1.Add(new Skill("Bug Bite", 40, Skill.SkillType.Physical,
+                    (self, target) =>
+                    {
+                        target.Inflict(new StatusEffect(StatusEffect.Bleed, 2, self, target));
+                    }, "Inflicts Bleed(2) and heals unit for 10% max HP."));
                 skillSet1.Add(new Skill("Buzz-by", 10, Skill.SkillType.Physical,
                     (self, target) =>
                     {
@@ -322,7 +328,7 @@ namespace _2D_Game
                     }, "Increases self Spd/Str by 2."));
 
                 ArrayList skillSet2 = new ArrayList();
-                skillSet2.Add(new Skill("Assault", 40));
+                skillSet2.Add(new Skill("Assault", 55));
                 skillSet2.Add(new Skill("Charge", 45, Skill.SkillType.Physical,
                     (self, target) =>
                     {
@@ -342,17 +348,17 @@ namespace _2D_Game
                 // Woody skill set
                 ArrayList woodysSkills = new ArrayList();
                 woodysSkills.Add(new Skill("High Five", 50));
-                woodysSkills.Add(new Skill("Hot Hands", 80, Skill.SkillType.Physical,
+                woodysSkills.Add(new Skill("Hot Hands", 60, Skill.SkillType.Physical,
                     (self, target) =>
                     {
                         target.Inflict(new StatusEffect(StatusEffect.Burn, 2, self, target));
                     }, "Inflicts Burn(2)."));
-                woodysSkills.Add(new Skill("The Bird", 65, Skill.SkillType.Physical,
+                woodysSkills.Add(new Skill("The Bird", 45, Skill.SkillType.Physical,
                     (self, target) =>
                     {
                         self.CurrHP += (int)((self.HP - self.CurrHP) * 0.20);
                     }, "Heal unit for 20% of missing health."));
-                woodysSkills.Add(new Skill("Psychic Shackle", 85, Skill.SkillType.Magical,
+                woodysSkills.Add(new Skill("Psychic Shackle", 65, Skill.SkillType.Magical,
                     (self, target) =>
                     {
                         target.DebuffStat(Unit.Speed, 2); // TODO: UPDATE MOVE ORDER QUEUE TO REFLECT SPEED CHANGES
@@ -407,7 +413,7 @@ namespace _2D_Game
                 skillSet4.Add(new Skill("Toxic Cloud", 15, Skill.SkillType.Magical,
                     (self, target, units) =>
                     {
-                        for(int i = units.Length/2; i < units.Length; i++)
+                        for(int i = units.Length / 2; i < units.Length; i++)
                         {
                             units[i].Inflict(new StatusEffect(StatusEffect.Poison, 1, self, units[i]));
 
@@ -419,7 +425,7 @@ namespace _2D_Game
                                 crit = 1.5f; // Also check for skill crit modifier
                             }
 
-                            int damage = (int)((15 * self.Fcs / units[i].Res * self.Level / 100) * 
+                            int damage = (int)((15 * self.Fcs / units[i].Res * self.Level / 100) *
                                 (random.Next(15) / 100 + 1.35) * crit);
 
                             if(damage < 1)
@@ -501,20 +507,49 @@ namespace _2D_Game
                         int targetIndex = target.Index;
                         int damage = (int)(target.LastDamageTaken / 2);
 
-                        if(units[targetIndex-1].IsEnemy)
+                        if(units[targetIndex - 1].IsEnemy)
                         {
                             units[targetIndex - 1].CurrHP -= damage;
                         }
-                        if(targetIndex+1 < units.Length &&
-                            units[targetIndex+1].IsAlive())
+                        if(targetIndex + 1 < units.Length &&
+                            units[targetIndex + 1].IsAlive())
                         {
-                            units[targetIndex+1].CurrHP -= damage;
+                            units[targetIndex + 1].CurrHP -= damage;
                         }
                     }, "Deals 50% damage to adjacent units."));
 
+                // spike pig
+                ArrayList skillSet8 = new ArrayList();
+                skillSet8.Add(new Skill("Assault", 55));
+                skillSet8.Add(new Skill("Heat Up", 0, Skill.SkillType.Buff,
+                    (self, target) =>
+                    {
+                        self.BuffStat(Unit.Speed, 1);
+                        self.BuffStat(Unit.Strength, 1);
+                        self.BuffStat(Unit.Focus, 1);
+                    }, "Increases self Spd/Str/Fcs by 1.")
+                    .SetTargetType(Skill.TargetSelf));
+                skillSet8.Add(new Skill("Frenzy", 100, Skill.SkillType.Physical,
+                    (self, target) =>
+                    {
+                        self.CurrHP = (int)(self.CurrHP * 0.8);
+                    }, "Damages self for 20% of current health."));
+                skillSet8.Add(new Skill("Adaptive Blow", 40, Skill.SkillType.Physical,
+                    (self, target) =>
+                    {
+                        if(self.PercentHealth() >= 0.5)
+                        {
+                            target.CurrHP -= target.LastDamageTaken;
+                        }
+                        else
+                        {
+                            self.CurrHP = (int)(0.8 * target.LastDamageTaken);
+                        }
+                    }, "If self HP is < 50%, deals double damage. Otherwise, heals unit for 80% damage dealt."));
+
                 BaseUnit puffFly = new BaseUnit(puffFlySprite, "Puff Fly", "common", "common", skillSet1, 
                     100, 110, 105, 95, 95, 95);
-                BaseUnit spikePig = new BaseUnit(spikePigSprite, "Spike Pig", "common", "common", skillSet1, 
+                BaseUnit spikePig = new BaseUnit(spikePigSprite, "Spike Pig", "common", "common", skillSet8, 
                     164, 70, 125, 80, 175, 95);
                 BaseUnit pinkScythe = new BaseUnit(pinkScytheSprite, "Pink Scythe", "Mage", "Spirit", skillSet3, 
                     97, 104, 109, 133, 100, 185);
@@ -542,6 +577,7 @@ namespace _2D_Game
                 baseUnitList.Add(snowSpirit);    // 8
 
                 mainMenu.AddBaseUnits(baseUnitList);
+                mainMenu.AddIcons(iconManager);
             }
             else if(gameState == GameState.RunMainMenu)
             {

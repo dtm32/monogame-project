@@ -24,7 +24,7 @@ namespace _2D_Game.Content
         SpriteFont spriteFont;
         Vector2 textPos;
         string text;
-        bool hover;
+        public bool Hover { get; private set; }
         int align;
 
         public Button(Rectangle positionRect, string text, int align)
@@ -66,7 +66,7 @@ namespace _2D_Game.Content
 
             textPos = new Vector2(positionRect.X + (int)textPadding.X, positionRect.Y + (int)textPadding.Y);
             hoverColor = Color.LightGray;
-            hover = false;
+            Hover = false;
         }
 
         public void SetText(string text)
@@ -99,7 +99,7 @@ namespace _2D_Game.Content
         {
             if(cursor.Rect.Intersects(positionRect))
             {
-                hover = true;
+                Hover = true;
                 if(cursor.LeftClick)
                 {
                     //StartBattle = true;
@@ -108,7 +108,7 @@ namespace _2D_Game.Content
             }
             else
             {
-                hover = false;
+                Hover = false;
             }
 
             return false;
@@ -118,7 +118,7 @@ namespace _2D_Game.Content
         {
             if(Texture != null)
             {
-                if(hover)
+                if(Hover)
                 {
                     spriteBatch.Draw(Texture, positionRect, hoverColor);
                 }

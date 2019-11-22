@@ -20,6 +20,17 @@ namespace _2D_Game.Content
             Buff
         }
 
+        public enum Elements
+        {
+            Common,
+            Wild,
+            Light,
+            Dark,
+            Spirit,
+            Demon,
+            Mythic
+        }
+
         //public enum TargetType
         //{
         //    Single,
@@ -32,9 +43,10 @@ namespace _2D_Game.Content
         public static int TargetFront = 2;
         public static int TargetAdjacent = 3;
         public static int TargetAlly = 3;
+        public static int TargetSelf = 4;
 
         public delegate void SkillEffect(Unit self, Unit target);
-        public delegate void SkillEffectAll(Unit self, Unit target, Unit[] units);
+        public delegate void SkillEffectAll(Unit self, Unit target, UnitList units);
 
         public string Name;
         private int tier;

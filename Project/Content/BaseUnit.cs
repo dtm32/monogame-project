@@ -26,6 +26,15 @@ namespace _2D_Game.Content
 
         public int Experience { get; set; }
 
+        public int StatTotal
+        {
+            get
+            {
+                int sum = HP + Spd + Str + Fcs + Amr + Res;
+                return sum;
+            }
+        }
+
         // TODO: directly add all textures and animations to unit/skill
 
         public BaseUnit(AnimatedSprite texture, String name, String type, String faction, ArrayList skills, int hp, int spd, int str, int fcs, int amr, int res)
