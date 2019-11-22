@@ -80,6 +80,7 @@ namespace _2D_Game
         public static SpriteFont font;
         public static SpriteFont FontSmallBold;
 
+        int[] team = new int[4];
 
         public Game1()
         {
@@ -275,7 +276,8 @@ namespace _2D_Game
                 mainMenu.AddUnitSprites(spriteList);
                 gameState = GameState.RunMainMenu;
 
-                ArrayList skillSet1 = new ArrayList(); // puff fly
+                // puff fly
+                ArrayList skillSet1 = new ArrayList();
                 skillSet1.Add(new Skill("Swarm", 0, Skill.SkillType.Physical,
                     (self, target, units) =>
                     {
@@ -316,7 +318,8 @@ namespace _2D_Game
                     (self, target) =>
                     {
                         self.BuffStat(Unit.Speed, 2);
-                    }, "Increases self Strength by 2."));
+                        self.BuffStat(Unit.Strength, 2);
+                    }, "Increases self Spd/Str by 2."));
 
                 ArrayList skillSet2 = new ArrayList();
                 skillSet2.Add(new Skill("Assault", 40));
@@ -454,45 +457,89 @@ namespace _2D_Game
                                 target.StatTiers[i] = 0;
                         }
                     }, "Removes all stat bonuses from target."));
-                skillSet5.Add(new Skill("Vorpal Strike", 35, Skill.SkillType.Physical,
+                skillSet5.Add(new Skill("Piercing Gaze", 50, Skill.SkillType.Physical,
+                    "Ignores 30% of target Armor.")
+                    .SetPenetration(0.3));
+
+                // psychic hands
+                ArrayList skillSet6 = new ArrayList();
+                skillSet6.Add(new Skill("Retaliate", 30, Skill.SkillType.Magical,
                     (self, target) =>
                     {
-                        switch(random.Next(4))
+                        double temp = self.PercentHealth();
+                        double damageMod = 6.0 * (1.0 - temp);
+                        if(damageMod < 1.0)
+                            damageMod = 1.0;
+                        Console.WriteLine($"Retaliate.damageMode={damageMod}");
+                        int lastDamage = target.LastDamageTaken;
+                        target.CurrHP -= (int)((lastDamage * damageMod) - lastDamage);
+                    }, "Deals more damage the less health this unit has."));
+                skillSet6.Add(new Skill("Torment", 60, Skill.SkillType.Magical));
+                skillSet6.Add(new Skill("Ignite", 50, Skill.SkillType.Magical,
+                    (self, target) =>
+                    {
+                        target.Inflict(new StatusEffect(StatusEffect.Burn, 3, self, target));
+                    }, "Inflicts Burn(3)."));
+                skillSet6.Add(new Skill("Psychic Shackle", 85, Skill.SkillType.Magical,
+                    (self, target) =>
+                    {
+                        target.DebuffStat(Unit.Speed, 2); // TODO: UPDATE MOVE ORDER QUEUE TO REFLECT SPEED CHANGES
+                    }, "Decrease Spd(2)."));
+
+                // snow spirit
+                ArrayList skillSet7 = new ArrayList();
+                skillSet7.Add(new Skill("Flash Freeze", 30, Skill.SkillType.Magical,
+                    (self, target) =>
+                    {
+                        //target.Inflict(new StatusEffect(StatusEffect.Stun, 2)); TODO
+                    }, "Inflicts Stun(2)."));
+                skillSet7.Add(new Skill("Arcane Blast", 70, Skill.SkillType.Magical));
+                skillSet7.Add(new Skill("Assault", 55));
+                skillSet7.Add(new Skill("Falling Ice", 60, Skill.SkillType.Physical,
+                    (self, target, units) =>
+                    {
+                        int targetIndex = target.Index;
+                        int damage = (int)(target.LastDamageTaken / 2);
+
+                        if(units[targetIndex-1].IsEnemy)
                         {
-                            case 0:
-                                target.Inflict(new StatusEffect(StatusEffect.Bleed, 2, self, target));
-                                break;
-                            case 1:
-                                target.Inflict(new StatusEffect(StatusEffect.Burn, 2, self, target));
-                                break;
-                            case 2:
-                                target.Inflict(new StatusEffect(StatusEffect.Poison, 2, self, target));
-                                break;
+                            units[targetIndex - 1].CurrHP -= damage;
                         }
-                    }, "Randomly inflicts Burn(2), Bleed(2), or Poison(2)."));
+                        if(targetIndex+1 < units.Length &&
+                            units[targetIndex+1].IsAlive())
+                        {
+                            units[targetIndex+1].CurrHP -= damage;
+                        }
+                    }, "Deals 50% damage to adjacent units."));
 
                 BaseUnit puffFly = new BaseUnit(puffFlySprite, "Puff Fly", "common", "common", skillSet1, 
                     100, 110, 105, 95, 95, 95);
-                BaseUnit spikePig = new BaseUnit(new AnimatedSprite(spikePigSprite), "Spike Pig", "common", "common", skillSet1, 
+                BaseUnit spikePig = new BaseUnit(spikePigSprite, "Spike Pig", "common", "common", skillSet1, 
                     164, 70, 125, 80, 175, 95);
                 BaseUnit pinkScythe = new BaseUnit(pinkScytheSprite, "Pink Scythe", "Mage", "Spirit", skillSet3, 
                     97, 104, 109, 133, 100, 185);
-                BaseUnit featherRaptor = new BaseUnit(new AnimatedSprite(featherRaptorSprite), "Feather Raptor", "common", "common", skillSet2, 
+                BaseUnit featherRaptor = new BaseUnit(featherRaptorSprite, "Feather Raptor", "common", "common", skillSet2, 
                     110, 105, 98, 70, 95, 60);
                 BaseUnit WOODY_HAHA_XD = new BaseUnit(woodThumbSprite, "Woody", "Dragon", "Spirit", woodysSkills, 
                     100, 137, 85, 75, 110, 80);
                 BaseUnit redMoth = new BaseUnit(redMothSprite, "Red Moth", "Beast", "Wild", skillSet4,
                     168, 64, 69, 103, 168, 169);
+                BaseUnit longHair = new BaseUnit(longHairSprite, "Long Hair", "Beast", "Wild", skillSet5,
+                    105, 80, 145, 45, 60, 110);
+                BaseUnit psychicHands = new BaseUnit(psychicHandsSprite, "Psychic Hands", "Beast", "Wild", skillSet6,
+                    90, 95, 80, 165, 85, 80);
+                BaseUnit snowSpirit = new BaseUnit(snowSpiritSprite, "Snow Spirt", "Beast", "Wild", skillSet7,
+                    85, 90, 125, 125, 95, 90);
 
                 baseUnitList.Add(puffFly);       // 0
                 baseUnitList.Add(spikePig);      // 1
-                baseUnitList.Add(pinkScythe);    // 2
-                baseUnitList.Add(featherRaptor); // 3
-                baseUnitList.Add(WOODY_HAHA_XD); // 4
+                baseUnitList.Add(featherRaptor); // 2
+                baseUnitList.Add(WOODY_HAHA_XD); // 3
+                baseUnitList.Add(pinkScythe);    // 4
                 baseUnitList.Add(redMoth);       // 5
-                baseUnitList.Add(redMoth);       // 5
-                baseUnitList.Add(redMoth);       // 5
-                baseUnitList.Add(redMoth);       // 5
+                baseUnitList.Add(longHair);      // 6
+                baseUnitList.Add(psychicHands);  // 7
+                baseUnitList.Add(snowSpirit);    // 8
 
                 mainMenu.AddBaseUnits(baseUnitList);
             }
@@ -503,15 +550,21 @@ namespace _2D_Game
                 if(mainMenu.StartBattle)
                 {
                     gameState = GameState.InitBattleManager;
+                    team = mainMenu.SelectedUnits;
+
                 }
             }
             else if(gameState == GameState.InitBattleManager)
             {
 
-                battleManager.AddUnit(baseUnitList[0], 0);
-                battleManager.AddUnit(baseUnitList[2], 1);
-                battleManager.AddUnit(baseUnitList[5], 2);
-                battleManager.AddUnit(baseUnitList[4], 3);
+                //battleManager.AddUnit(baseUnitList[0], 0);
+                //battleManager.AddUnit(baseUnitList[2], 1);
+                //battleManager.AddUnit(baseUnitList[5], 2);
+                //battleManager.AddUnit(baseUnitList[4], 3);
+                battleManager.AddUnit(baseUnitList[team[0]], 0);
+                battleManager.AddUnit(baseUnitList[team[1]], 1);
+                battleManager.AddUnit(baseUnitList[team[2]], 2);
+                battleManager.AddUnit(baseUnitList[team[3]], 3);
 
                 battleManager.AddUnit(baseUnitList[2], 4);
                 battleManager.AddUnit(baseUnitList[3], 5);

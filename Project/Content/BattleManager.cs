@@ -482,7 +482,7 @@ namespace _2D_Game.Content
                     SetState(BattleState.RoundNext);
                     break;
                 case BattleState.RoundNext:
-                    int nextIndex;
+                    //int nextIndex;
 
                     //if(BattleOver())
                     //{
@@ -742,6 +742,8 @@ namespace _2D_Game.Content
                 crit = 1.5; // Also check for skill crit modifier
             }
 
+            defense = (int) (defense * (1.0 - skill.Penetration));
+
             //damage = (int)((skill.Power * attack * (attacker.Level * attacker.Level / 18 + 1)) / (defense * defense * skill.Penetration) * (rnd.Next(15) / 100 + 0.85) * crit);
             //damage = (int)((skill.Power * attack / defense * (attacker.Level / 3 + 1) / 30) * (rnd.Next(15) / 100 + 0.85) * crit);
             //damage = (int)((skill.Power * attack / defense) * (rnd.Next(15) / 100 + 0.85) * crit);
@@ -847,6 +849,15 @@ namespace _2D_Game.Content
                 }
             }
 
+            if(unitList.PreviewedAlly != null)
+            {
+                DrawUnitPreview(spriteBatch);
+            }
+            if(unitList.PreviewedEnemy != null)
+            {
+                DrawEnemyPreview(spriteBatch);
+            }
+
             // draw unit panel if player unit is selected
             if(unitList.SelectedIsAlly)
             {
@@ -856,15 +867,6 @@ namespace _2D_Game.Content
                 {
                     DrawSkillDescription(spriteBatch);
                 }
-            }
-
-            if(unitList.PreviewedAlly != null)
-            {
-                DrawUnitPreview(spriteBatch);
-            }
-            if(unitList.PreviewedEnemy != null)
-            {
-                DrawEnemyPreview(spriteBatch);
             }
         }
 

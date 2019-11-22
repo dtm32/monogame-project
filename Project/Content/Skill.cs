@@ -6,6 +6,10 @@ using System.Threading.Tasks;
 
 namespace _2D_Game.Content
 {
+    // TODO:
+    // Add Print() method
+    // Move damage calculations to static func here
+    // Damage calc type variable ?
     class Skill
     {
         public enum SkillType
@@ -73,12 +77,19 @@ namespace _2D_Game.Content
             return this;
         }
 
+        public Skill SetPenetration(double pen)
+        {
+            this.Penetration = pen;
+
+            return this;
+        }
+
         public Skill(String name, int power)
         {
             tier = 0;
             Name = name;
             this.Power = power;
-            Penetration = 1.0;
+            Penetration = 0.0;
             Type = SkillType.Physical;
         }
 
@@ -87,7 +98,7 @@ namespace _2D_Game.Content
             tier = 0;
             Name = name;
             this.Power = power;
-            Penetration = 1.0;
+            Penetration = 0.0;
             Type = SkillType.Physical;
             Effect = effect;
         }
@@ -97,7 +108,7 @@ namespace _2D_Game.Content
             tier = 0;
             Name = name;
             this.Power = power;
-            Penetration = 1.0;
+            Penetration = 0.0;
             Type = type;
             //Effect = effect;
         }
@@ -107,7 +118,7 @@ namespace _2D_Game.Content
             tier = 0;
             Name = name;
             this.Power = power;
-            Penetration = 1.0;
+            Penetration = 0.0;
             Type = type;
             Effect = effect;
         }
@@ -117,7 +128,7 @@ namespace _2D_Game.Content
             tier = 0;
             Name = name;
             Power = 0;
-            Penetration = 1.0;
+            Penetration = 0.0;
             Type = SkillType.Effect;
             Effect = effect;
         }
@@ -127,7 +138,7 @@ namespace _2D_Game.Content
             tier = 0;
             Name = name;
             Power = 0;
-            Penetration = 1.0;
+            Penetration = 0.0;
             Type = type;
             Effect = effect;
         }
@@ -137,7 +148,7 @@ namespace _2D_Game.Content
             tier = 0;
             Name = name;
             Power = 0;
-            Penetration = 1.0;
+            Penetration = 0.0;
             Type = type;
             Effect = effect;
             this.description = description;
@@ -148,7 +159,7 @@ namespace _2D_Game.Content
             tier = 0;
             Name = name;
             Power = power;
-            Penetration = 1.0;
+            Penetration = 0.0;
             Type = type;
             Effect = effect;
             this.description = description;
@@ -159,7 +170,7 @@ namespace _2D_Game.Content
             tier = 0;
             Name = name;
             Power = 0;
-            Penetration = 1.0;
+            Penetration = 0.0;
             Type = SkillType.Effect;
             EffectAll = effect;
         }
@@ -169,7 +180,7 @@ namespace _2D_Game.Content
             tier = 0;
             Name = name;
             Power = 0;
-            Penetration = 1.0;
+            Penetration = 0.0;
             Type = type;
             EffectAll = effect;
         }
@@ -179,9 +190,20 @@ namespace _2D_Game.Content
             tier = 0;
             Name = name;
             Power = 0;
-            Penetration = 1.0;
+            Penetration = 0.0;
             Type = type;
             EffectAll = effect;
+            this.description = description;
+        }
+
+        public Skill(String name, int power, SkillType type, string description)
+        {
+            tier = 0;
+            Name = name;
+            Power = power;
+            Penetration = 0.0;
+            Type = type;
+            //EffectAll = effect;
             this.description = description;
         }
 
@@ -190,7 +212,7 @@ namespace _2D_Game.Content
             tier = 0;
             Name = name;
             Power = power;
-            Penetration = 1.0;
+            Penetration = 0.0;
             Type = type;
             EffectAll = effect;
             this.description = description;

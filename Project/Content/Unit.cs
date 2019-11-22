@@ -64,7 +64,7 @@ namespace _2D_Game.Content
 
             for(int i = 0; i < 6; i++)
             {
-                statTiers[i] = 0;
+                StatTiers[i] = 0;
             }
         }
 
@@ -96,31 +96,31 @@ namespace _2D_Game.Content
 
             int newStat = 0;
 
-            statTiers[stat] -= tiers;
+            StatTiers[stat] -= tiers;
 
-            if(statTiers[stat] < -8)
-                statTiers[stat] = -8;
+            if(StatTiers[stat] < -8)
+                StatTiers[stat] = -8;
 
             switch(stat)
             {
                 case Unit.Speed:
-                    newStat = (int)(CalcStatMod(statTiers[stat]) * baseUnit.CalcSpd);
+                    newStat = (int)(CalcStatMod(StatTiers[stat]) * baseUnit.CalcSpd);
                     Spd = newStat;
                     break;
                 case Unit.Strength:
-                    newStat = (int)(CalcStatMod(statTiers[stat]) * baseUnit.CalcStr);
+                    newStat = (int)(CalcStatMod(StatTiers[stat]) * baseUnit.CalcStr);
                     Str = newStat;
                     break;
                 case Unit.Focus:
-                    newStat = (int)(CalcStatMod(statTiers[stat]) * baseUnit.CalcFcs);
+                    newStat = (int)(CalcStatMod(StatTiers[stat]) * baseUnit.CalcFcs);
                     Fcs = newStat;
                     break;
                 case Unit.Armor:
-                    newStat = (int)(CalcStatMod(statTiers[stat]) * baseUnit.CalcAmr);
+                    newStat = (int)(CalcStatMod(StatTiers[stat]) * baseUnit.CalcAmr);
                     Amr = newStat;
                     break;
                 case Unit.Resistance:
-                    newStat = (int)(CalcStatMod(statTiers[stat]) * baseUnit.CalcRes);
+                    newStat = (int)(CalcStatMod(StatTiers[stat]) * baseUnit.CalcRes);
                     Res = newStat;
                     break;
             }
@@ -133,31 +133,31 @@ namespace _2D_Game.Content
             Console.WriteLine($"Buffing {Name} stat by {tiers}");
             int newStat = 0;
 
-            statTiers[stat] += tiers;
+            StatTiers[stat] += tiers;
 
-            if(statTiers[stat] > 8)
-                statTiers[stat] = 8;
+            if(StatTiers[stat] > 8)
+                StatTiers[stat] = 8;
 
             switch(stat)
             {
                 case Unit.Speed:
-                    newStat = (int)(CalcStatMod(statTiers[stat]) * baseUnit.CalcSpd);
+                    newStat = (int)(CalcStatMod(StatTiers[stat]) * baseUnit.CalcSpd);
                     Spd = newStat;
                     break;
                 case Unit.Strength:
-                    newStat = (int)(CalcStatMod(statTiers[stat]) * baseUnit.CalcStr);
+                    newStat = (int)(CalcStatMod(StatTiers[stat]) * baseUnit.CalcStr);
                     Str = newStat;
                     break;
                 case Unit.Focus:
-                    newStat = (int)(CalcStatMod(statTiers[stat]) * baseUnit.CalcFcs);
+                    newStat = (int)(CalcStatMod(StatTiers[stat]) * baseUnit.CalcFcs);
                     Fcs = newStat;
                     break;
                 case Unit.Armor:
-                    newStat = (int)(CalcStatMod(statTiers[stat]) * baseUnit.CalcAmr);
+                    newStat = (int)(CalcStatMod(StatTiers[stat]) * baseUnit.CalcAmr);
                     Amr = newStat;
                     break;
                 case Unit.Resistance:
-                    newStat = (int)(CalcStatMod(statTiers[stat]) * baseUnit.CalcRes);
+                    newStat = (int)(CalcStatMod(StatTiers[stat]) * baseUnit.CalcRes);
                     Res = newStat;
                     break;
             }
@@ -185,11 +185,11 @@ namespace _2D_Game.Content
         {
             Color color = Color.Black;
 
-            if(statTiers[stat] > 0)
+            if(StatTiers[stat] > 0)
             {
                 color = Color.Green;
             }
-            else if(statTiers[stat] < 0)
+            else if(StatTiers[stat] < 0)
             {
                 color = Color.DarkRed;
             }

@@ -31,7 +31,7 @@ namespace _2D_Game.Content
         Vector2[] spriteLocs;
         Rectangle[] spriteRects;
 
-        int[] selectedUnits = new int[4];
+        public int[] SelectedUnits = new int[4];
 
         Button startButton;
 
@@ -58,9 +58,9 @@ namespace _2D_Game.Content
                 unitButtons[i] = new Button(unitButtonRects[i], "--", Button.AlignCenter);
             }
 
-            for(int i = 0; i < selectedUnits.Length; i++)
+            for(int i = 0; i < SelectedUnits.Length; i++)
             {
-                selectedUnits[i] = -1;
+                SelectedUnits[i] = -1;
             }
         }
 
@@ -130,7 +130,24 @@ namespace _2D_Game.Content
                 sprite.Update();
             });
 
-            StartBattle = startButton.Update(cursor);
+            bool teamPicked = true;
+
+            for(int i = 0; i < SelectedUnits.Length; i++)
+            {
+                if(SelectedUnits[i] == -1)
+                {
+                    teamPicked = false;
+                }
+            }
+
+            if(teamPicked)
+            {
+                StartBattle = startButton.Update(cursor);
+            }
+            else
+            {
+                startButton.Update(cursor);
+            }
 
 
 
@@ -153,7 +170,7 @@ namespace _2D_Game.Content
                     {
                         if(unitButtonIndex > -1)
                         {
-                            selectedUnits[unitButtonIndex] = i;
+                            SelectedUnits[unitButtonIndex] = i;
                             unitButtons[unitButtonIndex].SetText(baseUnitList[i].Name);
                         }
                     }
