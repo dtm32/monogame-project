@@ -20,7 +20,7 @@ namespace _2D_Game.Content
         Rectangle positionRect;
         Color buttonColor;
         Color hoverColor;
-        Color textColor;
+        Color textColor = new Color(33, 33, 33);
         SpriteFont spriteFont;
         Vector2 textPos;
         string text;
@@ -46,7 +46,7 @@ namespace _2D_Game.Content
             //hoverColor = Color.White;
         }
 
-        public void Init()
+        public Button Initialize()
         {
             Vector2 textPadding = new Vector2(0, 0);
             spriteFont = FontManager.Default_Regular_11;
@@ -67,6 +67,8 @@ namespace _2D_Game.Content
             textPos = new Vector2(positionRect.X + (int)textPadding.X, positionRect.Y + (int)textPadding.Y);
             hoverColor = Color.LightGray;
             Hover = false;
+
+            return this;
         }
 
         public void SetText(string text)
@@ -130,7 +132,7 @@ namespace _2D_Game.Content
 
             if(spriteFont != null)
             {
-                spriteBatch.DrawString(spriteFont, text, textPos, Color.Black);
+                spriteBatch.DrawString(spriteFont, text, textPos, textColor);
             }
         }
 
@@ -143,7 +145,7 @@ namespace _2D_Game.Content
 
             if(spriteFont != null)
             {
-                spriteBatch.DrawString(spriteFont, text, textPos, Color.Black);
+                spriteBatch.DrawString(spriteFont, text, textPos, textColor);
             }
         }
     }

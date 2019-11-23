@@ -85,11 +85,11 @@ namespace _2D_Game.Content
             this.grassBackgroundTexture = grassBackgroundTexture;
 
             startButton.Texture = skillTexture;
-            startButton.Init();
+            startButton.Initialize();
             for(int i = 0; i < 4; i++)
             {
                 unitButtons[i].Texture = skillTexture;
-                unitButtons[i].Init();
+                unitButtons[i].Initialize();
             }
         }
 
@@ -317,7 +317,7 @@ namespace _2D_Game.Content
                 spriteBatch.Draw(blankTexture, statPreviewRect, Color.SlateGray);
 
                 spriteBatch.DrawString(FontManager.Default_Bold_15, previewAlly.Name, nameLoc, Color.Black);
-                spriteBatch.DrawString(FontManager.Default_Regular_11, $"HP  {previewAlly.HP}", hpLoc, Color.Black);
+                spriteBatch.DrawString(FontManager.Default_Regular_11, $"HP   {previewAlly.HP}", hpLoc, Color.Black);
                 //spriteBatch.DrawString(FontManager.Default_Regular_11, $"LVL  {previewAlly.Level}", levelLoc, Color.Black);
                 spriteBatch.DrawString(FontManager.Default_Regular_11, $"SPD  {previewAlly.Spd}", spdLoc, Color.Black);
                 spriteBatch.DrawString(FontManager.Default_Regular_11, $"STR  {previewAlly.Str}", strLoc, Color.Black);
@@ -356,11 +356,11 @@ namespace _2D_Game.Content
 
 
             // 400, 200 -> 400, 400
-            Vector2[] skillTextLocs = new Vector2[4];
-            for(int i = 0; i < skillTextLocs.Length; i++)
-            {
-                skillTextLocs[i] = new Vector2(skillRects[i].X + textPadding, skillRects[i].Y + textPadding);
-            }
+            //Vector2[] skillTextLocs = new Vector2[4];
+            //for(int i = 0; i < skillTextLocs.Length; i++)
+            //{
+            //    skillTextLocs[i] = new Vector2(skillRects[i].X + textPadding, skillRects[i].Y + textPadding);
+            //}
 
             ArrayList skills = selectedUnit.GetSkills();
             for(int i = 0; i < skills.Count; i++)
@@ -372,8 +372,12 @@ namespace _2D_Game.Content
                 //if(((Skill)skills[i]).Type != Skill.SkillType.Effect &&
                 //    ((Skill)skills[i]).Type != Skill.SkillType.Buff)
                 //    skillText += $" {((Skill)skills[i]).Power}";
-                spriteBatch.Draw(skillTexture, skillRects[i], skillColor);
-                spriteBatch.DrawString(FontManager.Default_Regular_11, skillText, skillTextLocs[i], Color.Black);
+                Button button = new Button(skillTexture, skillRects[i], skillText).Initialize();
+
+                button.Draw(spriteBatch);
+
+                //spriteBatch.Draw(skillTexture, skillRects[i], skillColor);
+                //spriteBatch.DrawString(FontManager.Default_Regular_11, skillText, skillTextLocs[i], Color.Black);
             }
 
             if(skillPreview != null)

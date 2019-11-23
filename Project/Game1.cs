@@ -661,7 +661,7 @@ namespace _2D_Game
                         int attack = self.Str;
                         double crit = 1.0;
 
-                        if(random.Next(50) < 5)
+                        if(random.Next(25) < 5)
                         {
                             crit = 1.5; // Also check for skill crit modifier
                         }
