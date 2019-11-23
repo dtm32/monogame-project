@@ -24,6 +24,7 @@ namespace _2D_Game.Content
         public const int Burn   = 0;
         public const int Bleed  = 1;
         public const int Poison = 2;
+        public const int Stun   = 3;
 
         public int Type { get; }
         public int Turns { get; set; }

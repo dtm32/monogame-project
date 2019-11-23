@@ -23,8 +23,8 @@ namespace _2D_Game.Content
         public int Amr { get; }
         public int Res { get; }
         public bool IsEnemy { get; set; }
-
         public int Experience { get; set; }
+        private const int expPerLevel = 200;
 
         public int StatTotal
         {
@@ -86,6 +86,13 @@ namespace _2D_Game.Content
             this.IsEnemy = false;
         }
 
+        public BaseUnit SetLevel(int level)
+        {
+            Experience = level * expPerLevel;
+
+            return this;
+        }
+
         public AnimatedSprite Texture
         {
             get { return unitTexture; }
@@ -105,7 +112,12 @@ namespace _2D_Game.Content
                 // level = (2.7exp)^2 - (0.364exp)^3
                 //level = Math.Floor(1.55 * 100) ^ 2
                 // level = 0.4 * exp ^ (1/1.83);
-                level = Experience / 200;
+                level = Experience / expPerLevel;
+
+                if(level < 1)
+                    level = 1;
+                else if(level > 100)
+                    level = 100;
                 
                 return (int)level;
             }

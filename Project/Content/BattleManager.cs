@@ -79,6 +79,7 @@ namespace _2D_Game.Content
         AnimatedSprite burnSprite;
         AnimatedSprite poisonedSprite;
         AnimatedSprite bleedSprite;
+        AnimatedSprite stunSprite;
         AnimatedSprite healthBarSprite;
         AnimatedSprite healthBarEnemySprite;
 
@@ -166,11 +167,13 @@ namespace _2D_Game.Content
         }
 
         public void AddSprites(AnimatedSprite burnSprite, AnimatedSprite poisonedSprite,
-            AnimatedSprite bleedSprite, AnimatedSprite healthBarSprite, AnimatedSprite healthBarEnemySprite)
+            AnimatedSprite bleedSprite, AnimatedSprite stunSprite, AnimatedSprite healthBarSprite, 
+            AnimatedSprite healthBarEnemySprite)
         {
             this.burnSprite = burnSprite;
             this.poisonedSprite = poisonedSprite;
             this.bleedSprite = bleedSprite;
+            this.stunSprite = stunSprite;
             this.healthBarSprite = healthBarSprite;
             this.healthBarEnemySprite = healthBarEnemySprite;
         }
@@ -241,7 +244,7 @@ namespace _2D_Game.Content
             // update animations
             //for(int i = 0; i < unitList.Length; i++)
             //{
-            //    if(unitList[i].IsAlive())
+            //    if(unitList[i].IsAlive)
             //    {
             //        unitList[i].Update();
             //    }
@@ -269,6 +272,7 @@ namespace _2D_Game.Content
             burnSprite.Update();
             poisonedSprite.Update();
             bleedSprite.Update();
+            stunSprite.Update();
 
             if(cursor.RightClick)
             {
@@ -405,111 +409,27 @@ namespace _2D_Game.Content
                     // TODO: update/remove stat changes
                     // TODO: update/remove status effects
 
-                    // calculate character move order
-                    //ArrayList moveOrder = new ArrayList();
-                    //ArrayList unitsArray = new ArrayList();
-                    //int[] moveOrder = new int[units.Length];
-                    //int[] speeds = new int[units.Length];
-                    //int index = 0;
-
-                    //roundOrder = new Queue<int>();
-
-                    //for(int i = 0; i < units.Length; i++)
-                    //{
-                    //    speeds[i] = units[i].Spd; // TODO: make unit manager that will calc spd w/ modifiers
-                    //}
-
-                    //for(int i = 0; i < units.Length; i++)
-                    //{
-                    //    ArrayList tiedUnits = new ArrayList();
-                    //    int highestSpeed = 0;
-
-                    //    for(int j = 0; j < speeds.Length; j++)
-                    //    {
-                    //        if(speeds[j] > highestSpeed)
-                    //        {
-                    //            highestSpeed = speeds[j];
-                    //            tiedUnits.Clear();
-                    //            tiedUnits.Add(j);
-                    //        }
-                    //        else if(speeds[j] == highestSpeed)
-                    //        {
-                    //            tiedUnits.Add(j);
-                    //        }
-                    //    }
-
-                    //    if(tiedUnits.Count > 1)
-                    //    {
-                    //        // randomly pick between tied units
-                    //        int randomIndex = rnd.Next(tiedUnits.Count);
-                    //        int unitIndex = (int)tiedUnits[randomIndex];
-                    //        // add to move order and set speed to -1
-                    //        moveOrder[index] = unitIndex;
-                    //        roundOrder.Enqueue(unitIndex);
-                    //        speeds[unitIndex] = -1;
-                    //    }
-                    //    else if(tiedUnits.Count == 1)
-                    //    {
-                    //        int unitIndex = (int)tiedUnits[0];
-                    //        // add to move order and set speed to -1
-                    //        moveOrder[index] = unitIndex;
-                    //        roundOrder.Enqueue(unitIndex);
-                    //        speeds[unitIndex] = -1;
-                    //    }
-
-                    //    index++;
-                    //}
-
-                    roundOrder = unitList.CalcMoveOrder();
-
                     unitList.RoundStart();
-
-                    // decrement status effects
-                    //for(int i = 0; i < units.Length; i++)
-                    //{
-                    //    if(units[i].IsAlive())
-                    //    {
-                    //        if(units[i].StatusEffects.Count > 0)
-                    //        {
-                    //            units[i].StatusEffects.ForEach((statusEffect) =>
-                    //            {
-                    //                if(statusEffect.Turns > 0)
-                    //                    statusEffect.Turns--;
-                    //            });
-
-                    //            units[i].StatusEffects.RemoveAll(status => status.Turns <= 0);
-                    //        }
-                    //    }
-                    //}
 
                     // update battle state
                     SetState(BattleState.RoundNext);
                     break;
                 case BattleState.RoundNext:
-                    //int nextIndex;
+                    Unit next = unitList.Next();
 
-                    //if(BattleOver())
-                    //{
-                    //    SetState(BattleState.BattleEnd);
-                    //    break;
-                    //}
-                    //else if(roundOrder.Count > 0)
-                    //{
-                    //    nextIndex = roundOrder.Dequeue();
-                    //}
-                    //else
-                    //{
-                    //    SetState(BattleState.RoundEnd);
-                    //    break;
-                    //}
                     if(unitList.BattleOver())
                     {
                         SetState(BattleState.BattleEnd);
                         break;
                     }
-                    if(unitList.Next() == null)
+                    if(next == null)
                     {
                         SetState(BattleState.RoundEnd);
+                        break;
+                    }
+                    else if(next.IsStunned)
+                    {
+                        SetState(BattleState.RoundNext);
                         break;
                     }
 
@@ -523,7 +443,7 @@ namespace _2D_Game.Content
                     // remove links to selected unit
                     skillPreview = null;
 
-                    //bool nextIsAlive = units[nextIndex].IsAlive();
+                    //bool nextIsAlive = units[nextIndex].IsAlive;
 
                     // update battle state
                     if(unitList.SelectedIsEnemy)
@@ -621,7 +541,7 @@ namespace _2D_Game.Content
                     // calculate end round damage (bleed, poison, etc)
                     for(int i = 0; i < unitList.Length; i++)
                     {
-                        if(unitList[i].IsAlive())
+                        if(unitList[i].IsAlive)
                         {
                             if(unitList[i].StatusEffects.Count > 0)
                             {
@@ -662,7 +582,7 @@ namespace _2D_Game.Content
                     bool win = false;
                     for(int i = 0; i < SIZE / 2; i++)
                     {
-                        if(unitList[i].IsAlive())
+                        if(unitList[i].IsAlive)
                         {
                             Console.WriteLine(" you win!");
                             win = true;
@@ -707,7 +627,7 @@ namespace _2D_Game.Content
             {
                 int target = rnd.Next(4);
 
-                if(unitList[target].IsAlive())
+                if(unitList[target].IsAlive)
                     return target;
             }
         }
@@ -798,6 +718,8 @@ namespace _2D_Game.Content
 
         private BattleState SetState(BattleState state)
         {
+
+            Console.WriteLine($"State: {state}");
             battleState = state;
 
             return state;
@@ -820,7 +742,7 @@ namespace _2D_Game.Content
                 }
 
                 Color unitColor = Color.White;
-                if(unitList[i].IsAlive() || healthBars[i].Width > 0)
+                if(unitList[i].IsAlive || healthBars[i].Width > 0)
                 {
                     unitList[i].Draw(spriteBatch, unitLocs[i]);
 
@@ -844,6 +766,9 @@ namespace _2D_Game.Content
                                     break;
                                 case StatusEffect.Poison:
                                     poisonedSprite.Draw(spriteBatch, unitLocs[i]);
+                                    break;
+                                case StatusEffect.Stun:
+                                    stunSprite.Draw(spriteBatch, unitLocs[i]);
                                     break;
                             }
 
@@ -872,6 +797,23 @@ namespace _2D_Game.Content
                     DrawSkillDescription(spriteBatch);
                 }
             }
+        }
+
+        private void DrawRoundQueue()
+        {
+            Queue<int> queue = unitList.GetRoundQueue();
+
+            Console.Write($"DrawRoundQueue()");
+
+
+            for(int i = 0; i < queue.Count; i++)
+            {
+                int index = queue.Dequeue();
+                if(index > -1)
+                    Console.Write($"{unitList[index].Name}({unitList[index].Spd}), ");
+            }
+
+            Console.WriteLine();
         }
 
         //Unit previewAlly = null;
@@ -924,11 +866,25 @@ namespace _2D_Game.Content
             Vector2 amrLoc = new Vector2(unitPreviewPadding, fcsLoc.Y + 17);
             Vector2 resLoc = new Vector2(unitPreviewPadding + 80, amrLoc.Y);
             
+            // draw panel
             spriteBatch.Draw(blankTexture, borderRect, new Color(64, 64, 64));
             spriteBatch.Draw(blankTexture, allyUnitPreviewRect, Color.SlateGray);
 
+            // draw name and level
             spriteBatch.DrawString(FontManager.Default_Bold_11, previewAlly.Name.ToUpper(), nameLoc, Color.Black);
             spriteBatch.DrawString(FontManager.Default_Regular_9, $"HP  {previewAlly.HP}", hpLoc, Color.Black);
+
+            // draw status condition icons
+            Rectangle statusRect = new Rectangle((int)nameLoc.X, (int)levelLoc.Y + 16, 16, 16);
+            previewAlly.StatusEffects.ForEach((status) =>
+            {
+                int statusType = status.Type;
+
+                spriteBatch.Draw(iconManager.IconTexture(statusType), statusRect, Color.White);
+
+                statusRect.X += 16;
+            });
+
             spriteBatch.DrawString(FontManager.Default_Regular_9, $"LVL  {previewAlly.Level}", levelLoc, Color.Black);
             spriteBatch.DrawString(FontManager.Default_Regular_9, $"SPD  {previewAlly.Spd}", spdLoc, previewAlly.StatColor(Unit.Speed));
             spriteBatch.DrawString(FontManager.Default_Regular_9, $"STR  {previewAlly.Str}", strLoc, previewAlly.StatColor(Unit.Strength));

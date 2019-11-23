@@ -1,5 +1,6 @@
 ﻿using _2D_Game.Content;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using System;
@@ -37,7 +38,7 @@ namespace _2D_Game
         Texture2D blankTexture;
         Texture2D skillTexture;
         Texture2D panelCornerTexture;
-        Texture2D poisonIconTexture, burnIconTexture, bleedIconTexture;
+        Texture2D poisonIconTexture, burnIconTexture, bleedIconTexture, stunIconTexture;
         Texture2D physicalIconTexture, magicalIconTexture, statusIconTexture, buffIconTexture;
         IconManager iconManager;
 
@@ -50,8 +51,10 @@ namespace _2D_Game
 
         List<AnimatedSprite> spriteList;
         List<BaseUnit> baseUnitList;
+        List<BaseUnit> enemyUnitList;
         Texture2D puffFlyTexture, spikePigTexture, featherRaptorTexture, woodThumbTexture, pinkScytheTexture,
-            redMothTexture, longHairTexture, psychicHandsTexture, snowSpiritTexture;
+            redMothTexture, longHairTexture, psychicHandsTexture, snowSpiritTexture, zigZagTexture,
+            beanSproutTexture;
         AnimatedSprite puffFlySprite;
         AnimatedSprite spikePigSprite;
         AnimatedSprite featherRaptorSprite;
@@ -61,9 +64,11 @@ namespace _2D_Game
         AnimatedSprite longHairSprite;
         AnimatedSprite psychicHandsSprite;
         AnimatedSprite snowSpiritSprite;
+        AnimatedSprite zigZagSprite;
+        AnimatedSprite beanSproutSprite;
 
-        Texture2D burnTexture, poisonedTexture, bleedTexture;
-        AnimatedSprite burnSprite, poisonedSprite, bleedSprite;
+        Texture2D burnTexture, poisonedTexture, bleedTexture, stunTexture;
+        AnimatedSprite burnSprite, poisonedSprite, bleedSprite, stunSprite;
 
         // health bar textures
         Texture2D healthBarTexture;
@@ -116,6 +121,7 @@ namespace _2D_Game
             Color backgroundColor = Color.Blue;
             spriteList = new List<AnimatedSprite>();
             baseUnitList = new List<BaseUnit>();
+            enemyUnitList = new List<BaseUnit>();
 
             base.Initialize();
         }
@@ -128,6 +134,7 @@ namespace _2D_Game
         {
             // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
+            //this.Content = Content;
 
             // TODO: use this.Content to load your game content here
 
@@ -175,6 +182,14 @@ namespace _2D_Game
             snowSpiritTexture = LoadTexturePNG("anim_snow_spirit");
             snowSpiritSprite = new AnimatedSprite(snowSpiritTexture, 1, 2);
 
+            zigZagTexture = Content.Load<Texture2D>("Resources/anim_zig_zag");
+            zigZagSprite = new AnimatedSprite(zigZagTexture, 1, 6);
+            psychicHandsSprite.UpdateSpeed = 6;
+
+            beanSproutTexture = Content.Load<Texture2D>("Resources/anim_bean_sprout");
+            beanSproutSprite = new AnimatedSprite(beanSproutTexture, 1, 4);
+            beanSproutSprite.UpdateSpeed = 8;
+
             spriteList.Add(puffFlySprite);
             spriteList.Add(spikePigSprite);
             spriteList.Add(featherRaptorSprite);
@@ -184,6 +199,7 @@ namespace _2D_Game
             spriteList.Add(longHairSprite);
             spriteList.Add(psychicHandsSprite);
             spriteList.Add(snowSpiritSprite);
+            spriteList.Add(beanSproutSprite);
 
             // combat animation sprites
             burnTexture = LoadTexturePNG("anim_fire");
@@ -201,16 +217,23 @@ namespace _2D_Game
             bleedSprite.Idle = 150;
             bleedSprite.UpdateSpeed = 3;
 
+            stunTexture = LoadTexturePNG("anim_stun");
+            stunSprite = new AnimatedSprite(stunTexture, 4, 5);
+            stunSprite.Idle = 150;
+            stunSprite.UpdateSpeed = 1;
+
             // icon textures
             bleedIconTexture = LoadTexturePNG("icon_bleed");
             burnIconTexture = LoadTexturePNG("icon_burned");
             poisonIconTexture = LoadTexturePNG("icon_poisoned");
+            stunIconTexture = LoadTexturePNG("icon_stunned");
             physicalIconTexture = LoadTexturePNG("icon_physical");
             magicalIconTexture = LoadTexturePNG("icon_magical");
             statusIconTexture = LoadTexturePNG("icon_status");
             buffIconTexture = LoadTexturePNG("icon_buff");
             iconManager = new IconManager(poisonIconTexture, burnIconTexture, bleedIconTexture,
-                physicalIconTexture, magicalIconTexture, statusIconTexture, buffIconTexture);
+                stunIconTexture, physicalIconTexture, magicalIconTexture, statusIconTexture, 
+                buffIconTexture);
 
             // health bar textures
             healthBarHighlightedTexture = LoadTexturePNG("health_bar_highlighted");
@@ -236,12 +259,15 @@ namespace _2D_Game
             fontManager = new FontManager(Content);
         }
 
+        //private ContentManager Content;
+
         private Texture2D LoadTexturePNG(string fileName)
         {
-            FileStream fileStream = new FileStream("../../../../Content/Resources/" + fileName + ".png", FileMode.Open);
-            Texture2D texture = Texture2D.FromStream(graphics.GraphicsDevice, fileStream);
-            fileStream.Dispose();
-            return texture;
+            //FileStream fileStream = new FileStream("../../../../Content/Resources/" + fileName + ".png", FileMode.Open);
+            //Texture2D texture = Texture2D.FromStream(graphics.GraphicsDevice, fileStream);
+            //fileStream.Dispose();
+            //return texture;
+            return Content.Load<Texture2D>($"Resources/{fileName}");
         }
 
         /// <summary>
@@ -283,7 +309,7 @@ namespace _2D_Game
                     {
                         //Random random = new Random();
                         int numAttacks = random.Next(4) + 5;
-                        int power = 20;
+                        int power = 10;
 
                         float crit = 1.0f;
 
@@ -301,7 +327,7 @@ namespace _2D_Game
                             while(!units.BattleOver())
                             {
                                 targetIndex = random.Next(units.Length / 2) + targetOffset;
-                                if(units[targetIndex].IsAlive())
+                                if(units[targetIndex].IsAlive)
                                     break;
                             }
                             if(units.BattleOver() || targetIndex < 0)
@@ -334,7 +360,7 @@ namespace _2D_Game
                     {
                         target.Inflict(new StatusEffect(StatusEffect.Bleed, 2, self, target));
                     }, "Inflicts Bleed(2)."));
-                skillSet2.Add(new Skill("Fast Swipe", 30, Skill.SkillType.Physical,
+                skillSet2.Add(new Skill("Fast Swipe", 40, Skill.SkillType.Physical,
                     (self, target) =>
                     {
                         self.BuffStat(Unit.Speed, 1);
@@ -376,7 +402,7 @@ namespace _2D_Game
                     {
                         self.CurrHP += target.LastDamageTaken / 2;
                     }, "Heals self for half damage dealt."));
-                skillSet3.Add(new Skill("Smooch", 100, Skill.SkillType.Magical,
+                skillSet3.Add(new Skill("Smooch", 60, Skill.SkillType.Magical,
                     (self, target) =>
                     {
                         target.DebuffStat(Unit.Resistance, 2);
@@ -384,10 +410,10 @@ namespace _2D_Game
                 skillSet3.Add(new Skill("Big Magic Churro", Skill.SkillType.Buff,
                     (self, target) =>
                     {
-                        int heal = (int)(self.Fcs * 0.45);
+                        int heal = (int)(self.Fcs * 0.40);
                         target.CurrHP += heal;
                         self.CurrHP += heal;
-                        target.BuffStat(Unit.Speed, 1);
+                        target.BuffStat(Unit.Speed, 2);
                     }, "Heal self and target = 45% Focus and increase target Speed(1).")
                     .SetTargetType(Skill.TargetAlly));
 
@@ -403,7 +429,7 @@ namespace _2D_Game
                 skillSet4.Add(new Skill("Incantation", Skill.SkillType.Buff,
                     (self, target) =>
                     {
-                        target.CurrHP += (int)(target.HP * 0.15);
+                        target.CurrHP += (int)(target.HP * 0.2);
                         target.BuffStat(Unit.Strength, 1);
                         target.BuffStat(Unit.Focus, 1);
                         target.BuffStat(Unit.Armor, 1);
@@ -497,7 +523,7 @@ namespace _2D_Game
                 skillSet7.Add(new Skill("Flash Freeze", 30, Skill.SkillType.Magical,
                     (self, target) =>
                     {
-                        //target.Inflict(new StatusEffect(StatusEffect.Stun, 2)); TODO
+                        target.Inflict(new StatusEffect(StatusEffect.Stun, 2));
                     }, "Inflicts Stun(2)."));
                 skillSet7.Add(new Skill("Arcane Blast", 70, Skill.SkillType.Magical));
                 skillSet7.Add(new Skill("Assault", 55));
@@ -512,7 +538,7 @@ namespace _2D_Game
                             units[targetIndex - 1].CurrHP -= damage;
                         }
                         if(targetIndex + 1 < units.Length &&
-                            units[targetIndex + 1].IsAlive())
+                            units[targetIndex + 1].IsAlive)
                         {
                             units[targetIndex + 1].CurrHP -= damage;
                         }
@@ -543,9 +569,133 @@ namespace _2D_Game
                         }
                         else
                         {
-                            self.CurrHP = (int)(0.8 * target.LastDamageTaken);
+                            self.CurrHP += (int)(0.8 * target.LastDamageTaken);
                         }
                     }, "If self HP is < 50%, deals double damage. Otherwise, heals unit for 80% damage dealt."));
+
+                // zig zag
+                ArrayList skillSet9 = new ArrayList();
+                skillSet9.Add(new Skill("Reckless Charge", 100, Skill.SkillType.Physical,
+                    (self, target) =>
+                    {
+                        self.Inflict(new StatusEffect(StatusEffect.Stun, 2));
+                        if(random.Next(2) == 1)
+                        {
+                            target.Inflict(new StatusEffect(StatusEffect.Stun, 2));
+                        }
+                    }, "Has a 50% chance to inflict Stun(2) on target. Inflicts Stun(2) on self."));
+                skillSet9.Add(new Skill("Tail Wag", Skill.SkillType.Effect,
+                    (self, target) =>
+                    {
+                        target.DebuffStat(Unit.Speed, 2);
+                        target.DebuffStat(Unit.Armor, 2);
+                    }, "Lowers target Spd/Amr by 2."));
+                skillSet9.Add(new Skill("Bite", 55, Skill.SkillType.Physical,
+                    (self, target) =>
+                    {
+                        if(random.Next(2) == 1)
+                        {
+                            target.DebuffStat(Unit.Armor, 1);
+                        }
+                    }, "Has a chance to lower Armor by 1."));
+                skillSet9.Add(new Skill("Fast Swipe", 40, Skill.SkillType.Physical,
+                    (self, target) =>
+                    {
+                        self.BuffStat(Unit.Speed, 1);
+                    }, "Increase self Speed(1)."));
+
+                // bean sprout
+                ArrayList skillSet10 = new ArrayList();
+                skillSet10.Add(new Skill("Sprout", 0, Skill.SkillType.Buff,
+                    (self, target) =>
+                    {
+                        self.CurrHP += (int)(self.Fcs * 0.2);
+                        self.BuffStat(Unit.Speed, 1);
+                        self.BuffStat(Unit.Strength, 1);
+                        self.BuffStat(Unit.Focus, 1);
+                    }, "Heal self = 20% Focus and increase Spd/Str/Fcs by 1."));
+                skillSet10.Add(new Skill("Poison Spike", 10, Skill.SkillType.Magical,
+                    (self, target) =>
+                    {
+                        target.Inflict(new StatusEffect(StatusEffect.Poison, 4, self, target));
+                    }, "Inflicts Poison(4)."));
+                skillSet10.Add(new Skill("Side Whip", Skill.SkillType.Physical,
+                    (self, target, units) =>
+                    {
+                        int topIndex = units.Length / 2;
+                        int botIndex = units.Length - 1;
+
+                        while(true)
+                        {
+                            if(!units[topIndex].IsAlive)
+                            {
+                                topIndex++;
+                            }
+                            else
+                            {
+                                break;
+                            }
+                            if(topIndex == botIndex)
+                            {
+                                break;
+                            }
+                        }
+
+                        while(true)
+                        {
+                            if(!units[botIndex].IsAlive)
+                            {
+                                botIndex--;
+                            }
+                            else
+                            {
+                                break;
+                            }
+                            if(topIndex == botIndex)
+                            {
+                                break;
+                            }
+                        }
+
+                        int power = 40;
+                        int attack = self.Str;
+                        double crit = 1.0;
+
+                        if(random.Next(50) < 5)
+                        {
+                            crit = 1.5; // Also check for skill crit modifier
+                        }
+
+                        if(topIndex == botIndex)
+                        {
+                            int defense = units[topIndex].Amr;
+                            //int crit = 1.0 * 
+                            power *= 2;
+                            int damage = (int)((power * attack / defense * self.Level / 100) *
+                                (random.Next(15) / 100 + 1.35) * crit);
+                            units[topIndex].CurrHP -= damage;
+                        }
+                        else
+                        {
+                            int topDefense = units[topIndex].Amr;
+                            int botDefense = units[botIndex].Amr;
+
+                            int damage = (int)((power * attack / topDefense * self.Level / 100) *
+                                (random.Next(15) / 100 + 1.35) * crit);
+                            units[topIndex].CurrHP -= damage;
+
+                            damage = (int)((power * attack / botDefense * self.Level / 100) *
+                                (random.Next(15) / 100 + 1.35) * crit);
+                            units[botIndex].CurrHP -= damage;
+                        }
+                    }, "Damages the top and bottom enemy. Has a boosted crit chance."));
+                skillSet10.Add(new Skill("Ingrain", Skill.SkillType.Buff,
+                    (self, target) =>
+                    {
+                        self.BuffStat(Unit.Armor, 3);
+                        self.BuffStat(Unit.Resistance, 3);
+                    }, "Increase self Amr/Res by 3."));
+
 
                 BaseUnit puffFly = new BaseUnit(puffFlySprite, "Puff Fly", "common", "common", skillSet1, 
                     100, 110, 105, 95, 95, 95);
@@ -554,7 +704,7 @@ namespace _2D_Game
                 BaseUnit pinkScythe = new BaseUnit(pinkScytheSprite, "Pink Scythe", "Mage", "Spirit", skillSet3, 
                     97, 104, 109, 133, 100, 185);
                 BaseUnit featherRaptor = new BaseUnit(featherRaptorSprite, "Feather Raptor", "common", "common", skillSet2, 
-                    110, 105, 98, 70, 95, 60);
+                    110, 130, 118, 70, 115, 60);
                 BaseUnit WOODY_HAHA_XD = new BaseUnit(woodThumbSprite, "Woody", "Dragon", "Spirit", woodysSkills, 
                     100, 137, 85, 75, 110, 80);
                 BaseUnit redMoth = new BaseUnit(redMothSprite, "Red Moth", "Beast", "Wild", skillSet4,
@@ -565,6 +715,10 @@ namespace _2D_Game
                     90, 95, 80, 165, 85, 80);
                 BaseUnit snowSpirit = new BaseUnit(snowSpiritSprite, "Snow Spirt", "Beast", "Wild", skillSet7,
                     85, 90, 125, 125, 95, 90);
+                BaseUnit zigZag = new BaseUnit(zigZagSprite, "Zig-Zag", "Beast", "Common", skillSet9,
+                    76, 120, 60, 60, 82, 122);
+                BaseUnit beanSprout = new BaseUnit(beanSproutSprite, "Whamoosh", "Mage", "Wild", skillSet10,
+                    80, 110, 105, 115, 70, 95);
 
                 baseUnitList.Add(puffFly);       // 0
                 baseUnitList.Add(spikePig);      // 1
@@ -575,6 +729,9 @@ namespace _2D_Game
                 baseUnitList.Add(longHair);      // 6
                 baseUnitList.Add(psychicHands);  // 7
                 baseUnitList.Add(snowSpirit);    // 8
+                baseUnitList.Add(beanSprout);    // 9
+
+                enemyUnitList.Add(zigZag);
 
                 mainMenu.AddBaseUnits(baseUnitList);
                 mainMenu.AddIcons(iconManager);
@@ -597,19 +754,20 @@ namespace _2D_Game
                 //battleManager.AddUnit(baseUnitList[2], 1);
                 //battleManager.AddUnit(baseUnitList[5], 2);
                 //battleManager.AddUnit(baseUnitList[4], 3);
-                battleManager.AddUnit(baseUnitList[team[0]], 0);
-                battleManager.AddUnit(baseUnitList[team[1]], 1);
-                battleManager.AddUnit(baseUnitList[team[2]], 2);
-                battleManager.AddUnit(baseUnitList[team[3]], 3);
+                battleManager.AddUnit(baseUnitList[team[0]].SetLevel(75), 0);
+                battleManager.AddUnit(baseUnitList[team[1]].SetLevel(75), 1);
+                battleManager.AddUnit(baseUnitList[team[2]].SetLevel(75), 2);
+                battleManager.AddUnit(baseUnitList[team[3]].SetLevel(75), 3);
 
-                battleManager.AddUnit(baseUnitList[2], 4);
-                battleManager.AddUnit(baseUnitList[3], 5);
-                battleManager.AddUnit(baseUnitList[0], 6);
-                battleManager.AddUnit(baseUnitList[1], 7);
+                battleManager.AddUnit(enemyUnitList[0].SetLevel(77), 4);
+                battleManager.AddUnit(baseUnitList[2].SetLevel(80), 5);
+                battleManager.AddUnit(enemyUnitList[0].SetLevel(77), 6);
+                battleManager.AddUnit(baseUnitList[1].SetLevel(80), 7);
 
                 battleManager.AddTextures(blankTexture, healthBarTexture, healthBarHighlightedTexture, 
                     skillTexture, panelCornerTexture, grassBackgroundTexture);
-                battleManager.AddSprites(burnSprite, poisonedSprite, bleedSprite, animHealthBarSprite, animHealthBarEnemySprite);
+                battleManager.AddSprites(burnSprite, poisonedSprite, bleedSprite, stunSprite,
+                    animHealthBarSprite, animHealthBarEnemySprite);
                 battleManager.AddFonts(font);
                 battleManager.AddIcons(iconManager);
 

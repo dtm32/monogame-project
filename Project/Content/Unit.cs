@@ -55,8 +55,8 @@ namespace _2D_Game.Content
             this.Amr         = baseUnit.CalcAmr;
             this.Res         = baseUnit.CalcRes;
             this.IsEnemy     = false;
-            this.baseUnit    = baseUnit;
             this.Index       = index;
+            this.baseUnit    = new BaseUnit(baseUnit);
 
             currHP = this.HP;
             StatusEffects = new List<StatusEffect>();
@@ -79,10 +79,26 @@ namespace _2D_Game.Content
                 else
                     LastDamageTaken = currHP - value > 0 ? CurrHP - value : currHP;
                 currHP = MathHelper.Clamp(value, 0, HP);
-                if(!IsAlive())
+                if(!IsAlive)
                     Console.WriteLine($"{Name} is defeated!");
             }
 
+        }
+
+        public bool IsStunned
+        {
+            get
+            {
+                bool value = false;
+
+                StatusEffects.ForEach((status) =>
+                {
+                    if(status.Type == StatusEffect.Stun)
+                        value = true;
+                });
+
+                return value;
+            }
         }
 
         public void Inflict(StatusEffect effect) // TODO: overload for poison/bleed
@@ -305,9 +321,9 @@ namespace _2D_Game.Content
         //    //set { _type = value; }
         //}
 
-        public bool IsAlive()
+        public bool IsAlive
         {
-            return currHP > 0;
+            get { return currHP > 0; }
         }
 
         public float PercentHealth()

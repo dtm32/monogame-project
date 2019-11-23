@@ -12,17 +12,20 @@ namespace _2D_Game.Content
         private Texture2D poisonIcon;
         private Texture2D burnIcon;
         private Texture2D bleedIcon;
+        private Texture2D stunIcon;
         private Texture2D physicalIcon;
         private Texture2D magicalIcon;
         private Texture2D statusIcon;
         private Texture2D buffIcon;
 
         public IconManager(Texture2D poisonIcon, Texture2D burnIcon, Texture2D bleedIcon,
-            Texture2D physicalIcon, Texture2D magicalIcon, Texture2D statusIcon, Texture2D buffIcon)
+            Texture2D stunIcon, Texture2D physicalIcon, Texture2D magicalIcon, Texture2D statusIcon, 
+            Texture2D buffIcon)
         {
             this.poisonIcon = poisonIcon;
             this.burnIcon = burnIcon;
             this.bleedIcon = bleedIcon;
+            this.stunIcon = stunIcon;
             this.physicalIcon = physicalIcon;
             this.magicalIcon = magicalIcon;
             this.statusIcon = statusIcon;
@@ -39,6 +42,8 @@ namespace _2D_Game.Content
                     return burnIcon;
                 case StatusEffect.Bleed:
                     return bleedIcon;
+                case StatusEffect.Stun:
+                    return stunIcon;
             }
 
             return poisonIcon;

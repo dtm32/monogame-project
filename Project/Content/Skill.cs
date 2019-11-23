@@ -60,6 +60,8 @@ namespace _2D_Game.Content
 
         private int targetType = 0;
 
+        //public static CalculateDamage()
+
         public string Description
         {
             get

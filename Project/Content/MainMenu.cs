@@ -38,7 +38,7 @@ namespace _2D_Game.Content
 
         Rectangle[] unitButtonRects = new Rectangle[4];
         Button[] unitButtons = new Button[4];
-        int unitButtonIndex = -1;
+        int unitButtonIndex = 0;
 
 
         public MainMenu(GraphicsDeviceManager graphics)
@@ -180,6 +180,7 @@ namespace _2D_Game.Content
                         {
                             SelectedUnits[unitButtonIndex] = i;
                             unitButtons[unitButtonIndex].SetText(baseUnitList[i].Name);
+                            unitButtonIndex = (unitButtonIndex + 1) % 4;
                         }
                     }
                     previewUnit = baseUnitList[i];
@@ -317,7 +318,7 @@ namespace _2D_Game.Content
 
                 spriteBatch.DrawString(FontManager.Default_Bold_15, previewAlly.Name, nameLoc, Color.Black);
                 spriteBatch.DrawString(FontManager.Default_Regular_11, $"HP  {previewAlly.HP}", hpLoc, Color.Black);
-                spriteBatch.DrawString(FontManager.Default_Regular_11, $"LVL  {previewAlly.Level}", levelLoc, Color.Black);
+                //spriteBatch.DrawString(FontManager.Default_Regular_11, $"LVL  {previewAlly.Level}", levelLoc, Color.Black);
                 spriteBatch.DrawString(FontManager.Default_Regular_11, $"SPD  {previewAlly.Spd}", spdLoc, Color.Black);
                 spriteBatch.DrawString(FontManager.Default_Regular_11, $"STR  {previewAlly.Str}", strLoc, Color.Black);
                 spriteBatch.DrawString(FontManager.Default_Regular_11, $"FCS  {previewAlly.Fcs}", fcsLoc, Color.Black);
