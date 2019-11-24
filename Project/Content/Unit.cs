@@ -45,8 +45,8 @@ namespace _2D_Game.Content
         {
             this.Texture     = baseUnit.Texture;
             this.Name        = baseUnit.Name;
-            this.unitType    = baseUnit.unitType;
-            this.unitFaction = baseUnit.unitFaction;
+            this.unitType    = baseUnit.Type;
+            this.unitFaction = baseUnit.Faction;
             this.Skills      = baseUnit.GetSkills();
             this.HP          = baseUnit.CalcHP;
             this.Spd         = baseUnit.CalcSpd;

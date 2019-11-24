@@ -37,6 +37,18 @@
 /processorParam:TextureFormat=Color
 /build:Resources/anim_bleed.png
 
+#begin Resources/anim_eye_lizard.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:Resources/anim_eye_lizard.png
+
 #begin Resources/anim_feather_raptor.png
 /importer:TextureImporter
 /processor:TextureProcessor
@@ -241,6 +253,18 @@
 /processorParam:TextureFormat=Color
 /build:Resources/anim_zig_zag.png
 
+#begin Resources/anim_zombie_fish.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:Resources/anim_zombie_fish.png
+
 #begin Resources/battle_background.png
 /importer:TextureImporter
 /processor:TextureProcessor
@@ -408,6 +432,18 @@
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
 /build:Resources/neorice_sprites.png
+
+#begin Resources/next_button.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:Resources/next_button.png
 
 #begin Resources/next_button.png
 /importer:TextureImporter

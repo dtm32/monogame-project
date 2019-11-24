@@ -14,8 +14,8 @@ namespace _2D_Game.Content
         public ArrayList unitSkills;
         public Skill skill1;
         public string Name { get; }
-        public String unitType;
-        public String unitFaction;
+        public String Type;
+        public String Faction;
         public int HP { get; }
         public int Spd { get; }
         public int Str { get; }
@@ -41,8 +41,8 @@ namespace _2D_Game.Content
         {
             unitTexture = texture;
             Name = name;
-            unitType = type;
-            unitFaction = faction;
+            Type = type;
+            Faction = faction;
             skill1 = (Skill)skills[0];
             unitSkills = skills;
             HP = hp;
@@ -59,8 +59,8 @@ namespace _2D_Game.Content
         {
             this.unitTexture = unit.Texture;
             this.Name = unit.Name;
-            this.unitType = unit.unitType;
-            this.unitFaction = unit.unitFaction;
+            this.Type = unit.Type;
+            this.Faction = unit.Faction;
             this.unitSkills = unit.GetSkills();
             this.HP = unit.HP;
             this.Spd = unit.Spd;
@@ -75,8 +75,8 @@ namespace _2D_Game.Content
         public BaseUnit()
         {
             this.Name = "";
-            this.unitType = "Infantry";
-            this.unitFaction = "Common";
+            this.Type = "Infantry";
+            this.Faction = "Common";
             this.HP = 0;
             this.Spd = 0;
             this.Str = 0;
@@ -97,6 +97,11 @@ namespace _2D_Game.Content
         {
             get { return unitTexture; }
             //set { _type = value; }
+        }
+
+        public AnimatedSprite Sprite
+        {
+            get { return unitTexture; }
         }
 
         public ArrayList GetSkills()

@@ -37,6 +37,7 @@ namespace _2D_Game
         Texture2D cursorTexture, cursorClickedTexture;
         Texture2D blankTexture;
         Texture2D skillTexture;
+        Texture2D arrowButtonTexture;
         Texture2D panelCornerTexture;
         Texture2D poisonIconTexture, burnIconTexture, bleedIconTexture, stunIconTexture;
         Texture2D physicalIconTexture, magicalIconTexture, statusIconTexture, buffIconTexture;
@@ -54,7 +55,7 @@ namespace _2D_Game
         List<BaseUnit> enemyUnitList;
         Texture2D puffFlyTexture, spikePigTexture, featherRaptorTexture, woodThumbTexture, pinkScytheTexture,
             redMothTexture, longHairTexture, psychicHandsTexture, snowSpiritTexture, zigZagTexture,
-            beanSproutTexture;
+            beanSproutTexture, eyeLizardTexture, zombieFishTexture;
         AnimatedSprite puffFlySprite;
         AnimatedSprite spikePigSprite;
         AnimatedSprite featherRaptorSprite;
@@ -66,6 +67,8 @@ namespace _2D_Game
         AnimatedSprite snowSpiritSprite;
         AnimatedSprite zigZagSprite;
         AnimatedSprite beanSproutSprite;
+        AnimatedSprite eyeLizardSprite;
+        AnimatedSprite zombieFishSprite;
 
         Texture2D burnTexture, poisonedTexture, bleedTexture, stunTexture;
         AnimatedSprite burnSprite, poisonedSprite, bleedSprite, stunSprite;
@@ -190,6 +193,15 @@ namespace _2D_Game
             beanSproutSprite = new AnimatedSprite(beanSproutTexture, 1, 4);
             beanSproutSprite.UpdateSpeed = 8;
 
+            eyeLizardTexture = Content.Load<Texture2D>("Resources/anim_eye_lizard");
+            eyeLizardSprite = new AnimatedSprite(eyeLizardTexture, 4, 4);
+            eyeLizardSprite.UpdateSpeed = 13;
+            eyeLizardSprite.Idle = 200;
+
+            zombieFishTexture = Content.Load<Texture2D>("Resources/anim_zombie_fish");
+            zombieFishSprite = new AnimatedSprite(zombieFishTexture, 2, 3);
+            zombieFishSprite.UpdateSpeed = 25;
+
             spriteList.Add(puffFlySprite);
             spriteList.Add(spikePigSprite);
             spriteList.Add(featherRaptorSprite);
@@ -200,6 +212,8 @@ namespace _2D_Game
             spriteList.Add(psychicHandsSprite);
             spriteList.Add(snowSpiritSprite);
             spriteList.Add(beanSproutSprite);
+            spriteList.Add(eyeLizardSprite);
+            spriteList.Add(zombieFishSprite);
 
             // combat animation sprites
             burnTexture = LoadTexturePNG("anim_fire");
@@ -250,6 +264,7 @@ namespace _2D_Game
             blankTexture = LoadTexturePNG("square");
             healthBarTexture = LoadTexturePNG("health_bar");
             skillTexture = LoadTexturePNG("skill_texture");
+            arrowButtonTexture = LoadTexturePNG("next_button");
             panelCornerTexture = LoadTexturePNG("panel_corner");
             grassBackgroundTexture = LoadTexturePNG("battle_background");
 
@@ -298,7 +313,7 @@ namespace _2D_Game
 
             if(gameState == GameState.InitMainMenu)
             {
-                mainMenu.AddTextures(blankTexture, skillTexture, grassBackgroundTexture);
+                mainMenu.AddTextures(blankTexture, skillTexture, arrowButtonTexture, grassBackgroundTexture);
                 mainMenu.AddUnitSprites(spriteList);
                 gameState = GameState.RunMainMenu;
 
@@ -373,22 +388,31 @@ namespace _2D_Game
 
                 // Woody skill set
                 ArrayList woodysSkills = new ArrayList();
-                woodysSkills.Add(new Skill("High Five", 50));
-                woodysSkills.Add(new Skill("Hot Hands", 60, Skill.SkillType.Physical,
+                woodysSkills.Add(new Skill("High Five", 60));
+                woodysSkills.Add(new Skill("Hot Hands", 75, Skill.SkillType.Physical,
                     (self, target) =>
                     {
                         target.Inflict(new StatusEffect(StatusEffect.Burn, 2, self, target));
                     }, "Inflicts Burn(2)."));
-                woodysSkills.Add(new Skill("The Bird", 45, Skill.SkillType.Physical,
+                woodysSkills.Add(new Skill("The Bird", 60, Skill.SkillType.Physical,
                     (self, target) =>
                     {
                         self.CurrHP += (int)((self.HP - self.CurrHP) * 0.20);
                     }, "Heal unit for 20% of missing health."));
-                woodysSkills.Add(new Skill("Psychic Shackle", 65, Skill.SkillType.Magical,
-                    (self, target) =>
+                woodysSkills.Add(new Skill("Roulette", Skill.SkillType.Physical,
+                    (self, target, units) =>
                     {
-                        target.DebuffStat(Unit.Speed, 2); // TODO: UPDATE MOVE ORDER QUEUE TO REFLECT SPEED CHANGES
-                    }, "Decrease Spd(2)."));
+                        int count = 0;
+                        while(count < 3)
+                        {
+                            int index = Game1.random.Next(units.Length);
+                            if(units[index].IsAlive)
+                            {
+                                units[index].CurrHP -= (int)(units[index].HP * 0.34);
+                                count++;
+                            }
+                        }
+                    }, "Randomly damages 3 units."));
 
                 // Pink Scythe skill set
                 ArrayList skillSet3 = new ArrayList();
@@ -480,18 +504,8 @@ namespace _2D_Game
                         }
                     }, "Randomly inflicts Burn(2), Bleed(2), or Poison(2)."));
                 skillSet5.Add(new Skill("Backlash", 55));
-                skillSet5.Add(new Skill("Nullify", 20, Skill.SkillType.Magical,
-                    (self, target) =>
-                    {
-                        for(int i = 0; i < target.StatTiers.Length; i++)
-                        {
-                            if(target.StatTiers[i] > 0)
-                                target.StatTiers[i] = 0;
-                        }
-                    }, "Removes all stat bonuses from target."));
-                skillSet5.Add(new Skill("Piercing Gaze", 50, Skill.SkillType.Physical,
-                    "Ignores 30% of target Armor.")
-                    .SetPenetration(0.3));
+                skillSet5.Add(Skill.Nullify);
+                skillSet5.Add(Skill.PiercingGaze);
 
                 // psychic hands
                 ArrayList skillSet6 = new ArrayList();
@@ -560,18 +574,7 @@ namespace _2D_Game
                     {
                         self.CurrHP = (int)(self.CurrHP * 0.8);
                     }, "Damages self for 20% of current health."));
-                skillSet8.Add(new Skill("Adaptive Blow", 40, Skill.SkillType.Physical,
-                    (self, target) =>
-                    {
-                        if(self.PercentHealth() >= 0.5)
-                        {
-                            target.CurrHP -= target.LastDamageTaken;
-                        }
-                        else
-                        {
-                            self.CurrHP += (int)(0.8 * target.LastDamageTaken);
-                        }
-                    }, "If self HP is < 50%, deals double damage. Otherwise, heals unit for 80% damage dealt."));
+                skillSet8.Add(Skill.AdaptiveBlow);
 
                 // zig zag
                 ArrayList skillSet9 = new ArrayList();
@@ -696,29 +699,46 @@ namespace _2D_Game
                         self.BuffStat(Unit.Resistance, 3);
                     }, "Increase self Amr/Res by 3."));
 
+                // eye lizard
+                ArrayList skillSet11 = new ArrayList();
+                skillSet11.Add(Skill.TongueLash);
+                skillSet11.Add(Skill.AdaptiveBlow);
+                skillSet11.Add(Skill.Impede);
+                skillSet11.Add(Skill.PiercingGaze);
 
-                BaseUnit puffFly = new BaseUnit(puffFlySprite, "Puff Fly", "common", "common", skillSet1, 
+                // zombie fish
+                ArrayList skillSet12 = new ArrayList();
+                skillSet12.Add(Skill.SoulSiphon);
+                skillSet12.Add(Skill.Nullify);
+                skillSet12.Add(Skill.Sacrifice);
+                skillSet12.Add(Skill.Reprisal);
+
+                BaseUnit puffFly = new BaseUnit(puffFlySprite, "Puff Fly", "Beast", "Common", skillSet1, 
                     100, 110, 105, 95, 95, 95);
-                BaseUnit spikePig = new BaseUnit(spikePigSprite, "Spike Pig", "common", "common", skillSet8, 
+                BaseUnit spikePig = new BaseUnit(spikePigSprite, "Spike Pig", "Beast", "Common", skillSet8, 
                     164, 70, 125, 80, 175, 95);
                 BaseUnit pinkScythe = new BaseUnit(pinkScytheSprite, "Pink Scythe", "Mage", "Spirit", skillSet3, 
                     97, 104, 109, 133, 100, 185);
-                BaseUnit featherRaptor = new BaseUnit(featherRaptorSprite, "Feather Raptor", "common", "common", skillSet2, 
+                BaseUnit featherRaptor = new BaseUnit(featherRaptorSprite, "Feather Raptor", "Beast", "Wild", skillSet2, 
                     110, 130, 118, 70, 115, 60);
                 BaseUnit WOODY_HAHA_XD = new BaseUnit(woodThumbSprite, "Woody", "Dragon", "Spirit", woodysSkills, 
-                    100, 137, 85, 75, 110, 80);
+                    80, 157, 100, 90, 110, 70);
                 BaseUnit redMoth = new BaseUnit(redMothSprite, "Red Moth", "Beast", "Wild", skillSet4,
                     168, 64, 69, 103, 168, 169);
-                BaseUnit longHair = new BaseUnit(longHairSprite, "Long Hair", "Beast", "Wild", skillSet5,
+                BaseUnit longHair = new BaseUnit(longHairSprite, "Long Hair", "Infantry", "Dark", skillSet5,
                     105, 80, 145, 45, 60, 110);
-                BaseUnit psychicHands = new BaseUnit(psychicHandsSprite, "Psychic Hands", "Beast", "Wild", skillSet6,
+                BaseUnit psychicHands = new BaseUnit(psychicHandsSprite, "Psychic Hands", "Mage", "Dark", skillSet6,
                     90, 95, 80, 165, 85, 80);
-                BaseUnit snowSpirit = new BaseUnit(snowSpiritSprite, "Snow Spirt", "Beast", "Wild", skillSet7,
+                BaseUnit snowSpirit = new BaseUnit(snowSpiritSprite, "Snow Spirt", "Mage", "Mythic", skillSet7,
                     85, 90, 125, 125, 95, 90);
                 BaseUnit zigZag = new BaseUnit(zigZagSprite, "Zig-Zag", "Beast", "Common", skillSet9,
                     76, 120, 60, 60, 82, 122);
                 BaseUnit beanSprout = new BaseUnit(beanSproutSprite, "Whamoosh", "Mage", "Wild", skillSet10,
                     80, 110, 105, 115, 70, 95);
+                BaseUnit eyeLizard = new BaseUnit(eyeLizardSprite, "Eye Lizard", "Beast", "Wild", skillSet11,
+                    85, 65, 120, 85, 95, 145);
+                BaseUnit zombieFish = new BaseUnit(zombieFishSprite, "Zombie Fish", "Beast", "Spirit", skillSet12,
+                    135, 84, 120, 60, 79, 125);
 
                 baseUnitList.Add(puffFly);       // 0
                 baseUnitList.Add(spikePig);      // 1
@@ -730,6 +750,8 @@ namespace _2D_Game
                 baseUnitList.Add(psychicHands);  // 7
                 baseUnitList.Add(snowSpirit);    // 8
                 baseUnitList.Add(beanSprout);    // 9
+                baseUnitList.Add(eyeLizard);     // 10
+                baseUnitList.Add(zombieFish);    // 11
 
                 enemyUnitList.Add(zigZag);
 
@@ -760,9 +782,9 @@ namespace _2D_Game
                 battleManager.AddUnit(baseUnitList[team[3]].SetLevel(75), 3);
 
                 battleManager.AddUnit(enemyUnitList[0].SetLevel(77), 4);
-                battleManager.AddUnit(baseUnitList[2].SetLevel(80), 5);
+                battleManager.AddUnit(baseUnitList[2].SetLevel(75), 5);
                 battleManager.AddUnit(enemyUnitList[0].SetLevel(77), 6);
-                battleManager.AddUnit(baseUnitList[1].SetLevel(80), 7);
+                battleManager.AddUnit(baseUnitList[0].SetLevel(72), 7);
 
                 battleManager.AddTextures(blankTexture, healthBarTexture, healthBarHighlightedTexture, 
                     skillTexture, panelCornerTexture, grassBackgroundTexture);

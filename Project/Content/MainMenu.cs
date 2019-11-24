@@ -14,7 +14,7 @@ namespace _2D_Game.Content
 
         public bool StartBattle = false;
 
-        Texture2D blankTexture, skillTexture, grassBackgroundTexture;
+        Texture2D blankTexture, skillTexture, arrowButtonTexture, grassBackgroundTexture;
 
         private Rectangle backgroundRect;
         private Rectangle coverRect;
@@ -27,7 +27,6 @@ namespace _2D_Game.Content
 
         bool startHover = false;
 
-        List<AnimatedSprite> spriteList;
         List<BaseUnit> baseUnitList;
         Vector2[] spriteLocs;
         Rectangle[] spriteRects;
@@ -40,11 +39,19 @@ namespace _2D_Game.Content
         Button[] unitButtons = new Button[4];
         int unitButtonIndex = 0;
 
+        private int viewportWidth = 0;
+        private int viewportHeight = 0;
+
+        // scroll button variables
+        Rectangle leftArrowRect, rightArrowRect;
+        bool leftArrowHover, rightArrowHover;
+        int scroll = 0;
+
 
         public MainMenu(GraphicsDeviceManager graphics)
         {
-            int viewportWidth = graphics.GraphicsDevice.Viewport.Width;
-            int viewportHeight = graphics.GraphicsDevice.Viewport.Height;
+            viewportWidth = graphics.GraphicsDevice.Viewport.Width;
+            viewportHeight = graphics.GraphicsDevice.Viewport.Height;
 
             backgroundRect = new Rectangle(0, 0, viewportWidth, viewportHeight);
             borderRect = new Rectangle(0, windowPadding + Game1.SpriteHeight + 6, viewportWidth, 4);
@@ -78,10 +85,11 @@ namespace _2D_Game.Content
         }
 
         public void AddTextures(Texture2D blankTexture, Texture2D skillTexture,
-            Texture2D grassBackgroundTexture)
+            Texture2D arrowButtonTexture, Texture2D grassBackgroundTexture)
         {
             this.blankTexture = blankTexture;
             this.skillTexture = skillTexture;
+            this.arrowButtonTexture = arrowButtonTexture;
             this.grassBackgroundTexture = grassBackgroundTexture;
 
             startButton.Texture = skillTexture;
@@ -91,27 +99,48 @@ namespace _2D_Game.Content
                 unitButtons[i].Texture = skillTexture;
                 unitButtons[i].Initialize();
             }
+
+            int arrowPadding = 40;
+
+            leftArrowRect = new Rectangle(arrowPadding, windowPadding, 
+                arrowButtonTexture.Width, arrowButtonTexture.Height);
+            rightArrowRect = new Rectangle(viewportWidth - arrowPadding - arrowButtonTexture.Width, 
+                windowPadding, arrowButtonTexture.Width, arrowButtonTexture.Height);
+
         }
 
         public void AddUnitSprites(List<AnimatedSprite> spriteList)
         {
-            int spriteMargin = 16;
-            this.spriteList = spriteList;
+            //int spriteMargin = 16;
+            //this.spriteList = spriteList;
 
-            spriteLocs = new Vector2[spriteList.Count];
-            spriteRects = new Rectangle[spriteList.Count];
+            //spriteLocs = new Vector2[spriteList.Count];
+            //spriteRects = new Rectangle[spriteList.Count];
+
+            //for(int i = 0; i < spriteLocs.Length; i++)
+            //{
+            //    spriteLocs[i] = new Vector2(windowPadding + i * (Game1.SpriteWidth + spriteMargin), windowPadding);
+            //    spriteRects[i] = new Rectangle((int)spriteLocs[i].X, (int)spriteLocs[i].Y, Game1.SpriteWidth, Game1.SpriteWidth);
+            //}
+        }
+
+        public void AddBaseUnits(List<BaseUnit> baseUnitList)
+        {
+            //int spriteMargin = 16;
+            int spriteMargin = 16;
+            //this.spriteList = spriteList;
+
+            this.baseUnitList = baseUnitList;
+
+            spriteLocs = new Vector2[baseUnitList.Count];
+            spriteRects = new Rectangle[baseUnitList.Count];
 
             for(int i = 0; i < spriteLocs.Length; i++)
             {
                 spriteLocs[i] = new Vector2(windowPadding + i * (Game1.SpriteWidth + spriteMargin), windowPadding);
                 spriteRects[i] = new Rectangle((int)spriteLocs[i].X, (int)spriteLocs[i].Y, Game1.SpriteWidth, Game1.SpriteWidth);
             }
-        }
 
-        public void AddBaseUnits(List<BaseUnit> baseUnitList)
-        {
-            //int spriteMargin = 16;
-            this.baseUnitList = baseUnitList;
 
             previewUnit = baseUnitList[0];
         }
@@ -125,17 +154,10 @@ namespace _2D_Game.Content
 
         public void Update(Cursor cursor)
         {
-            //for(int i = 0; i < 4; i++)
-            //{
-            //if(cursor.Rect.Intersects(startRect))
-            //{
-            //    startHover = true;
-            //    if(cursor.LeftClick)
-            //    {
 
-            spriteList.ForEach((sprite) =>
+            baseUnitList.ForEach((baseUnit) =>
             {
-                sprite.Update();
+                baseUnit.Sprite.Update();
             });
 
             bool teamPicked = true;
@@ -148,6 +170,7 @@ namespace _2D_Game.Content
                 }
             }
 
+            // check if full team selected, enable start button click
             if(teamPicked)
             {
                 StartBattle = startButton.Update(cursor);
@@ -156,8 +179,6 @@ namespace _2D_Game.Content
             {
                 startButton.Update(cursor);
             }
-
-
 
             for(int i = 0; i < 4; i++)
             {
@@ -169,10 +190,38 @@ namespace _2D_Game.Content
                 }
             }
 
+            // over scroll arrow
+            if(cursor.Rect.Intersects(leftArrowRect))
+            {
+                leftArrowHover = true;
+                rightArrowHover = false;
+                if(cursor.LeftClick)
+                {
+                    scroll += 50;
+                }
+            }
+            else if(cursor.Rect.Intersects(rightArrowRect))
+            {
+                rightArrowHover = true;
+                leftArrowHover = false;
+                if(cursor.LeftClick)
+                {
+                    scroll -= 50;
+                }
+            }
+            else
+            {
+                leftArrowHover = false;
+                rightArrowHover = false;
+            }
+
             // over unit sprite
             for(int i = 0; i < spriteRects.Length; i++)
             {
-                if(cursor.Rect.Intersects(spriteRects[i]))
+                // add scroll offset to sprite rects
+                Rectangle tempRect = new Rectangle(spriteRects[i].X + scroll, spriteRects[i].Y,
+                    spriteRects[i].Width, spriteRects[i].Height);
+                if(cursor.Rect.Intersects(tempRect) && !leftArrowHover && !rightArrowHover)
                 {
                     if(cursor.LeftClick)
                     {
@@ -263,7 +312,7 @@ namespace _2D_Game.Content
             //spriteBatch.Draw(skillTexture, startRect, hoverColor);
             startButton.Draw(spriteBatch);
 
-
+            // selected unit buttons
             spriteBatch.DrawString(FontManager.Default_Bold_15, "Select Units",
                 new Vector2(unitButtonRects[0].X + 10, unitButtonRects[0].Y - 25), Color.Black);
             for(int i = 0; i < 4; i++)
@@ -278,13 +327,34 @@ namespace _2D_Game.Content
                 }
             }
 
-
-            for(int i = 0; i < spriteList.Count; i++)
+            // draw unit sprites
+            for(int i = 0; i < baseUnitList.Count; i++)
             {
-                spriteList[i].Draw(spriteBatch, spriteLocs[i]);
+                // add scroll offset to sprite locations
+                Vector2 tempLoc = new Vector2(spriteLocs[i].X + scroll, spriteLocs[i].Y);
+                //spriteList[i].Draw(spriteBatch, tempLoc);
+                baseUnitList[i].Sprite.Draw(spriteBatch, tempLoc);
             }
 
+            // draw scroll arrows for unit sprites
+            Color leftArrowColor = Color.White;
+            Color rightArrowColor = Color.White;
+            if(leftArrowHover)
+            {
+                leftArrowColor = Color.LightGray;
+            }
+            if(rightArrowHover)
+            {
+                rightArrowColor = Color.LightGray;
+            }
+            spriteBatch.Draw(arrowButtonTexture, leftArrowRect, null, leftArrowColor, 0f, Vector2.Zero, SpriteEffects.FlipHorizontally, 1f);
+            spriteBatch.Draw(arrowButtonTexture, rightArrowRect, rightArrowColor);
+
+
+            // draw previewed units
             DrawUnitPreview(spriteBatch, previewUnit);
+
+
         }
 
         Rectangle statPreviewRect = new Rectangle(200, 350, 200, 200);
@@ -317,8 +387,8 @@ namespace _2D_Game.Content
                 spriteBatch.Draw(blankTexture, statPreviewRect, Color.SlateGray);
 
                 spriteBatch.DrawString(FontManager.Default_Bold_15, previewAlly.Name, nameLoc, Color.Black);
+                spriteBatch.DrawString(FontManager.Default_Regular_11, $"{previewAlly.Faction} {previewAlly.Type}", levelLoc, Color.Black);
                 spriteBatch.DrawString(FontManager.Default_Regular_11, $"HP   {previewAlly.HP}", hpLoc, Color.Black);
-                //spriteBatch.DrawString(FontManager.Default_Regular_11, $"LVL  {previewAlly.Level}", levelLoc, Color.Black);
                 spriteBatch.DrawString(FontManager.Default_Regular_11, $"SPD  {previewAlly.Spd}", spdLoc, Color.Black);
                 spriteBatch.DrawString(FontManager.Default_Regular_11, $"STR  {previewAlly.Str}", strLoc, Color.Black);
                 spriteBatch.DrawString(FontManager.Default_Regular_11, $"FCS  {previewAlly.Fcs}", fcsLoc, Color.Black);

@@ -31,19 +31,78 @@ namespace _2D_Game.Content
             Mythic
         }
 
-        //public enum TargetType
-        //{
-        //    Single,
-        //    All,
-        //    FrontLine,
-        //    Adjacent
-        //}
         public static int TargetSingle = 0;
         public static int TargetAll = 1;
         public static int TargetFront = 2;
         public static int TargetAdjacent = 3;
         public static int TargetAlly = 3;
         public static int TargetSelf = 4;
+
+        public static Skill SoulSiphon = new Skill("Soul Siphon", 55, SkillType.Magical,
+            (self, target) =>
+            {
+                if(!target.IsAlive)
+                {
+                    self.CurrHP += target.HP / 2;
+                }
+            }, "If this move kills an enemy, heal self for 50% of target's max health.");
+        public static Skill Nullify = new Skill("Nullify", 20, SkillType.Magical,
+            (self, target) =>
+            {
+                for(int i = 0; i < target.StatTiers.Length; i++)
+                {
+                    if(target.StatTiers[i] > 0)
+                        target.StatTiers[i] = 0;
+                }
+            }, "Removes all stat bonuses from target.");
+        public static Skill Sacrifice = new Skill("Sacrifice", 0, SkillType.Buff,
+            (self, target, units) =>
+            {
+                int healAmount = (int)(self.Str * 0.5);
+                for(int i = 0; i < units.Length / 2; i++)
+                {
+                    if(units[i].IsAlive)
+                        units[i].CurrHP += healAmount;
+                }
+                self.Inflict(new StatusEffect(StatusEffect.Bleed, 2, self, self));
+            }, "Heal all allies for 50% of unit's Strength. Inflicts Bleed(2) on self.");
+        public static Skill Reprisal = new Skill("Reprisal", 50, SkillType.Physical,
+            (self, target) =>
+            {
+                if(self.StatusEffects.Count > 0)
+                {
+                    target.CurrHP -= target.LastDamageTaken;
+                }
+            }, "Deals double damage if self is affected by a status condition.");
+        public static Skill TongueLash = new Skill("Tongue Lash", 55, SkillType.Physical,
+            (self, target) =>
+            {
+                if(Game1.random.Next(3) == 0)
+                {
+                    target.DebuffStat(Unit.Speed, 4);
+                }
+            }, "Has a chance to lower target Speed by 4.");
+        public static Skill AdaptiveBlow = new Skill("Adaptive Blow", 40, SkillType.Physical,
+            (self, target) =>
+            {
+                if(self.PercentHealth() >= 0.5)
+                {
+                    target.CurrHP -= target.LastDamageTaken;
+                }
+                else
+                {
+                    self.CurrHP += (int)(0.8 * target.LastDamageTaken);
+                }
+            }, "If self HP is < 50%, deals double damage. Otherwise, heals unit for 80% damage dealt.");
+        public static Skill Impede = new Skill("Impede", SkillType.Effect,
+            (self, target) =>
+            {
+                target.Inflict(new StatusEffect(StatusEffect.Stun, 4));
+                target.BuffStat(Unit.Armor, 2);
+                target.BuffStat(Unit.Resistance, 2);
+            }, "Inflicts Stun(4). Increases target Amr/Res by 2.");
+        public static Skill PiercingGaze = new Skill("Piercing Gaze", 50, Skill.SkillType.Physical,
+            "Ignores 30% of target Armor.").SetPenetration(0.3);
 
         public delegate void SkillEffect(Unit self, Unit target);
         public delegate void SkillEffectAll(Unit self, Unit target, UnitList units);
