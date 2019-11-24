@@ -55,7 +55,7 @@ namespace _2D_Game
         List<BaseUnit> enemyUnitList;
         Texture2D puffFlyTexture, spikePigTexture, featherRaptorTexture, woodThumbTexture, pinkScytheTexture,
             redMothTexture, longHairTexture, psychicHandsTexture, snowSpiritTexture, zigZagTexture,
-            beanSproutTexture, eyeLizardTexture, zombieFishTexture;
+            beanSproutTexture, eyeLizardTexture, zombieFishTexture, ancientFishTexture, cursedTomeTexture;
         AnimatedSprite puffFlySprite;
         AnimatedSprite spikePigSprite;
         AnimatedSprite featherRaptorSprite;
@@ -69,6 +69,8 @@ namespace _2D_Game
         AnimatedSprite beanSproutSprite;
         AnimatedSprite eyeLizardSprite;
         AnimatedSprite zombieFishSprite;
+        AnimatedSprite ancientFishSprite;
+        AnimatedSprite cursedTomeSprite;
 
         Texture2D burnTexture, poisonedTexture, bleedTexture, stunTexture;
         AnimatedSprite burnSprite, poisonedSprite, bleedSprite, stunSprite;
@@ -201,6 +203,13 @@ namespace _2D_Game
             zombieFishTexture = Content.Load<Texture2D>("Resources/anim_zombie_fish");
             zombieFishSprite = new AnimatedSprite(zombieFishTexture, 2, 3);
             zombieFishSprite.UpdateSpeed = 25;
+
+            ancientFishTexture = Content.Load<Texture2D>("Resources/anim_ancient_fish");
+            ancientFishSprite = new AnimatedSprite(ancientFishTexture, 1, 1);
+
+            cursedTomeTexture = Content.Load<Texture2D>("Resources/anim_cursed_tome");
+            cursedTomeSprite = new AnimatedSprite(cursedTomeTexture, 2, 4);
+            cursedTomeSprite.UpdateSpeed = 13;
 
             spriteList.Add(puffFlySprite);
             spriteList.Add(spikePigSprite);
@@ -622,76 +631,7 @@ namespace _2D_Game
                     {
                         target.Inflict(new StatusEffect(StatusEffect.Poison, 4, self, target));
                     }, "Inflicts Poison(4)."));
-                skillSet10.Add(new Skill("Side Whip", Skill.SkillType.Physical,
-                    (self, target, units) =>
-                    {
-                        int topIndex = units.Length / 2;
-                        int botIndex = units.Length - 1;
-
-                        while(true)
-                        {
-                            if(!units[topIndex].IsAlive)
-                            {
-                                topIndex++;
-                            }
-                            else
-                            {
-                                break;
-                            }
-                            if(topIndex == botIndex)
-                            {
-                                break;
-                            }
-                        }
-
-                        while(true)
-                        {
-                            if(!units[botIndex].IsAlive)
-                            {
-                                botIndex--;
-                            }
-                            else
-                            {
-                                break;
-                            }
-                            if(topIndex == botIndex)
-                            {
-                                break;
-                            }
-                        }
-
-                        int power = 40;
-                        int attack = self.Str;
-                        double crit = 1.0;
-
-                        if(random.Next(25) < 5)
-                        {
-                            crit = 1.5; // Also check for skill crit modifier
-                        }
-
-                        if(topIndex == botIndex)
-                        {
-                            int defense = units[topIndex].Amr;
-                            //int crit = 1.0 * 
-                            power *= 2;
-                            int damage = (int)((power * attack / defense * self.Level / 100) *
-                                (random.Next(15) / 100 + 1.35) * crit);
-                            units[topIndex].CurrHP -= damage;
-                        }
-                        else
-                        {
-                            int topDefense = units[topIndex].Amr;
-                            int botDefense = units[botIndex].Amr;
-
-                            int damage = (int)((power * attack / topDefense * self.Level / 100) *
-                                (random.Next(15) / 100 + 1.35) * crit);
-                            units[topIndex].CurrHP -= damage;
-
-                            damage = (int)((power * attack / botDefense * self.Level / 100) *
-                                (random.Next(15) / 100 + 1.35) * crit);
-                            units[botIndex].CurrHP -= damage;
-                        }
-                    }, "Damages the top and bottom enemy. Has a boosted crit chance."));
+                skillSet10.Add(Skill.SideWhip);
                 skillSet10.Add(new Skill("Ingrain", Skill.SkillType.Buff,
                     (self, target) =>
                     {
@@ -712,6 +652,21 @@ namespace _2D_Game
                 skillSet12.Add(Skill.Nullify);
                 skillSet12.Add(Skill.Sacrifice);
                 skillSet12.Add(Skill.Reprisal);
+
+                // ancient fish
+                ArrayList skillSet13 = new ArrayList();
+                skillSet12.Add(Skill.SoulSiphon);
+                skillSet12.Add(Skill.Nullify);
+                skillSet12.Add(Skill.Sacrifice);
+                skillSet12.Add(Skill.Reprisal);
+
+                // cursed tome
+                ArrayList skillSet14 = new ArrayList();
+                skillSet14.Add(Skill.SoulSiphon);
+                skillSet14.Add(Skill.Nullify);
+                skillSet14.Add(Skill.Sacrifice);
+                skillSet14.Add(Skill.Reprisal);
+
 
                 BaseUnit puffFly = new BaseUnit(puffFlySprite, "Puff Fly", "Beast", "Common", skillSet1, 
                     100, 110, 105, 95, 95, 95);
@@ -739,6 +694,10 @@ namespace _2D_Game
                     85, 65, 120, 85, 95, 145);
                 BaseUnit zombieFish = new BaseUnit(zombieFishSprite, "Zombie Fish", "Beast", "Spirit", skillSet12,
                     135, 84, 120, 60, 79, 125);
+                BaseUnit ancientFish = new BaseUnit(ancientFishSprite, "Depth Dweller", "Beast", "Dark", skillSet12,
+                    135, 84, 120, 60, 79, 125);
+                BaseUnit cursedTome = new BaseUnit(cursedTomeSprite, "Cursed Tome", "Mage", "Spirit", skillSet12,
+                    135, 84, 120, 60, 79, 125);
 
                 baseUnitList.Add(puffFly);       // 0
                 baseUnitList.Add(spikePig);      // 1
@@ -752,6 +711,8 @@ namespace _2D_Game
                 baseUnitList.Add(beanSprout);    // 9
                 baseUnitList.Add(eyeLizard);     // 10
                 baseUnitList.Add(zombieFish);    // 11
+                baseUnitList.Add(ancientFish);   // 12
+                baseUnitList.Add(cursedTome);    // 13
 
                 enemyUnitList.Add(zigZag);
 

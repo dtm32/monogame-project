@@ -103,6 +103,76 @@ namespace _2D_Game.Content
             }, "Inflicts Stun(4). Increases target Amr/Res by 2.");
         public static Skill PiercingGaze = new Skill("Piercing Gaze", 50, Skill.SkillType.Physical,
             "Ignores 30% of target Armor.").SetPenetration(0.3);
+        public static Skill SideWhip = new Skill("Side Whip", SkillType.Physical,
+            (self, target, units) =>
+            {
+                int topIndex = units.Length / 2;
+                int botIndex = units.Length - 1;
+
+                while(true)
+                {
+                    if(!units[topIndex].IsAlive)
+                    {
+                        topIndex++;
+                    }
+                    else
+                    {
+                        break;
+                    }
+                    if(topIndex == botIndex)
+                    {
+                        break;
+                    }
+                }
+
+                while(true)
+                {
+                    if(!units[botIndex].IsAlive)
+                    {
+                        botIndex--;
+                    }
+                    else
+                    {
+                        break;
+                    }
+                    if(topIndex == botIndex)
+                    {
+                        break;
+                    }
+                }
+
+                int power = 40;
+                int attack = self.Str;
+                double crit = 1.0;
+
+                if(Game1.random.Next(25) < 5)
+                {
+                    crit = 1.5; // Also check for skill crit modifier
+                }
+
+                if(topIndex == botIndex)
+                {
+                    int defense = units[topIndex].Amr;
+                    //int crit = 1.0 * 
+                    power *= 2;
+                    int damage = (int)((power * attack / defense * self.Level / 100) *
+                        (Game1.random.Next(15) / 100 + 1.35) * crit);
+                    units[topIndex].CurrHP -= damage;
+                }
+                else
+                {
+                    int topDefense = units[topIndex].Amr;
+                    int botDefense = units[botIndex].Amr;
+
+                    int damage = (int)((power * attack / topDefense * self.Level / 100) *
+                        (Game1.random.Next(15) / 100 + 1.35) * crit);
+                    units[topIndex].CurrHP -= damage;
+
+                    damage = (int)((power * attack / botDefense * self.Level / 100) *
+                        (Game1.random.Next(15) / 100 + 1.35) * crit);
+                    units[botIndex].CurrHP -= damage;
+                }
+            }, "Damages the top and bottom enemy. Has a boosted crit chance.");
 
         public delegate void SkillEffect(Unit self, Unit target);
         public delegate void SkillEffectAll(Unit self, Unit target, UnitList units);
