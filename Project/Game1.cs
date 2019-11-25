@@ -655,10 +655,10 @@ namespace _2D_Game
 
                 // ancient fish
                 ArrayList skillSet13 = new ArrayList();
-                skillSet12.Add(Skill.SoulSiphon);
-                skillSet12.Add(Skill.Nullify);
-                skillSet12.Add(Skill.Sacrifice);
-                skillSet12.Add(Skill.Reprisal);
+                skillSet13.Add(Skill.SoulSiphon);
+                skillSet13.Add(Skill.Nullify);
+                skillSet13.Add(Skill.Sacrifice);
+                skillSet13.Add(Skill.Reprisal);
 
                 // cursed tome
                 ArrayList skillSet14 = new ArrayList();
