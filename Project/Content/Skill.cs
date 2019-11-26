@@ -31,6 +31,13 @@ namespace _2D_Game.Content
             Mythic
         }
 
+        public struct Damage
+        {
+            public int Value;
+            public bool CriticalHit;
+            public bool 
+        }
+
         public static Random random = new Random();
 
         public static int TargetSingle = 0;
@@ -326,8 +333,8 @@ namespace _2D_Game.Content
 
             //Console.WriteLine($"{self.Name} used {skill.Name} on {target.Name} for {damage} damage!");
 
-            //if(crit > 1.0)
-            //    Console.WriteLine($"Critical hit!");
+            if(crit > 1.0)
+                Console.WriteLine($"Critical hit!");
 
             return damage;
         }
