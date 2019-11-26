@@ -655,8 +655,8 @@ namespace _2D_Game
 
                 // ancient fish
                 ArrayList skillSet13 = new ArrayList();
-                skillSet13.Add(Skill.SoulSiphon);
-                skillSet13.Add(Skill.Nullify);
+                skillSet13.Add(Skill.RockSmash);
+                skillSet13.Add(Skill.Maelstrom);
                 skillSet13.Add(Skill.Sacrifice);
                 skillSet13.Add(Skill.Reprisal);
 
@@ -694,7 +694,7 @@ namespace _2D_Game
                     85, 65, 120, 85, 95, 145);
                 BaseUnit zombieFish = new BaseUnit(zombieFishSprite, "Zombie Fish", "Beast", "Spirit", skillSet12,
                     135, 84, 120, 60, 79, 125);
-                BaseUnit ancientFish = new BaseUnit(ancientFishSprite, "Depth Dweller", "Beast", "Dark", skillSet12,
+                BaseUnit ancientFish = new BaseUnit(ancientFishSprite, "Depth Dweller", "Beast", "Mythic", skillSet13,
                     135, 84, 120, 60, 79, 125);
                 BaseUnit cursedTome = new BaseUnit(cursedTomeSprite, "Cursed Tome", "Mage", "Spirit", skillSet12,
                     135, 84, 120, 60, 79, 125);

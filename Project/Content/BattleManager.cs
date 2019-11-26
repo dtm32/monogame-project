@@ -472,7 +472,15 @@ namespace _2D_Game.Content
                         //if(unitSelected && skillSelected && unitClicked != -1)
                         if(skillSelected && unitClicked != -1)
                         {
-                            int damage = CombatCalculation(unitList[unitClicked], unitList.Selected, selectedSkill);
+                            //int damage = CombatCalculation(unitList[unitClicked], unitList.Selected, selectedSkill);
+                            //int damage = CombatCalculation(unitList[unitClicked], unitList.Selected, selectedSkill);
+
+                            //skill.Invoke(unitList[unitClicked], unitList.Selected);
+                            //skill.EffectAll?.Invoke(attacker, target, unitList);
+
+                            selectedSkill.Invoke(unitList.Selected, unitList[unitClicked], unitList);
+
+
                             healthBars[unitClicked].Set(unitList[unitClicked].PercentHealth());
                             healthBars[unitList.SelectedIndex].Set(unitList.Selected.PercentHealth());
 
@@ -505,7 +513,9 @@ namespace _2D_Game.Content
                     Skill aiSkill = (Skill)unitList.Selected.Skills[rnd.Next(4)];
                     int targetUnit = FindTarget(unitList.Selected, aiSkill);
 
-                    int aiDamage = CombatCalculation(unitList[targetUnit], unitList.Selected, aiSkill);
+                    //int aiDamage = CombatCalculation(unitList[targetUnit], unitList.Selected, aiSkill);
+
+                    aiSkill.Invoke(unitList.Selected, unitList[targetUnit], unitList);
 
                     healthBars[targetUnit].Set(unitList[targetUnit].PercentHealth());
                     healthBars[unitList.SelectedIndex].Set(unitList.Selected.PercentHealth());
@@ -632,62 +642,62 @@ namespace _2D_Game.Content
             }
         }
 
-        public int CombatCalculation(Unit target, Unit attacker, Skill skill)
-        {
-            //Random rnd = new Random();
-            int damage = 0;
-            int attack = 0;
-            int defense = 0;
-            double crit = 1.0;
+        //public int CombatCalculation(Unit target, Unit attacker, Skill skill)
+        //{
+        //    //Random rnd = new Random();
+        //    int damage = 0;
+        //    int attack = 0;
+        //    int defense = 0;
+        //    double crit = 1.0;
 
-            if(skill.Type == Skill.SkillType.Physical)
-            {
-                attack = attacker.Str;
-                defense = target.Amr;
-            }
-            else if(skill.Type == Skill.SkillType.Magical)
-            {
-                attack = attacker.Fcs;
-                defense = target.Res;
-            }
-            else if(skill.Type == Skill.SkillType.Effect||
-                skill.Type == Skill.SkillType.Buff)
-            {
-                skill.Effect?.Invoke(attacker, target);
-                skill.EffectAll?.Invoke(attacker, target, unitList);
+        //    if(skill.Type == Skill.SkillType.Physical)
+        //    {
+        //        attack = attacker.Str;
+        //        defense = target.Amr;
+        //    }
+        //    else if(skill.Type == Skill.SkillType.Magical)
+        //    {
+        //        attack = attacker.Fcs;
+        //        defense = target.Res;
+        //    }
+        //    else if(skill.Type == Skill.SkillType.Effect||
+        //        skill.Type == Skill.SkillType.Buff)
+        //    {
+        //        skill.Effect?.Invoke(attacker, target);
+        //        skill.EffectAll?.Invoke(attacker, target, unitList);
 
-                Console.WriteLine($"{attacker.Name} used {skill.Name} on {target.Name}!");
+        //        Console.WriteLine($"{attacker.Name} used {skill.Name} on {target.Name}!");
 
-                return 0;
-            }
+        //        return 0;
+        //    }
 
-            if(rnd.Next(100) < 5)
-            {
-                crit = 1.5; // Also check for skill crit modifier
-            }
+        //    if(rnd.Next(100) < 5)
+        //    {
+        //        crit = 1.5; // Also check for skill crit modifier
+        //    }
 
-            defense = (int) (defense * (1.0 - skill.Penetration));
+        //    defense = (int) (defense * (1.0 - skill.Penetration));
 
-            //damage = (int)((skill.Power * attack * (attacker.Level * attacker.Level / 18 + 1)) / (defense * defense * skill.Penetration) * (rnd.Next(15) / 100 + 0.85) * crit);
-            //damage = (int)((skill.Power * attack / defense * (attacker.Level / 3 + 1) / 30) * (rnd.Next(15) / 100 + 0.85) * crit);
-            //damage = (int)((skill.Power * attack / defense) * (rnd.Next(15) / 100 + 0.85) * crit);
-            //damage = (int)((skill.Power * attack / defense * attacker.Level / 100) * (rnd.Next(15) / 100 + 0.85) * crit);
-            damage = (int)((skill.Power * attack / defense * attacker.Level / 100) * (rnd.Next(15) / 100 + 1.35) * crit);
+        //    //damage = (int)((skill.Power * attack * (attacker.Level * attacker.Level / 18 + 1)) / (defense * defense * skill.Penetration) * (rnd.Next(15) / 100 + 0.85) * crit);
+        //    //damage = (int)((skill.Power * attack / defense * (attacker.Level / 3 + 1) / 30) * (rnd.Next(15) / 100 + 0.85) * crit);
+        //    //damage = (int)((skill.Power * attack / defense) * (rnd.Next(15) / 100 + 0.85) * crit);
+        //    //damage = (int)((skill.Power * attack / defense * attacker.Level / 100) * (rnd.Next(15) / 100 + 0.85) * crit);
+        //    damage = (int)((skill.Power * attack / defense * attacker.Level / 100) * (rnd.Next(15) / 100 + 1.35) * crit);
 
-            if(damage < 1)
-                damage = 1;
+        //    if(damage < 1)
+        //        damage = 1;
 
-            target.CurrHP -= damage;
+        //    target.CurrHP -= damage;
 
-            skill.Effect?.Invoke(attacker, target);
-            skill.EffectAll?.Invoke(attacker, target, unitList);
+        //    skill.Effect?.Invoke(attacker, target);
+        //    skill.EffectAll?.Invoke(attacker, target, unitList);
 
-            Console.WriteLine($"{attacker.Name} used {skill.Name} on {target.Name} for {damage} damage!");
-            if(crit > 1.0)
-                Console.WriteLine($"Critical hit!");
+        //    Console.WriteLine($"{attacker.Name} used {skill.Name} on {target.Name} for {damage} damage!");
+        //    if(crit > 1.0)
+        //        Console.WriteLine($"Critical hit!");
 
-            return damage;
-        }
+        //    return damage;
+        //}
 
         private void UpdateHealthBars()
         {

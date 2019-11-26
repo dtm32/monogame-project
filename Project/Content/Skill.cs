@@ -31,6 +31,8 @@ namespace _2D_Game.Content
             Mythic
         }
 
+        public static Random random = new Random();
+
         public static int TargetSingle = 0;
         public static int TargetAll = 1;
         public static int TargetFront = 2;
@@ -101,7 +103,7 @@ namespace _2D_Game.Content
                 target.BuffStat(Unit.Armor, 2);
                 target.BuffStat(Unit.Resistance, 2);
             }, "Inflicts Stun(4). Increases target Amr/Res by 2.");
-        public static Skill PiercingGaze = new Skill("Piercing Gaze", 50, Skill.SkillType.Physical,
+        public static Skill PiercingGaze = new Skill("Piercing Gaze", 50, SkillType.Physical,
             "Ignores 30% of target Armor.").SetPenetration(0.3);
         public static Skill SideWhip = new Skill("Side Whip", SkillType.Physical,
             (self, target, units) =>
@@ -173,9 +175,162 @@ namespace _2D_Game.Content
                     units[botIndex].CurrHP -= damage;
                 }
             }, "Damages the top and bottom enemy. Has a boosted crit chance.");
+        public static Skill Maelstrom = new Skill("Maelstrom", 45, SkillType.Magical,
+            (self, target) =>
+            {
+                self.BuffStat(Unit.Armor, 2);
+                self.BuffStat(Unit.Resistance, 2);
+            }, "Increases unit's Amr/Res by 2.");
+        public static Skill RockSmash = new Skill("Rock Smash", 55).SetCritChance(0.25);
+        public static Skill Earthquake = new Skill("Earthquake", 55);
 
         public delegate void SkillEffect(Unit self, Unit target);
         public delegate void SkillEffectAll(Unit self, Unit target, UnitList units);
+        public delegate int SkillDamageTarget(Unit self, Unit target, Skill skill);
+        public delegate int SkillDamageAndHeal(Unit self, Unit target, Skill skill);
+        public delegate int SkillDamageEnemies(Unit self, List<Unit> enemies, Skill skill);
+
+        public static SkillDamageTarget DefaultDamageTarget = (self, target, skill) =>
+        {
+            int damage = 0;
+            int attack = 0;
+            int defense = 0;
+            int power = skill.Power;
+            int level = self.Level;
+            double crit = 1.0;
+
+            if(skill.Type == Skill.SkillType.Physical)
+            {
+                attack = self.Str;
+                defense = target.Amr;
+            }
+            else if(skill.Type == Skill.SkillType.Magical)
+            {
+                attack = self.Fcs;
+                defense = target.Res;
+            }
+
+            if(random.Next((int)(1/skill.CritChance)) == 0)
+            {
+                crit = skill.CritDamage;
+            }
+
+            defense = (int)(defense * (1.0 - skill.Penetration));
+
+            damage = (int)((power * attack / defense * level / 100) * (random.Next(15) / 100 + 1.35) * crit);
+
+            if(damage < 1)
+                damage = 1;
+
+            target.CurrHP -= damage;
+
+            Console.WriteLine($"{self.Name} used {skill.Name} on {target.Name} for {damage} damage!");
+
+            if(crit > 1.0)
+                Console.WriteLine($"Critical hit!");
+
+            return damage;
+        };
+        public static SkillDamageAndHeal DefaultDamageAndHeal = (self, target, skill) =>
+        {
+            int damage = 0;
+            int attack = 0;
+            int defense = 0;
+            int heal = 0;
+            int power = skill.Power;
+            int level = self.Level;
+            double crit = 1.0;
+
+            if(skill.Type == Skill.SkillType.Physical)
+            {
+                attack = self.Str;
+                defense = target.Amr;
+            }
+            else if(skill.Type == Skill.SkillType.Magical)
+            {
+                attack = self.Fcs;
+                defense = target.Res;
+            }
+
+            if(random.Next((int)(1 / skill.CritChance)) == 0)
+            {
+                crit = skill.CritDamage;
+            }
+
+            defense = (int)(defense * (1.0 - skill.Penetration));
+
+            damage = (int)((power * attack / defense * level / 100) * (random.Next(15) / 100 + 1.35) * crit);
+
+            if(damage < 1)
+                damage = 1;
+
+            target.CurrHP -= damage;
+            heal = (int)(damage * skill.HealPercent);
+            self.CurrHP += heal;
+
+            Console.WriteLine($"{self.Name} used {skill.Name} on {target.Name} for {damage} damage!");
+            Console.WriteLine($"{self.Name} healed {heal} health!");
+
+            if(crit > 1.0)
+                Console.WriteLine($"Critical hit!");
+
+            return damage;
+        };
+
+        /// <summary>
+        /// Apply default single target damage formula and returns damage value as an int.
+        /// Does not apply damage to target unit.
+        /// </summary>
+        /// <param name="self"></param>
+        /// <param name="target"></param>
+        /// <param name="skill"></param>
+        /// <returns></returns>
+        public static int CalculateDamage(Unit self, Unit target, Skill skill)
+        {
+            int damage = 0;
+            int attack = 0;
+            int defense = 0;
+            int power = skill.Power;
+            int level = self.Level;
+            double crit = 1.0;
+
+            // check if skill inflicts physical or magical damage
+            if(skill.Type == SkillType.Physical)
+            {
+                attack = self.Str;
+                defense = target.Amr;
+            }
+            else if(skill.Type == SkillType.Magical)
+            {
+                attack = self.Fcs;
+                defense = target.Res;
+            }
+
+            // check for critical strike
+            // TODO: make version without crit chance for AI calculations
+            if(random.Next((int)(1 / skill.CritChance)) == 0)
+            {
+                crit = skill.CritDamage;
+            }
+
+            // calculate defense modified by penetration
+            defense = (int)(defense * (1.0 - skill.Penetration));
+
+            // calculate skill damage
+            damage = (int)((power * attack / defense * level / 100) * (random.Next(15) / 100 + 1.35) * crit);
+
+            //if(damage < 1)
+            //    damage = 1;
+
+            //target.CurrHP -= damage;
+
+            //Console.WriteLine($"{self.Name} used {skill.Name} on {target.Name} for {damage} damage!");
+
+            //if(crit > 1.0)
+            //    Console.WriteLine($"Critical hit!");
+
+            return damage;
+        }
 
         public string Name;
         private int tier;
@@ -186,6 +341,12 @@ namespace _2D_Game.Content
         public SkillType Type { get; set; }
         public SkillEffect Effect { get; set; }
         public SkillEffectAll EffectAll { get; set; }
+        private SkillDamageTarget damageTarget;
+        private SkillDamageAndHeal damageAndHeal;
+        private SkillDamageEnemies damageEnemies;
+        public double CritChance { get; private set; } = 0.05;
+        public double CritDamage { get; private set; } = 1.50;
+        public double HealPercent { get; private set; } = 0.0;
 
         private int targetType = 0;
 
@@ -213,20 +374,6 @@ namespace _2D_Game.Content
             get { return targetType; }
         }
 
-        public Skill SetTargetType(int targetType)
-        {
-            this.targetType = targetType;
-
-            return this;
-        }
-
-        public Skill SetPenetration(double pen)
-        {
-            this.Penetration = pen;
-
-            return this;
-        }
-
         public Skill(String name, int power)
         {
             tier = 0;
@@ -234,132 +381,183 @@ namespace _2D_Game.Content
             this.Power = power;
             Penetration = 0.0;
             Type = SkillType.Physical;
+            damageTarget = Skill.DefaultDamageTarget;
+            description = "";
         }
 
-        public Skill(String name, int power, SkillEffect effect)
+        public Skill(String name, int power, SkillType type) : this(name, power)
         {
-            tier = 0;
-            Name = name;
-            this.Power = power;
-            Penetration = 0.0;
-            Type = SkillType.Physical;
+            //tier = 0;
+            //Name = name;
+            //this.Power = power;
+            //Penetration = 0.0;
+            Type = type;
+        }
+
+        public Skill(String name, int power, SkillEffect effect) : this(name, power)
+        {
             Effect = effect;
         }
 
-        public Skill(String name, int power, SkillType type)
-        {
-            tier = 0;
-            Name = name;
-            this.Power = power;
-            Penetration = 0.0;
-            Type = type;
-            //Effect = effect;
-        }
 
-        public Skill(String name, int power, SkillType type, SkillEffect effect)
+        public Skill(String name, int power, SkillType type, SkillEffect effect) : this(name, power)
         {
-            tier = 0;
-            Name = name;
-            this.Power = power;
-            Penetration = 0.0;
+            //tier = 0;
+            //Name = name;
+            //this.Power = power;
+            //Penetration = 0.0;
             Type = type;
             Effect = effect;
         }
 
-        public Skill(String name, SkillEffect effect)
+        public Skill(String name, SkillEffect effect) : this(name, 0)
         {
-            tier = 0;
-            Name = name;
-            Power = 0;
-            Penetration = 0.0;
+            //tier = 0;
+            //Name = name;
+            //Power = 0;
+            //Penetration = 0.0;
             Type = SkillType.Effect;
             Effect = effect;
         }
 
-        public Skill(String name, SkillType type, SkillEffect effect)
+        public Skill(String name, SkillType type, SkillEffect effect) : this(name, 0)
         {
-            tier = 0;
-            Name = name;
-            Power = 0;
-            Penetration = 0.0;
+            //tier = 0;
+            //Name = name;
+            //Power = 0;
+            //Penetration = 0.0;
             Type = type;
             Effect = effect;
         }
 
-        public Skill(String name, SkillType type, SkillEffect effect, string description)
+        public Skill(String name, SkillType type, SkillEffect effect, string description) : this(name, 0)
         {
-            tier = 0;
-            Name = name;
-            Power = 0;
-            Penetration = 0.0;
+            //tier = 0;
+            //Name = name;
+            //Power = 0;
+            //Penetration = 0.0;
             Type = type;
             Effect = effect;
             this.description = description;
         }
 
         public Skill(String name, int power, SkillType type, SkillEffect effect, string description)
+            : this(name, power)
         {
-            tier = 0;
-            Name = name;
-            Power = power;
-            Penetration = 0.0;
+            //tier = 0;
+            //Name = name;
+            //Power = power;
+            //Penetration = 0.0;
             Type = type;
             Effect = effect;
             this.description = description;
         }
 
-        public Skill(String name, SkillEffectAll effect)
+        public Skill(String name, SkillEffectAll effect) : this(name, 0)
         {
-            tier = 0;
-            Name = name;
-            Power = 0;
-            Penetration = 0.0;
+            //tier = 0;
+            //Name = name;
+            //Power = 0;
+            //Penetration = 0.0;
             Type = SkillType.Effect;
             EffectAll = effect;
         }
 
-        public Skill(String name, SkillType type, SkillEffectAll effect)
+        public Skill(String name, SkillType type, SkillEffectAll effect) : this(name, 0)
         {
-            tier = 0;
-            Name = name;
-            Power = 0;
-            Penetration = 0.0;
+            //tier = 0;
+            //Name = name;
+            //Power = 0;
+            //Penetration = 0.0;
             Type = type;
             EffectAll = effect;
         }
 
-        public Skill(String name, SkillType type, SkillEffectAll effect, string description)
+        public Skill(String name, SkillType type, SkillEffectAll effect, string description) : this(name, 0)
         {
-            tier = 0;
-            Name = name;
-            Power = 0;
-            Penetration = 0.0;
+            //tier = 0;
+            //Name = name;
+            //Power = 0;
+            //Penetration = 0.0;
             Type = type;
             EffectAll = effect;
             this.description = description;
         }
 
-        public Skill(String name, int power, SkillType type, string description)
+        public Skill(String name, int power, SkillType type, string description) : this(name, power)
         {
-            tier = 0;
-            Name = name;
-            Power = power;
-            Penetration = 0.0;
+            //tier = 0;
+            //Name = name;
+            //Power = power;
+            //Penetration = 0.0;
             Type = type;
             //EffectAll = effect;
             this.description = description;
         }
 
         public Skill(String name, int power, SkillType type, SkillEffectAll effect, string description)
+            : this(name, power)
         {
-            tier = 0;
-            Name = name;
-            Power = power;
-            Penetration = 0.0;
+            //tier = 0;
+            //Name = name;
+            //Power = power;
+            //Penetration = 0.0;
             Type = type;
             EffectAll = effect;
             this.description = description;
         }
+
+        public Skill SetTargetType(int targetType)
+        {
+            this.targetType = targetType;
+
+            return this;
+        }
+
+        /// <summary>
+        /// Set pentration to a value between 0.0 and 1.0; represents the percent of target's
+        /// defensive stat to ignore.
+        /// </summary>
+        /// <param name="pen">Penetration value.</param>
+        /// <returns>Reference to this Skill.</returns>
+        public Skill SetPenetration(double pen)
+        {
+            this.Penetration = pen;
+
+            return this;
+        }
+
+        /// <summary>
+        /// Set critical hit chance to a value between 0.0 and 1.0; default value is 0.05.
+        /// </summary>
+        /// <param name="crit">Critical hit chance value.</param>
+        /// <returns>Reference to this Skill.</returns>
+        public Skill SetCritChance(double crit)
+        {
+            this.CritChance = crit;
+
+            return this;
+        }
+
+        public Skill SetCritDamage(double damage)
+        {
+            this.CritDamage = damage;
+
+            return this;
+        }
+
+        public int Invoke(Unit self, Unit target, UnitList unitList)
+        {
+            this.Effect?.Invoke(self, target);
+            this.EffectAll?.Invoke(self, target, unitList);
+
+            damageTarget?.Invoke(self, target, this);
+            damageAndHeal?.Invoke(self, target, this);
+            damageEnemies?.Invoke(self, unitList.EnemyList, this);
+
+            return 0;
+        }
+
 
         //public void SetEffect(SkillEffect effect)
         //{
