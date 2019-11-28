@@ -20,7 +20,8 @@ namespace _2D_Game
             InitMainMenu,
             RunMainMenu,
             InitBattleManager,
-            RunBattleManager
+            RunBattleManager,
+            ContinueBattleManager
         }
 
         public static Random random = new Random();
@@ -91,6 +92,7 @@ namespace _2D_Game
         public static SpriteFont FontSmallBold;
 
         int[] team = new int[4];
+        int gauntletTier = 0;
 
         public Game1()
         {
@@ -328,72 +330,17 @@ namespace _2D_Game
 
                 // puff fly
                 ArrayList skillSet1 = new ArrayList();
-                skillSet1.Add(new Skill("Swarm", 0, Skill.SkillType.Physical,
-                    (self, target, units) =>
-                    {
-                        //Random random = new Random();
-                        int numAttacks = random.Next(4) + 5;
-                        int power = 10;
+                skillSet1.Add(Skill.Swarm);
+                skillSet1.Add(Skill.Assault);
+                skillSet1.Add(Skill.BugBite);
+                skillSet1.Add(Skill.BuzzBy);
 
-                        float crit = 1.0f;
-
-                        if(random.Next(100) < 5)
-                        {
-                            crit = 1.5f; // Also check for skill crit modifier
-                        }
-
-                        for(int i = 0; i < numAttacks; i++)
-                        {
-                            int targetOffset = 0;
-                            if(!self.IsEnemy)
-                                targetOffset += units.Length / 2;
-                            int targetIndex = -1;
-                            while(!units.BattleOver())
-                            {
-                                targetIndex = random.Next(units.Length / 2) + targetOffset;
-                                if(units[targetIndex].IsAlive)
-                                    break;
-                            }
-                            if(units.BattleOver() || targetIndex < 0)
-                                return;
-                            int damage = (int)((power * self.Str / units[targetIndex].Amr * self.Level / 100) *
-                                    (random.Next(15) / 100 + 1.35) * crit);
-                            units[targetIndex].CurrHP -= damage;
-                            Console.WriteLine($"{self.Name} damaged {units[targetIndex].Name} with Swarm for {damage} damage!");
-                        }
-
-                    }, "Randomly damages enemies 5-8 times.")
-                    .SetTargetType(Skill.TargetAll));
-                skillSet1.Add(new Skill("Assault", 55));
-                skillSet1.Add(new Skill("Bug Bite", 40, Skill.SkillType.Physical,
-                    (self, target) =>
-                    {
-                        target.Inflict(new StatusEffect(StatusEffect.Bleed, 2, self, target));
-                    }, "Inflicts Bleed(2) and heals unit for 10% max HP."));
-                skillSet1.Add(new Skill("Buzz-by", 10, Skill.SkillType.Physical,
-                    (self, target) =>
-                    {
-                        self.BuffStat(Unit.Speed, 2);
-                        self.BuffStat(Unit.Strength, 2);
-                    }, "Increases self Spd/Str by 2."));
-
+                // feather raptor
                 ArrayList skillSet2 = new ArrayList();
-                skillSet2.Add(new Skill("Assault", 55));
-                skillSet2.Add(new Skill("Charge", 45, Skill.SkillType.Physical,
-                    (self, target) =>
-                    {
-                        target.Inflict(new StatusEffect(StatusEffect.Bleed, 2, self, target));
-                    }, "Inflicts Bleed(2)."));
-                skillSet2.Add(new Skill("Fast Swipe", 40, Skill.SkillType.Physical,
-                    (self, target) =>
-                    {
-                        self.BuffStat(Unit.Speed, 1);
-                    }, "Increase self Speed(1)."));
-                skillSet2.Add(new Skill("Gouge", 55, Skill.SkillType.Physical,
-                    (self, target) =>
-                    {
-                        target.Inflict(new StatusEffect(StatusEffect.Poison, 2, self, target));
-                    }, "Inflict Poison(2)."));
+                skillSet2.Add(Skill.Assault);
+                skillSet2.Add(Skill.Charge);
+                skillSet2.Add(Skill.FastSwipe);
+                skillSet2.Add(Skill.Gouge);
 
                 // Woody skill set
                 ArrayList woodysSkills = new ArrayList();
@@ -430,191 +377,50 @@ namespace _2D_Game
                     {
                         target.CurrHP = (int)(target.CurrHP * 0.75);
                     }, "Deals damage = 25% target's current health."));
-                skillSet3.Add(new Skill("Drain", 60, Skill.SkillType.Magical,
-                    (self, target) =>
-                    {
-                        self.CurrHP += target.LastDamageTaken / 2;
-                    }, "Heals self for half damage dealt."));
-                skillSet3.Add(new Skill("Smooch", 60, Skill.SkillType.Magical,
-                    (self, target) =>
-                    {
-                        target.DebuffStat(Unit.Resistance, 2);
-                    }));
-                skillSet3.Add(new Skill("Big Magic Churro", Skill.SkillType.Buff,
-                    (self, target) =>
-                    {
-                        int heal = (int)(self.Fcs * 0.40);
-                        target.CurrHP += heal;
-                        self.CurrHP += heal;
-                        target.BuffStat(Unit.Speed, 2);
-                    }, "Heal self and target = 45% Focus and increase target Speed(1).")
-                    .SetTargetType(Skill.TargetAlly));
+                skillSet3.Add(Skill.Drain);
+                skillSet3.Add(Skill.Smooch);
+                skillSet3.Add(Skill.BigMagicChurro);
 
                 // Red Moth skill set
                 ArrayList skillSet4 = new ArrayList();
-                skillSet4.Add(new Skill("Sonic Buzz", 65, Skill.SkillType.Magical));
-                skillSet4.Add(new Skill("Corroding Bite", 40, Skill.SkillType.Physical,
-                    (self, target) =>
-                    {
-                        target.DebuffStat(Unit.Armor, 2);
-                        target.DebuffStat(Unit.Resistance, 2);
-                    }, "Decrease target Amr/Res(2)."));
-                skillSet4.Add(new Skill("Incantation", Skill.SkillType.Buff,
-                    (self, target) =>
-                    {
-                        target.CurrHP += (int)(target.HP * 0.2);
-                        target.BuffStat(Unit.Strength, 1);
-                        target.BuffStat(Unit.Focus, 1);
-                        target.BuffStat(Unit.Armor, 1);
-                        target.BuffStat(Unit.Resistance, 1);
-                    }, "Heal target ally (15% unit's Health) and increase Str/Fcs/Amr/Res(1).")
-                    .SetTargetType(Skill.TargetAlly));
-                skillSet4.Add(new Skill("Toxic Cloud", 15, Skill.SkillType.Magical,
-                    (self, target, units) =>
-                    {
-                        for(int i = units.Length / 2; i < units.Length; i++)
-                        {
-                            units[i].Inflict(new StatusEffect(StatusEffect.Poison, 1, self, units[i]));
-
-                            // TODO: MOVE DAMAGE LOGIC SOMEWHERE IT CAN BE ACCESSED
-                            float crit = 1.0f;
-
-                            if(random.Next(100) < 5)
-                            {
-                                crit = 1.5f; // Also check for skill crit modifier
-                            }
-
-                            int damage = (int)((15 * self.Fcs / units[i].Res * self.Level / 100) *
-                                (random.Next(15) / 100 + 1.35) * crit);
-
-                            if(damage < 1)
-                                damage = 1;
-
-                            units[i].CurrHP -= damage;
-                        }
-                    }, "Damage all enemies and inflicts Poison(1).")
-                    .SetTargetType(Skill.TargetAll));
+                skillSet4.Add(Skill.SonicBuzz);
+                skillSet4.Add(Skill.CorrodingBite);
+                skillSet4.Add(Skill.Incantation);
+                skillSet4.Add(Skill.ToxicCloud);
 
                 ArrayList skillSet5 = new ArrayList(); // long hair
-                skillSet5.Add(new Skill("Vorpal Strike", 35, Skill.SkillType.Physical,
-                    (self, target) =>
-                    {
-                        switch(random.Next(4))
-                        {
-                            case 0:
-                                target.Inflict(new StatusEffect(StatusEffect.Bleed, 2, self, target));
-                                break;
-                            case 1:
-                                target.Inflict(new StatusEffect(StatusEffect.Burn, 2, self, target));
-                                break;
-                            case 2:
-                                target.Inflict(new StatusEffect(StatusEffect.Poison, 2, self, target));
-                                break;
-                        }
-                    }, "Randomly inflicts Burn(2), Bleed(2), or Poison(2)."));
-                skillSet5.Add(new Skill("Backlash", 55));
+                skillSet5.Add(Skill.VorpalStrike);
+                skillSet5.Add(Skill.Backlash);
                 skillSet5.Add(Skill.Nullify);
                 skillSet5.Add(Skill.PiercingGaze);
 
                 // psychic hands
                 ArrayList skillSet6 = new ArrayList();
-                skillSet6.Add(new Skill("Retaliate", 30, Skill.SkillType.Magical,
-                    (self, target) =>
-                    {
-                        double temp = self.PercentHealth();
-                        double damageMod = 6.0 * (1.0 - temp);
-                        if(damageMod < 1.0)
-                            damageMod = 1.0;
-                        Console.WriteLine($"Retaliate.damageMode={damageMod}");
-                        int lastDamage = target.LastDamageTaken;
-                        target.CurrHP -= (int)((lastDamage * damageMod) - lastDamage);
-                    }, "Deals more damage the less health this unit has."));
-                skillSet6.Add(new Skill("Torment", 60, Skill.SkillType.Magical));
-                skillSet6.Add(new Skill("Ignite", 50, Skill.SkillType.Magical,
-                    (self, target) =>
-                    {
-                        target.Inflict(new StatusEffect(StatusEffect.Burn, 3, self, target));
-                    }, "Inflicts Burn(3)."));
-                skillSet6.Add(new Skill("Psychic Shackle", 85, Skill.SkillType.Magical,
-                    (self, target) =>
-                    {
-                        target.DebuffStat(Unit.Speed, 2); // TODO: UPDATE MOVE ORDER QUEUE TO REFLECT SPEED CHANGES
-                    }, "Decrease Spd(2)."));
+                skillSet6.Add(Skill.Retaliate);
+                skillSet6.Add(Skill.Torment);
+                skillSet6.Add(Skill.Ignite);
+                skillSet6.Add(Skill.PsychicShackle);
 
                 // snow spirit
                 ArrayList skillSet7 = new ArrayList();
-                skillSet7.Add(new Skill("Flash Freeze", 30, Skill.SkillType.Magical,
-                    (self, target) =>
-                    {
-                        target.Inflict(new StatusEffect(StatusEffect.Stun, 2));
-                    }, "Inflicts Stun(2)."));
+                skillSet7.Add(Skill.FlashFreeze);
                 skillSet7.Add(new Skill("Arcane Blast", 70, Skill.SkillType.Magical));
-                skillSet7.Add(new Skill("Assault", 55));
-                skillSet7.Add(new Skill("Falling Ice", 60, Skill.SkillType.Physical,
-                    (self, target, units) =>
-                    {
-                        int targetIndex = target.Index;
-                        int damage = (int)(target.LastDamageTaken / 2);
-
-                        if(units[targetIndex - 1].IsEnemy)
-                        {
-                            units[targetIndex - 1].CurrHP -= damage;
-                        }
-                        if(targetIndex + 1 < units.Length &&
-                            units[targetIndex + 1].IsAlive)
-                        {
-                            units[targetIndex + 1].CurrHP -= damage;
-                        }
-                    }, "Deals 50% damage to adjacent units."));
+                skillSet7.Add(Skill.Assault);
+                skillSet7.Add(Skill.FallingIce);
 
                 // spike pig
                 ArrayList skillSet8 = new ArrayList();
-                skillSet8.Add(new Skill("Assault", 55));
-                skillSet8.Add(new Skill("Heat Up", 0, Skill.SkillType.Buff,
-                    (self, target) =>
-                    {
-                        self.BuffStat(Unit.Speed, 1);
-                        self.BuffStat(Unit.Strength, 1);
-                        self.BuffStat(Unit.Focus, 1);
-                    }, "Increases self Spd/Str/Fcs by 1.")
-                    .SetTargetType(Skill.TargetSelf));
-                skillSet8.Add(new Skill("Frenzy", 100, Skill.SkillType.Physical,
-                    (self, target) =>
-                    {
-                        self.CurrHP = (int)(self.CurrHP * 0.8);
-                    }, "Damages self for 20% of current health."));
+                skillSet8.Add(Skill.Assault);
+                skillSet8.Add(Skill.HeatUp);
+                skillSet8.Add(Skill.Frenzy);
                 skillSet8.Add(Skill.AdaptiveBlow);
 
                 // zig zag
                 ArrayList skillSet9 = new ArrayList();
-                skillSet9.Add(new Skill("Reckless Charge", 100, Skill.SkillType.Physical,
-                    (self, target) =>
-                    {
-                        self.Inflict(new StatusEffect(StatusEffect.Stun, 2));
-                        if(random.Next(2) == 1)
-                        {
-                            target.Inflict(new StatusEffect(StatusEffect.Stun, 2));
-                        }
-                    }, "Has a 50% chance to inflict Stun(2) on target. Inflicts Stun(2) on self."));
-                skillSet9.Add(new Skill("Tail Wag", Skill.SkillType.Effect,
-                    (self, target) =>
-                    {
-                        target.DebuffStat(Unit.Speed, 2);
-                        target.DebuffStat(Unit.Armor, 2);
-                    }, "Lowers target Spd/Amr by 2."));
-                skillSet9.Add(new Skill("Bite", 55, Skill.SkillType.Physical,
-                    (self, target) =>
-                    {
-                        if(random.Next(2) == 1)
-                        {
-                            target.DebuffStat(Unit.Armor, 1);
-                        }
-                    }, "Has a chance to lower Armor by 1."));
-                skillSet9.Add(new Skill("Fast Swipe", 40, Skill.SkillType.Physical,
-                    (self, target) =>
-                    {
-                        self.BuffStat(Unit.Speed, 1);
-                    }, "Increase self Speed(1)."));
+                skillSet9.Add(Skill.RecklessCharge);
+                skillSet9.Add(Skill.TailWag);
+                skillSet9.Add(Skill.Bite);
+                skillSet9.Add(Skill.FastSwipe);
 
                 // bean sprout
                 ArrayList skillSet10 = new ArrayList();
@@ -626,18 +432,9 @@ namespace _2D_Game
                         self.BuffStat(Unit.Strength, 1);
                         self.BuffStat(Unit.Focus, 1);
                     }, "Heal self = 20% Focus and increase Spd/Str/Fcs by 1."));
-                skillSet10.Add(new Skill("Poison Spike", 10, Skill.SkillType.Magical,
-                    (self, target) =>
-                    {
-                        target.Inflict(new StatusEffect(StatusEffect.Poison, 4, self, target));
-                    }, "Inflicts Poison(4)."));
+                skillSet10.Add(Skill.PoisonSpike);
                 skillSet10.Add(Skill.SideWhip);
-                skillSet10.Add(new Skill("Ingrain", Skill.SkillType.Buff,
-                    (self, target) =>
-                    {
-                        self.BuffStat(Unit.Armor, 3);
-                        self.BuffStat(Unit.Resistance, 3);
-                    }, "Increase self Amr/Res by 3."));
+                skillSet10.Add(Skill.Ingrain);
 
                 // eye lizard
                 ArrayList skillSet11 = new ArrayList();
@@ -657,21 +454,21 @@ namespace _2D_Game
                 ArrayList skillSet13 = new ArrayList();
                 skillSet13.Add(Skill.RockSmash);
                 skillSet13.Add(Skill.Maelstrom);
-                skillSet13.Add(Skill.Sacrifice);
+                skillSet13.Add(Skill.Earthquake);
                 skillSet13.Add(Skill.Reprisal);
 
                 // cursed tome
                 ArrayList skillSet14 = new ArrayList();
-                skillSet14.Add(Skill.SoulSiphon);
-                skillSet14.Add(Skill.Nullify);
-                skillSet14.Add(Skill.Sacrifice);
                 skillSet14.Add(Skill.Reprisal);
+                skillSet14.Add(Skill.PhantasmalRend);
+                skillSet14.Add(Skill.Infuse);
+                skillSet14.Add(Skill.Torment);
 
 
                 BaseUnit puffFly = new BaseUnit(puffFlySprite, "Puff Fly", "Beast", "Common", skillSet1, 
                     100, 110, 105, 95, 95, 95);
                 BaseUnit spikePig = new BaseUnit(spikePigSprite, "Spike Pig", "Beast", "Common", skillSet8, 
-                    164, 70, 125, 80, 175, 95);
+                    164, 70, 125, 80, 135, 95);
                 BaseUnit pinkScythe = new BaseUnit(pinkScytheSprite, "Pink Scythe", "Mage", "Spirit", skillSet3, 
                     97, 104, 109, 133, 100, 185);
                 BaseUnit featherRaptor = new BaseUnit(featherRaptorSprite, "Feather Raptor", "Beast", "Wild", skillSet2, 
@@ -695,9 +492,9 @@ namespace _2D_Game
                 BaseUnit zombieFish = new BaseUnit(zombieFishSprite, "Zombie Fish", "Beast", "Spirit", skillSet12,
                     135, 84, 120, 60, 79, 125);
                 BaseUnit ancientFish = new BaseUnit(ancientFishSprite, "Depth Dweller", "Beast", "Mythic", skillSet13,
-                    135, 84, 120, 60, 79, 125);
-                BaseUnit cursedTome = new BaseUnit(cursedTomeSprite, "Cursed Tome", "Mage", "Spirit", skillSet12,
-                    135, 84, 120, 60, 79, 125);
+                    150, 60, 145, 85, 210, 80);
+                BaseUnit cursedTome = new BaseUnit(cursedTomeSprite, "Cursed Tome", "Mage", "Spirit", skillSet14,
+                    120, 98, 75, 162, 80, 90);
 
                 baseUnitList.Add(puffFly);       // 0
                 baseUnitList.Add(spikePig);      // 1
@@ -715,6 +512,24 @@ namespace _2D_Game
                 baseUnitList.Add(cursedTome);    // 13
 
                 enemyUnitList.Add(zigZag);
+                enemyUnitList.Add(featherRaptor);
+                enemyUnitList.Add(zigZag);
+                enemyUnitList.Add(featherRaptor);
+
+                enemyUnitList.Add(featherRaptor.SetLevel(79));
+                enemyUnitList.Add(longHair);
+                enemyUnitList.Add(snowSpirit);
+                enemyUnitList.Add(zombieFish);
+                
+                enemyUnitList.Add(snowSpirit);
+                enemyUnitList.Add(spikePig);
+                enemyUnitList.Add(snowSpirit);
+                enemyUnitList.Add(spikePig);
+                
+                enemyUnitList.Add(cursedTome);
+                enemyUnitList.Add(eyeLizard);
+                enemyUnitList.Add(zombieFish);
+                enemyUnitList.Add(cursedTome);
 
                 mainMenu.AddBaseUnits(baseUnitList);
                 mainMenu.AddIcons(iconManager);
@@ -763,8 +578,31 @@ namespace _2D_Game
 
                 if(battleManager.ExitBattleManager)
                 {
-                    gameState = GameState.RunMainMenu;
+                    //gameState = GameState.RunMainMenu;
+                    gameState = GameState.ContinueBattleManager;
                 }
+            }
+            else if(gameState == GameState.ContinueBattleManager)
+            {
+                
+                //battleManager = new 
+                battleManager.ClearUnits();
+                battleManager.AddUnit(baseUnitList[team[0]].SetLevel(75), 0);
+                battleManager.AddUnit(baseUnitList[team[1]].SetLevel(75), 1);
+                battleManager.AddUnit(baseUnitList[team[2]].SetLevel(75), 2);
+                battleManager.AddUnit(baseUnitList[team[3]].SetLevel(75), 3);
+
+                int index = gauntletTier * 4;
+
+                battleManager.AddUnit(enemyUnitList[index], 4);
+                battleManager.AddUnit(enemyUnitList[index + 1], 5);
+                battleManager.AddUnit(enemyUnitList[index + 2], 6);
+                battleManager.AddUnit(enemyUnitList[index + 3], 7);
+
+                gauntletTier++;
+
+                gameState = GameState.RunBattleManager;
+                battleManager.Start();
             }
 
             base.Update(gameTime);

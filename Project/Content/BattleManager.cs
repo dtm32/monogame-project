@@ -205,6 +205,11 @@ namespace _2D_Game.Content
             return false;
         }
 
+        public void ClearUnits()
+        {
+            unitList.Clear();
+        }
+
         /// <summary>
         /// Run after passing all required resources to BattleManager.
         /// </summary>
@@ -223,6 +228,8 @@ namespace _2D_Game.Content
 
             // update state
             battleState = BattleState.RoundStart;
+
+            exitBattleManager = false;
 
             return true;
         }
@@ -387,6 +394,7 @@ namespace _2D_Game.Content
                             healthBarHighlighted.Add(unitHovered);
                         }
                     }
+                    //else if(selected)
                     else if(selectedSkill.GetTargetType == Skill.TargetSingle)
                     {
                         if(unitList[unitHovered].IsEnemy)
@@ -397,6 +405,67 @@ namespace _2D_Game.Content
                     else if(selectedSkill.GetTargetType == Skill.TargetSelf)
                     {
 
+                    }
+                    else if(selectedSkill.GetTargetType == Skill.TargetSides)
+                    {
+                        if(unitList[unitHovered].IsEnemy)
+                        {
+                            // select top unit
+                            int topIndex = unitList.Capacity / 2;
+
+                            for(int i = topIndex; i < unitList.Capacity; i++)
+                            {
+                                if(unitList[i].IsAlive)
+                                {
+                                    topIndex = i;
+                                    break;
+                                }
+                            }
+
+                            // select bot unit
+                            int botIndex = unitList.Capacity - 1;
+
+                            for(int i = botIndex; i >= topIndex; i--)
+                            {
+                                if(unitList[i].IsAlive)
+                                {
+                                    botIndex = i;
+                                    break;
+                                }
+                            }
+
+                            healthBarHighlighted.Add(topIndex);
+                            healthBarHighlighted.Add(botIndex);
+                        }
+
+                    }
+                    else if(selectedSkill.GetTargetType == Skill.TargetAllies)
+                    {
+                        if(!unitList[unitHovered].IsEnemy)
+                        {
+                            foreach(Unit unit in unitList.AllyList)
+                            {
+                                healthBarHighlighted.Add(unit.Index);
+                            }
+                        }
+                    }
+                    else if(selectedSkill.GetTargetType == Skill.TargetAdjacent)
+                    {
+                        int index = unitHovered;
+
+                        if(unitList[unitHovered].IsEnemy)
+                        {
+                            healthBarHighlighted.Add(unitHovered);
+
+                            if(unitList[unitHovered - 1].IsEnemy && unitList[unitHovered - 1].IsAlive)
+                            {
+                                healthBarHighlighted.Add(unitHovered - 1);
+                            }
+                            if(unitHovered + 1 < unitList.Capacity && unitList[unitHovered + 1].IsEnemy)
+                            {
+                                healthBarHighlighted.Add(unitHovered + 1);
+                            }
+                        }
                     }
                 }
             }
@@ -729,7 +798,7 @@ namespace _2D_Game.Content
         private BattleState SetState(BattleState state)
         {
 
-            Console.WriteLine($"State: {state}");
+            //Console.WriteLine($"State: {state}");
             battleState = state;
 
             return state;

@@ -106,11 +106,20 @@ namespace _2D_Game.Content
             StatusEffects.Add(effect);
         }
 
+        public void UpdateStats()
+        {
+            Spd = (int)(CalcStatMod(StatTiers[Unit.Speed]) * baseUnit.CalcSpd);
+            Str = (int)(CalcStatMod(StatTiers[Unit.Strength]) * baseUnit.CalcStr);
+            Fcs = (int)(CalcStatMod(StatTiers[Unit.Focus]) * baseUnit.CalcFcs);
+            Amr = (int)(CalcStatMod(StatTiers[Unit.Armor]) * baseUnit.CalcAmr);
+            Res = (int)(CalcStatMod(StatTiers[Unit.Resistance]) * baseUnit.CalcRes);
+        }
+
         public int DebuffStat(int stat, int tiers)
         {
-            Console.WriteLine($"Debuffing {Name} stat by {tiers}");
-
             int newStat = 0;
+
+            string statString = "speed";
 
             StatTiers[stat] -= tiers;
 
@@ -122,32 +131,39 @@ namespace _2D_Game.Content
                 case Unit.Speed:
                     newStat = (int)(CalcStatMod(StatTiers[stat]) * baseUnit.CalcSpd);
                     Spd = newStat;
+                    statString = "speed";
                     break;
                 case Unit.Strength:
                     newStat = (int)(CalcStatMod(StatTiers[stat]) * baseUnit.CalcStr);
                     Str = newStat;
+                    statString = "strength";
                     break;
                 case Unit.Focus:
                     newStat = (int)(CalcStatMod(StatTiers[stat]) * baseUnit.CalcFcs);
                     Fcs = newStat;
+                    statString = "focus";
                     break;
                 case Unit.Armor:
                     newStat = (int)(CalcStatMod(StatTiers[stat]) * baseUnit.CalcAmr);
                     Amr = newStat;
+                    statString = "armor";
                     break;
                 case Unit.Resistance:
                     newStat = (int)(CalcStatMod(StatTiers[stat]) * baseUnit.CalcRes);
                     Res = newStat;
+                    statString = "resistance";
                     break;
             }
+
+            Console.WriteLine($"{Name}'s {statString} fell!");
 
             return newStat;
         }
 
         public int BuffStat(int stat, int tiers)
         {
-            Console.WriteLine($"Buffing {Name} stat by {tiers}");
             int newStat = 0;
+            string statString = "speed";
 
             StatTiers[stat] += tiers;
 
@@ -163,20 +179,26 @@ namespace _2D_Game.Content
                 case Unit.Strength:
                     newStat = (int)(CalcStatMod(StatTiers[stat]) * baseUnit.CalcStr);
                     Str = newStat;
+                    statString = "strength";
                     break;
                 case Unit.Focus:
                     newStat = (int)(CalcStatMod(StatTiers[stat]) * baseUnit.CalcFcs);
                     Fcs = newStat;
+                    statString = "focus";
                     break;
                 case Unit.Armor:
                     newStat = (int)(CalcStatMod(StatTiers[stat]) * baseUnit.CalcAmr);
                     Amr = newStat;
+                    statString = "armor";
                     break;
                 case Unit.Resistance:
                     newStat = (int)(CalcStatMod(StatTiers[stat]) * baseUnit.CalcRes);
                     Res = newStat;
+                    statString = "resistance";
                     break;
             }
+
+            Console.WriteLine($"{Name}'s {statString} rose!");
 
             return newStat;
         }

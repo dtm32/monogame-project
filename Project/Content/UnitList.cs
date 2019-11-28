@@ -57,7 +57,7 @@ namespace _2D_Game.Content
         {
             get
             {
-                return base.GetRange(base.Capacity / 2, base.Capacity);
+                return base.GetRange(base.Capacity / 2, base.Capacity / 2);
             }
         }
 
@@ -363,14 +363,14 @@ namespace _2D_Game.Content
                 }
             }
 
-            int[] tempArray = new int[moveQueue.Count];
-            moveQueue.CopyTo(tempArray, 0);
-            Console.WriteLine("Move queue");
-            foreach(int i in tempArray)
-            {
-                Console.WriteLine($"  {base[i].Name}({base[i].Spd})");
-            }
-            Console.WriteLine();
+            //int[] tempArray = new int[moveQueue.Count];
+            //moveQueue.CopyTo(tempArray, 0);
+            //Console.WriteLine("Move queue");
+            //foreach(int i in tempArray)
+            //{
+            //    Console.WriteLine($"  {base[i].Name}({base[i].Spd})");
+            //}
+            //Console.WriteLine();
 
             return moveQueue;
         }

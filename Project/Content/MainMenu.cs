@@ -275,7 +275,7 @@ namespace _2D_Game.Content
             }
         }
 
-        Rectangle skillDescriptionRect = new Rectangle(10, 10, 200, 0);
+        Rectangle skillDescriptionRect = new Rectangle(10, 10, 250, 0);
         int skillDescriptionRectPadding = 10;
         Skill skillPreview;
         int prevSkillHovered = -1;
@@ -465,6 +465,8 @@ namespace _2D_Game.Content
 
             description = FontManager.WrapText(FontManager.Default_Regular_9, description,
                 skillDescriptionRect.Width - 2 * skillDescriptionRectPadding);
+            //description = FontManager.WrapText(FontManager.Default_Regular_11, description,
+            //    skillDescriptionRect.Width - 2 * skillDescriptionRectPadding);
 
             int numLines = description.Split('\n').Length;
             int textHeight = FontManager.Default_Regular_9.LineSpacing * numLines;
