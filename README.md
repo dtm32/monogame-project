@@ -3,13 +3,13 @@
 TODO:
 - [x] Clickable skill panel
 - [X] Iterate through characters
-- [ ] Eight unique units (with unique skills/stats)
-- [ ] Calculate damage
-- [ ] Enemies attack on their turn
-- [ ] Attack animations
-- [ ] Damage animations
-- [ ] Refactor for BattleUnitManager
-- [ ] Battle end
-- [ ] Status effects and icons
-- [ ] Click unit during battle for stats overview
+- [X] Eight unique units (with unique skills/stats)
+- [X] Calculate damage
+- [X] Enemies attack on their turn
+- [X] Attack animations
+- [X] Damage animations
+- [X] Refactor for BattleUnitManager
+- [X] Battle end
+- [X] Status effects and icons
+- [X] Click unit during battle for stats overview
 - [ ] Stat icons
